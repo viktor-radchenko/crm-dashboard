@@ -1,0 +1,63 @@
+{% extends 'dashboard.html' %}
+{% block extra_head %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static "/vendor/datatables/dataTables.bootstrap4.min.css"%}">
+{% endblock %}
+{% block content %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Edit month {{month.num}}</h1>
+</div>
+
+<div class="row align-items-center justify-content-center">
+    <div class="col-xl-8 col-lg-10 col-md-10 col-sm-12">
+        <div class="card shadow mb-4 p-2">
+            <div class="row">
+                <div class="col-12 mb-3 mt-3">
+                    <form method="POST" onsubmit="reOrder()">
+                        {% csrf_token %}
+
+                        <div class="form-group col-12 mb-4">
+                            <div class="table-responsive">
+                                <table id="dataTable" width="100%" cellspacing="0" class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" class="sortable col-2">#</th>
+                                            <th scope="col" class="sortable col-7">Title</th>
+                                        </tr>
+                                    </thead>
+                                    
+                                    <tbody class="draggable">
+                                    {% for checkedtask in checkedtasks|dictsort:"ordering" %}
+                                        <tr style="cursor: pointer;">
+                                            <td scope="row" class="sortable"><i class="fas fa-bars" style="vertical-align: super;"></i><input type="checkbox" class="inputcheck" name="check" value="{{ checkedtask.templateTask.id }}" checked title="Add this task" style="width: 25px; height: 25px; margin: 0 15px;"></td>
+                                            <td scope="col" class="sortable" style="user-select: none;">{{ checkedtask.templateTask.title }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    {% for task in tasks %}
+                                        {% if task.id not in ids %}
+                                            <tr style="cursor: pointer;">
+                                                <td scope="row" class="sortable"><i class="fas fa-bars" style="vertical-align: super;"></i><input type="checkbox" class="inputcheck" name="check" value="{{ task.id }}" title="Add this task" style="width: 25px; height: 25px; margin: 0 15px;"></td>
+                                                <td scope="col" class="sortable" style="user-select: none;">{{ task.title }}</td>
+                                            </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                    </tbody>
+                                    
+                                </table>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn text btn-outline-primary ml-3 mt-2" id="submit">Submit</button>
+                        
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_script %}
+{% load static %}
+<script src="{% static "/vendor/sortablejs/sortable.min.js"%}"></script>
+<script src="{% static "/js/custom/selectsize_edit_package.js"%}"></script>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends 'dashboard.html' %}
+{% block extra_head %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static "/vendor/datatables/dataTables.bootstrap4.min.css"%}">
+{% endblock %}
+{% block content %}
+{% load i18n %}
+{% language 'en' %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">All users</h1>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="dataTable" width="100%" cellspacing="0" class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col" class="sortable">Email</th>
+                        <th scope="col" class="sortable">First name</th>
+                        <th scope="col" class="sortable">Last name</th>
+                        <th scope="col" class="sortable">Is active</th>
+                        <th scope="col" class="sortable">Is staff</th>
+                        <th scope="col" class="sortable">Is superuser</th>
+                        <th scope="col" class="sortable">Date joined</th>
+                        <th scope="col" class="sortable">Last login</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <th scope="col" class="sortable"><a href="/dashboard/admin/allusers/{{ user.id }}/">{{ user.email }}</a></th>
+                        <th scope="col" class="sortable">{{ user.first_name }}</th>
+                        <th scope="col" class="sortable">{{ user.last_name }}</th>
+                        <th scope="col" class="sortable">{% if user.is_active %}<i class="fas fa-plus-square fa-lg text-success"></i>{% else %}<i class="fas fa-minus-square fa-lg text-danger"></i>{% endif %}</th>
+                        <th scope="col" class="sortable">{% if user.is_staff %}<i class="fas fa-plus-square fa-lg text-success"></i>{% else %}<i class="fas fa-minus-square fa-lg text-danger"></i>{% endif %}</th>
+                        <th scope="col" class="sortable">{% if user.is_superuser %}<i class="fas fa-plus-square fa-lg text-success"></i>{% else %}<i class="fas fa-minus-square fa-lg text-danger"></i>{% endif %}</th>
+                        <th scope="col" class="sortable">{{ user.date_joined|date:"d/m/Y, G:i" }}</th>
+                        <th scope="col" class="sortable">{{ user.last_login|date:"d/m/Y, G:i" }}</th>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endlanguage %}
+{% endblock %}
+{% block extra_script %}
+{% load static %}
+<script src="{% static "/vendor/datatables/jquery.dataTables.min.js"%}"></script>
+<script src="{% static "/vendor/datatables/dataTables.bootstrap4.min.js"%}"></script>
+<script src="{% static "/js/datatables.js"%}"></script>
+{% endblock %}

@@ -1,0 +1,118 @@
+{% extends 'dashboard.html' %}
+{% block content %}
+{% load i18n %}
+{% language 'en' %}
+<div class="col-7 d-sm-flex align-items-center justify-content-betwen mb-4">
+  <h1 class="h3 mb-0 text-gray-800">User account</h1>
+</div>
+
+<div class="row align-items-center justify-content-center">
+    <div class="col-lg-6 col-md-10 col-sm-12">
+        <div class="card shadow mb-4">
+            <div class="row">
+                <div class="col-12 mt-3">
+                    <form method="POST" name="editUser" action="">
+                    {% csrf_token %}
+                        <div class="form-group col-12">
+                            <label class="text">Email</label>
+                            <input type="email" class="form-control" name="email" value="{{ user.email }}" required>
+                            <p class="text font-weight-light mt-1 ml-1"><small>You can change <a class="" href="" data-toggle="modal" data-target="#editPassword">password</a></small></p>
+                        </div>
+
+                        <div class="form-group col-12">
+                            <label class="text" for="first_name">First name</label>
+                            <input type="text" class="form-control" name="first_name" value="{{ user.first_name }}" id="first_name">
+                        </div>
+
+                        <div class="form-group col-12">
+                            <label class="text" for="last_name">Last name</label>
+                            <input type="text" class="form-control" name="last_name" value="{{ user.last_name }}" id="last_name" >
+                        </div>
+
+                        <div class="form-group col-12">
+                            <label class="text" for="is_active">Is active</label>
+                            <input type="checkbox" class="form-control" name="is_active" value="" {% if user.is_active %}checked{% endif %} id="is_active" style="max-width: 20px; max-height: 20px;">
+                        </div>
+
+                        <div class="form-group col-12">
+                            <label class="text" for="is_staff">Is staff</label>
+                            <input type="checkbox" class="form-control" name="is_staff" value="" {% if user.is_staff %}checked{% endif %} id="is_staff" style="max-width: 20px; max-height: 20px;">
+                        </div>
+
+                        <div class="form-group col-12">
+                            <label class="text" for="is_superuser">Is superuser</label>
+                            <input type="checkbox" class="form-control" name="is_superuser" value="" {% if user.is_superuser %}checked{% endif %} id="is_superuser" style="max-width: 20px; max-height: 20px;">
+                        </div>
+
+                        <button type="submit" class="btn text btn-outline-primary ml-3 mt-2" name="editUser" value="True">Submit</button>
+
+                        <hr>
+
+                        <div class="form-group col-12">
+                            <p class="text">Date joined: {{ request.user.date_joined }}</p>
+                        </div>
+                        <div class="form-group col-12">
+                            <p class="text">Last login: {{ request.user.last_login }}</p>
+                            <p class="text font-weight-light"><small>You can <a class="" href="" data-toggle="modal" data-target="#deleteUser">delete</a> this user</small></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editPassword" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Change password</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <form method="POST" name="editUserPassword" action="">
+                {% csrf_token %}
+                    <div class="form-group">
+                        <label class="text" for="id_password1">New password</label>
+                        <input type="password" minlength="6" class="form-control inputs" name="password" autocomplete="new-password" required id="id_password1" aria-autocomplete="list">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="text" for="id_password2">Repeat password</label>
+                        <input type="password" minlength="6" class="form-control inputs" name="password" autocomplete="new-password" required id="id_password2" aria-autocomplete="list">
+                    </div>
+                    <p class="text font-weight-light mt-1 ml-1"><small>Min lenght: 6</small></p>
+                    <button type="submit" class="btn text btn-outline-primary" name="editUserPassword" value="True">Change password</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="deleteUser" tabindex="-1" aria-labelledby="deleteUser" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Are you sure you want to delete this user?</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">After deletion, it will be impossible to restore the data.</div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                <a class="btn btn-primary" href="/dashboard/admin/allusers/{{ user.id }}/delete/">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endlanguage %}
+{% endblock %}
+{% block extra_script %}
+{% load static %}
+<script src="{% static "/js/matchpassword.js"%}"></script>
+{% endblock %}

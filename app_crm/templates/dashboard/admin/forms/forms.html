@@ -1,0 +1,44 @@
+{% extends 'dashboard.html' %}
+{% block extra_head %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static "/vendor/datatables/dataTables.bootstrap4.min.css"%}">
+{% endblock %}
+{% block content %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">All forms</h1>
+    <a class="btn btn-outline-primary" href="/dashboard/admin/forms/create/" role="button">Create form</a>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="dataTable" width="100%" cellspacing="0" class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col" class="sortable">Name</th>
+                        <th scope="col" class="sortable">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for form in forms %}
+                    <tr>
+                        <th scope="col" class="sortable">{{ form.title }}</th>
+                        <th scope="col" class="sortable">
+                            <a href="/dashboard/admin/forms/edit/{{ form.id }}/" title="Edit this form" class="mr-1"><i class="fa fa-pencil-alt"></i></a>
+                            <a href="/dashboard/admin/forms/remove/{{ form.id }}/" title="Remove this form" class="mr-1"><i class="fa fa-times"></i></a>
+                        </th>
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_script %}
+{% load static %}
+<script src="{% static "/vendor/datatables/jquery.dataTables.min.js"%}"></script>
+<script src="{% static "/vendor/datatables/dataTables.bootstrap4.min.js"%}"></script>
+<script src="{% static "/js/datatables.js"%}"></script>
+{% endblock %}

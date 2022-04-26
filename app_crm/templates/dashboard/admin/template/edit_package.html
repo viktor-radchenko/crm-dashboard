@@ -1,0 +1,58 @@
+{% extends 'dashboard.html' %}
+{% block extra_head %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static "/vendor/datatables/dataTables.bootstrap4.min.css"%}">
+{% endblock %}
+{% block content %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Edit package</h1>
+</div>
+
+<div class="row align-items-center justify-content-center">
+    <div class="col-xl-8 col-lg-10 col-md-10 col-sm-12">
+        <div class="card shadow mb-4 p-2">
+            <div class="row">
+                <div class="col-12 mb-3 mt-3">
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                            <div class="form-group col-12 mb-4">
+                                <label class="text ml-1" for="title">Title:</label>
+                                <input type="text" class="form-control mb-2" name="title" maxlength="500" value="{{ package.title }}" id="title" required>
+                            </div>
+
+                            <div class="form-group col-12 mb-4">    
+                                <label class="text ml-1" for="month">Number of months:</label>
+                                <input type="number" min="1" class="form-control mb-2" name="month" value="{{ package.num_of_month }}" id="month" required>
+                            </div>
+
+                            <div class="form-group col-12 mb-4">    
+                                <label class="text ml-1" for="color">Color:</label>
+                                <input type="color" name="color" value="{{ package.color }}">
+                            </div>
+                        
+                            <button type="submit" class="btn text btn-outline-primary ml-3 mt-2" id="submit">Submit</button>
+                    </form>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-12 mb-3 mt-3">
+                    <ul class="list-unstyled">
+                    {% for month in months %}
+                    <li class="col-12 mb-3 ml-1"><a href="/dashboard/admin/template/package/edit/{{package.id}}/month/{{month.id}}/" class="font-weight-bolder h5">Month {{month.num}}</a></li>
+                    {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_script %}
+{% load static %}
+<script src="{% static "/vendor/datatables/jquery.dataTables.min.js"%}"></script>
+<script src="{% static "/vendor/datatables/dataTables.bootstrap4.min.js"%}"></script>
+<script src="{% static "/js/datatables_template.js"%}"></script>
+<script src="{% static "/js/dfilter_task_create.js"%}"></script>
+{% endblock %}

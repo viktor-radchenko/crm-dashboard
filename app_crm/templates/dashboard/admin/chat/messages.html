@@ -1,0 +1,185 @@
+{% extends 'dashboard.html' %}
+{% block extra_head %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static "/vendor/datatables/dataTables.bootstrap4.min.css"%}">
+{% endblock %}
+{% block content %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+  <h1 class="h3 mb-0 text-gray-800">Order #{{ order.id }} - messages</h1>
+</div>
+
+<div class="card shadow mb-4">
+
+  <div class="d-flex justify-content-center row p-3">
+    <div class="col-md-12">
+      <div class="d-flex flex-row flex-wrap">
+        <div class="order-details p-3 w-50 d-flex ">
+          <div class="col1">
+            <h5>Company details:</h5>
+            <div>Name: {{order.company_name}}</div>
+            <div>Address: {{order.company_address}}</div>
+            <div>City: {{order.company_city}}</div>
+            <div>State: {{order.company_state}}</div>
+            <div>Zip: {{order.company_zip}}</div>
+            <div>Country: {{order.company_country}}</div>
+            <div>Phone: {{order.company_phone}}</div>
+            <div>Url: {{order.website_url}}</div>
+            <div>Email: {{order.company_email}}</div>
+          </div>
+          <div class="col2 ml-auto mr-auto pl-5">
+            <h5>Order details:</h5>
+            <div>Start date: {{ order.start_date }}</div>
+            <div>Renewal date: {{ order.renewal_date }}</div>
+            <div>Status: {{ order.status }}</div>
+            <div>Package: {{ order.package }}</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <hr class="sidebar-divider">
+
+  {% if messages|length == 0 %}
+  <div class="container mt-5 mb-5">
+    <div class="d-flex justify-content-center row">
+      No messages yet
+    </div>
+  </div>
+  {% else %}
+  <div class="container mt-5 mb-5">
+    <div class="d-flex justify-content-center row">
+        {% for msg in messages %} 
+        <div class="col-md-12">
+        <div class="d-flex flex-column comment-section">
+          <div class="bg-white p-2">
+            <div class="d-flex flex-row user-info">
+              <div class="d-flex flex-column mb-3">
+                <span class="d-block font-weight-bold name">
+                  {% if msg.author.first_name or msg.author.last_name %} {{ msg.author.first_name }} {{ msg.author.last_name }} | {% endif %}{{ msg.author.email }}
+                </span>
+                <span class="date text-black-50">{{ msg.date_added }}</span>
+              </div>
+              {% if msg.author == request.user %}
+              <a class="btn btn-sm shadow-none ml-auto" href="/dashboard/chatroom/edit/{{msg.id}}/">
+                <i class="fa fa-edit"></i>
+                Edit
+              </a>
+              {% endif %}
+            </div>
+            <div class="mt-2 editable-message">
+              <p class="comment-text">{{ msg.body|linebreaks|urlize }}</p>
+            </div>
+          </div>
+          {% if not msg.replies.all %}
+          <div class="bg-white">
+            <div class="d-flex flex-row justify-content-end">
+              <btn class="btn btn-outline-primary btn-sm shadow-none reply-btn ml-3" data-message-id="{{ msg.id }}">
+                <i class="fa fa-share"></i>
+                <span class="ml-1">Reply
+                </span>
+              </btn>
+            </div>
+            <hr class="sidebar-divider">
+          </div>
+          {% endif %}
+        </div>
+
+        {% if msg.replies.all %}
+
+        {% for m in msg.replies.all|dictsort:"date_added" %}
+        <div class="ml-5 pl-5">
+          <hr class="sidebar-divider">
+          <div class="d-flex flex-column comment-section">
+            <div class="bg-white p-2">
+              <div class="d-flex flex-row user-info">
+                <div class="d-flex flex-column mb-3">
+                  <span class="d-block font-weight-bold name">
+                    {% if m.author.first_name or m.author.last_name %}{{ m.author.first_name }} {{ m.author.last_name }}
+                    | {% endif %}{{ m.author.email }}
+                  </span>
+                  <span class="date text-black-50">{{ m.date_added }}</span>
+                </div>
+                {% if m.author == request.user %}
+                <a class="btn btn-sm shadow-none ml-auto" href="/dashboard/chatroom/edit/{{m.id}}/">
+                  <i class="fa fa-edit"></i>
+                  Edit
+                </a>
+                {% endif %}
+              </div>
+              <div class="mt-2">
+                <p class="comment-text">{{ m.body|linebreaks|urlize }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+        <div class="bg-white">
+          <div class="d-flex flex-row justify-content-end">
+            <btn class="btn btn-outline-primary btn-sm shadow-none reply-btn ml-3" data-message-id="{{ msg.id }}">
+              <i class="fa fa-share"></i>
+              <span class="ml-1">Reply
+              </span>
+            </btn>
+          </div>
+        </div>
+        <hr class="sidebar-divider">
+      </div>
+      {% endif %}
+      {% endfor %}
+
+      <form class="p-2 ml-auto w-100" method="POST">
+        <div class="p-2">New message</div>
+        {% csrf_token %}
+        <div class="d-flex flex-row align-items-start">
+          <textarea class="form-control ml-1 shadow-none textarea" style="height: 15rem;"
+            name="message-body"></textarea>
+        </div>
+        <div class="mt-2 text-right">
+          <button type="submit" class="btn text btn-outline-primary ml-3 mt-2" id="submit">Send</button>
+        </div>
+      </form>
+
+      <hr class="sidebar-divider">
+    </div>
+  </div>
+</div>
+{% endif %}
+</div>
+{% endblock %}
+{% block extra_script %}
+{% load static %}
+<script src="{% static "/vendor/datatables/jquery.dataTables.min.js"%}"></script>
+<script src="{% static "/vendor/datatables/dataTables.bootstrap4.min.js"%}"></script>
+<script src="{% static "/js/datatables.js"%}"></script>
+
+<script>
+  $('.reply-btn').click(function (event) {
+    // Don't follow the link
+    event.preventDefault();
+
+    const form = `
+      <form class="bg-light p-2 w-100 mb-5" method="POST">
+        <h5 class="p-2">Your message</h5>
+          <input type="hidden" name="csrfmiddlewaretoken" value="{{csrf_token}}">
+          <input type="hidden" name="replyto" value="${$(this).data("messageId")}">
+          <div class="d-flex flex-row align-items-start">
+            <textarea class="form-control ml-1 shadow-none textarea" name="message-body"></textarea>
+            </div>
+          <div class="mt-2 text-right">
+            <button type="submit" class="btn text btn-outline-primary ml-3 mt-2" id="submit">Send</button>
+          </div>
+         
+      </form>
+      <hr class="sidebar-divider">`
+
+    $(this).after(form);
+    $(this).hide();
+
+    // Log the clicked element in the console
+    console.log(event);
+
+  });
+</script>
+{% endblock %}

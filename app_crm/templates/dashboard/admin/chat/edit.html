@@ -1,0 +1,33 @@
+{% extends 'dashboard.html' %}
+{% block extra_head %}
+{% load static %}
+{% endblock %}
+{% block content %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+  <h1 class="h3 mb-0 text-gray-800">Order #{{ order.id }} - messages</h1>
+</div>
+
+<div class="card shadow mb-4">
+
+  <div class="d-flex justify-content-center row p-3">
+    <div class="col-md-12">
+      <div class="d-flex flex-row flex-wrap">
+        <form class="p-2 ml-auto w-100" method="POST">
+          <div class="p-2">Edit message</div>
+          {% csrf_token %}
+          <div class="d-flex flex-row align-items-start">
+            <textarea class="form-control ml-1 shadow-none textarea" style="height: 15rem;"
+              name="message-body">{{ message.body }}</textarea>
+          </div>
+          <div class="mt-2 text-right">
+            <button type="submit" class="btn text btn-outline-primary ml-3 mt-2" id="submit">Save</button>
+          </div>
+        </form>
+      </div> 
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_script %}
+{% load static %}
+{% endblock %}

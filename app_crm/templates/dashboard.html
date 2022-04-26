@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+
+    {% load static %}
+    <link rel="shortcut icon" href="{% static "/img/ico/favicon.svg" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "/vendor/fontawesome-free/css/all.min.css"%}">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="{% static "/css/dashboard/sb-admin-2.min.css"%}">
+    {% block extra_head %}{% endblock %}
+
+</head>
+
+<body id="page-top">
+
+    <div id="wrapper">
+
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/">
+                <div class="sidebar-brand-text mx-3">DASHBOARD</div>
+            </a>
+
+            <hr class="sidebar-divider">
+
+
+            <div class="sidebar-heading">Orders</div>
+
+            {% if request.user.is_staff == False %}
+            <li class="nav-item">
+                <a class="nav-link" href="/dashboard/user/myorders">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>My Orders</span></a>
+            </li>
+            {% endif %}
+
+            {% if request.user.is_staff %}
+            <li class="nav-item">
+                <a class="nav-link" href="/dashboard/admin/allorders">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>All Orders</span></a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
+                    aria-expanded="true" aria-controls="collapseTwo">
+                    <i class="fas fa-book-open"></i>
+                    <span>Templates</span>
+                </a>
+                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Custom templates:</h6>
+                        <a class="collapse-item" href="/dashboard/admin/template/package">Packages</a>
+                        <a class="collapse-item" href="/dashboard/admin/template/task">Tasks</a>
+                        <a class="collapse-item" href="/dashboard/admin/template/addon">Addons</a>
+                        <a class="collapse-item" href="/dashboard/admin/statuses/">Statuses</a>
+                    </div>
+                </div>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="/dashboard/admin/forms/">
+                    <i class="fab fa-wpforms"></i>
+                    <span>Forms</span></a>
+            </li>
+            {% endif %}
+
+            {% if not request.user.is_client %}
+            <hr class="sidebar-divider">
+            
+            <div class="sidebar-heading">Clients</div>
+
+            <li class="nav-item">
+                <a class="nav-link" href="/dashboard/admin/clients">
+                    <i class="fas fa-users"></i>
+                    <span>Clients</span></a>
+            </li>
+           
+            {% endif %}
+
+            <hr class="sidebar-divider">
+
+            {% if request.user.is_superuser %}
+
+            <div class="sidebar-heading">Users</div>
+
+            <li class="nav-item">
+                <a class="nav-link" href="/dashboard/admin/allusers">
+                    <i class="fas fa-users"></i>
+                    <span>All Users</span></a>
+            </li>
+
+            <hr class="sidebar-divider">
+           
+            {% endif %}
+
+        </ul>
+
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <div id="content">
+
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+
+                    <ul class="navbar-nav ml-auto">
+
+                        <div class="topbar-divider d-none d-sm-block"></div>
+
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="mr-2 d-lg-inline text-gray-600 small">{% if request.user.first_name %}{{ request.user.first_name }} {{ request.user.last_name }}{% else %}{{ request.user.email }}{% endif %}</span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="/dashboard/profile">
+                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Profile
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="/logout">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Logout
+                                </a>
+                            </div>
+                        </li>
+
+                    </ul>
+
+                </nav>
+
+                <div class="container-fluid">
+                    {% block content %}
+                    {% endblock %}
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <script src="{% static "/vendor/jquery/jquery.min.js"%}"></script>
+    <script src="{% static "/vendor/bootstrap/js/bootstrap.bundle.min.js"%}"></script>
+
+    <script src="{% static "/vendor/jquery-easing/jquery.easing.min.js"%}"></script>
+
+    <script src="{% static "/js/sb-admin-2.min.js"%}"></script>
+
+    {% block extra_script %}{% endblock %}
+
+</body>
+
+</html>

@@ -1,0 +1,60 @@
+{% extends 'dashboard.html' %}
+{% block extra_head %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static "/vendor/datatables/dataTables.bootstrap4.min.css"%}">
+{% endblock %}
+{% block content %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">All statuses</h1>
+    <a class="btn btn-outline-primary" href="/dashboard/admin/statuses/create/" role="button">Create status</a>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="form-group col-12 mb-4">
+            <p><strong>Name can be anything</strong></p>
+            <p><strong>Value must be unique and numeric (use 0, 1, 2, 3 etc.)</strong></p>
+            <p><strong>Global values:
+                <br>
+                0 - canceled<br>
+                1 - new<br>
+                2 - in process<br>
+                3 - completed<br>
+                4 - waiting for approval<br>
+                5 - approved<br>
+            </strong></p>
+        </div>
+        <hr>
+        <div class="table-responsive">
+            <table id="dataTable" width="100%" cellspacing="0" class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col" class="sortable">Name</th>
+                        <th scope="col" class="sortable">Value</th>
+                        <th scope="col" class="sortable">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for status in statuses %}
+                    <tr>
+                        <th scope="col" class="sortable">{{ status.name }}</th>
+                        <th scope="col" class="sortable">{{ status.val }}</th>
+                        <th scope="col" class="sortable">
+                            <a href="/dashboard/admin/statuses/edit/{{ status.id }}/" title="Edit this status" class="mr-1"><i class="fa fa-pencil-alt"></i></a>
+                            <a href="/dashboard/admin/statuses/remove/{{ status.id }}/" title="Remove this status" class="mr-1"><i class="fa fa-times"></i></a>
+                        </th>
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_script %}
+{% load static %}
+<script src="{% static "/vendor/datatables/jquery.dataTables.min.js"%}"></script>
+<script src="{% static "/vendor/datatables/dataTables.bootstrap4.min.js"%}"></script>
+<script src="{% static "/js/datatables.js"%}"></script>
+{% endblock %}

@@ -1,0 +1,140 @@
+{% extends 'dashboard.html' %}
+{% block extra_head %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static "/vendor/datatables/dataTables.bootstrap4.min.css"%}">
+<link rel="stylesheet" type="text/css" href="{% static "/css/allorders.css"%}">
+{% endblock %}
+{% block content %}
+{% load custom_tags %}
+{% load i18n %}
+{% language 'en' %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">All orders</h1>
+    <a class="btn btn-outline-primary" href="/dashboard/admin/create" role="button">Create custom order</a>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+
+        <form action="" method="GET" id="search_order">
+
+        <div class="row mb-4">
+            <div class="col-4">
+                <div class="input-group input-group-sm mb-1">
+                    <div class="input-group-prepend w-25">
+                        <label class="input-group-text w-100" for="select-package">Package</label>
+                    </div>
+                    <select class="custom-select" id="select-package" name="select-package">
+                        <option value="">All</option>
+                        {% for package in packages %}
+                        <option value="{{ package.id }}" {% if package.id in request.GET|get_getlist:'select-package' %}selected="selected"{% endif %}>{{ package.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="input-group input-group-sm mb-1">
+                    <div class="input-group-prepend w-25">
+                        <label class="input-group-text w-100" for="select-addon">Addon</label>
+                    </div>
+                    <select class="custom-select" id="select-addon" name="select-addon">
+                        <option value="">All</option>
+                        {% for addon in addons %}
+                        <option value="{{ addon.id }}" {% if addon.id in request.GET|get_getlist:'select-addon' %}selected="selected"{% endif %}>{{ addon.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-4">
+                <div class="input-group input-group-sm mb-1">
+                    <div class="input-group-prepend w-25">
+                        <label class="input-group-text w-100" for="select-status">Status</label>
+                    </div>
+                    <select class="custom-select" id="select-status" name="select-status">
+                        <option value="">All</option>
+                        {% for status in statuses %}
+                        <option value="{{ status.id }}" {% if status.id in request.GET|get_getlist:'select-status' %}selected="selected"{% endif %}>{{ status.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="input-group input-group-sm mb-1">
+                    <div class="input-group-prepend w-25">
+                        <label class="input-group-text w-100" for="select-user">User</label>
+                    </div>
+                    <select class="custom-select" id="select-user" name="select-user">
+                        <option value="">All</option>
+                        {% for user in users %}
+                        <option value="{{ user.id }}" {% if user.id in request.GET|get_getlist:'select-user' %}selected="selected"{% endif %}>{% if user.first_name or user.last_name %}{{ user.first_name }} {{ user.last_name }} | {% endif %}{{ user.email }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-4">
+                <div class="input-group input-group-sm mb-1">
+                    <div class="input-group-prepend w-25">
+                        <span class="input-group-text w-100" id="month">Month</span>
+                    </div>
+                    <input type="number" min="0" class="form-control" name="month" value="{{ request.GET.month }}">
+                </div>
+                <div class="input-group-prepend">
+                    <a class="btn btn-outline-secondary btn-sm col-6" href="/dashboard/admin/allorders/" role="button">Reset filter</a>
+                    <button class="btn btn-outline-primary btn-sm col-6" type="submit" form="search_order">Search</button>
+                </div>
+            </div>
+        </div>
+        </form>
+
+        <div class="table-responsive">
+            <table id="dataTable" width="100%" cellspacing="0" class="table table-bordered table-sm" style="text-align: center;">
+                <thead>
+                    <tr>
+                        <th scope="col" class="sortable">Order #</th>
+                        <th scope="col" class="sortable">Company name</th>
+                        <th scope="col" class="sortable">Start date</th>
+                        <th scope="col" class="sortable">Renewal date</th>
+                        <th scope="col" class="sortable">Status</th>
+                        <th scope="col" class="sortable">Month</th>
+                        <th scope="col" class="sortable">Package</th>
+                        <th scope="col" class="sortable">Addon</th>
+                        <th scope="col" class="sortable">Actions</th>
+                    </tr>
+                </thead>
+                
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td scope="col" class="sortable">{{ order.order }}</td>
+                        <td scope="col" class="sortable">{{ order.company_name }}</td>
+                        <td scope="col" class="sortable">{% if order.start_date == None %}{%else%}{{ order.start_date }}{% endif %}</td>
+                        <td scope="col" class="sortable">{% if order.renewal_date == None %}{%else%}{{ order.renewal_date }}{% endif %}</td>
+                        <td scope="col" class="sortable">{% if order.status.name == None %}{%else%}<span style="display: block; background-color: {{ order.status.color }};">{{ order.status.name }}</span>{% endif %}</td>
+                        <td scope="col" class="sortable">Month {{ order.month }}</td>
+                        <td scope="col" class="sortable">{% if order.package == None %}{%else%}<span style="display: block; background-color: {{ order.package.template.color }};">{{ order.package }}</span>{% endif %}</td>
+                        <td scope="col" class="sortable">{% if order.addon == None %}{%else%}{% for add in order.addon.all %}<span style="display: block; margin: 1px; background-color: {{ add.template.color }};">{{ add.template.title }}</span>{% endfor %}{% endif %}</td>
+                        <td scope="col" class="sortable">
+                            <a href="/dashboard/admin/editinfo/{{ order.id }}/" title="Edit info" class="mr-1"><i class="fa fa-pencil-alt"></i></a>
+                            <a href="/dashboard/admin/edit/{{ order.id }}/" title="Edit this order" class="mr-1"><i class="fa fa-edit"></i></a>
+                            <a href="/dashboard/admin/{{ order.id }}/deliverables/" title="Deliverables page" class="mr-1"><i class="fa fa-file"></i></a>
+                            <a href="/dashboard/admin/{{ order.id }}/deliverables/form/all/" title="Send to Zapier" class="mr-1"><i class="fa fa-paper-plane"></i></a>
+                            <a href="/dashboard/chatroom/{{ order.id }}/" title="View messages" class="mr-1"><i class="fa fa-comment"></i></a>
+                            <a href="/dashboard/admin/cancel/{{ order.id }}/" title="Set status 'canceled'" class="mr-1"><i class="fa fa-times"></i></a>
+                            {% if order.link1 %}<a href="{{ order.link1 }}" target="_blank" title="google drive" class="mr-1" ><i class="fab fa-google-drive"></i></a>{% endif %}
+                            {% if order.link2 %}<a href="{{ order.link2 }}" target="_blank" title="trello card" class="mr-1" ><i class="fab fa-trello"></i></a>{% endif %}
+                            {% if order.link3 %}<a href="{{ order.link3 }}" target="_blank" title="workbook" class="mr-1" ><i class="fas fa-table"></i></a>{% endif %}
+                            {% if order.link4 %}<a href="{{ order.link4 }}" target="_blank" title="link 4" class="mr-1" ><i class="fas fa-external-link-alt"></i></a>{% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endlanguage %}
+{% endblock %}
+{% block extra_script %}
+{% load static %}
+<script src="{% static "/vendor/datatables/jquery.dataTables.min.js"%}"></script>
+<script src="{% static "/vendor/datatables/dataTables.bootstrap4.min.js"%}"></script>
+<script src="{% static "/js/datatables.js"%}"></script>
+{% endblock %}

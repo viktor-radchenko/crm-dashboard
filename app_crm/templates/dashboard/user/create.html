@@ -1,0 +1,81 @@
+{% extends 'dashboard.html' %}
+{% block content %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Create order</h1>
+</div>
+
+<div class="row align-items-center justify-content-center">
+    <div class="col-xl-6 col-lg-8 col-md-10 col-sm-12">
+        <div class="card shadow mb-4 p-2">
+            <div class="row">
+                <div class="col-12 mb-3 mt-3">
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                            <div class="form-group col-12 mb-4">
+                                <label class="text ml-1" for="order">Order #:</label>
+                                <input type="text" class="form-control mb-2" name="order" autofocus="" maxlength="500" id="order" required>
+                            </div>
+
+                            <div class="form-group col-12 mb-4">
+                                <label class="text ml-1" for="company">Company name:</label>
+                                <input type="text" class="form-control mb-2" name="company_name" maxlength="5000" id="company">
+                                
+                                <label class="text ml-1" for="company_address">Company address:</label>
+                                <input type="text" class="form-control mb-2" name="company_address" maxlength="5000" id="company_address">
+
+                                <label class="text ml-1" for="company_city">Company city:</label>
+                                <input type="text" class="form-control mb-2" name="company_city" maxlength="5000" id="company_city">
+
+                                <label class="text ml-1" for="company_state">Company state:</label>
+                                <input type="text" class="form-control mb-2" name="company_state" maxlength="5000" id="company_state">
+
+                                <label class="text ml-1" for="company_zip">Company zip:</label>
+                                <input type="text" class="form-control mb-2" name="company_zip" maxlength="5000" id="company_zip">
+
+                                <label class="text ml-1" for="company_country">Company country:</label>
+                                <input type="text" class="form-control mb-2" name="company_country" maxlength="5000" id="company_country">
+
+                                <label class="text ml-1" for="company_phone">Company phone:</label>
+                                <input type="text" class="form-control mb-2" name="company_phone" maxlength="5000" id="company_phone">
+
+                                <label class="text ml-1" for="website_url">Website url:</label>
+                                <input type="text" class="form-control mb-2" name="website_url" maxlength="5000" id="website_url">
+
+                                <label class="text ml-1" for="company_email">Company email:</label>
+                                <input type="text" class="form-control mb-2" name="company_email" maxlength="5000" id="company_email">
+
+                                <label class="text ml-1" for="company_description">Company description:</label>
+                                <input type="text" class="form-control mb-2" name="company_description" maxlength="5000" id="company_description">
+
+                                <label class="text ml-1" for="logo_image">Logo image:</label>
+                                <input type="text" class="form-control mb-2" name="logo_image" maxlength="5000" id="logo_image">
+
+                                <label class="text ml-1" for="map_url">Map url:</label>
+                                <input type="text" class="form-control mb-2" name="map_url" maxlength="5000" id="map_url">
+
+                                <label class="text ml-1" for="website_login_url">Wesite login url:</label>
+                                <input type="text" class="form-control mb-2" name="website_login_url" maxlength="5000" id="website_login_url">
+
+                                <label class="text ml-1" for="web_username">Website username:</label>
+                                <input type="text" class="form-control mb-2" name="web_username" maxlength="5000" id="web_username">
+
+                                <label class="text ml-1" for="web_password">Website password:</label>
+                                <input type="text" class="form-control mb-2" name="web_password" maxlength="5000" id="web_password">
+
+                                <label class="text ml-1" for="analytics_account">Analytics account:</label>
+                                <input type="text" class="form-control mb-2" name="analytics_account" maxlength="5000" id="analytics_account">
+                            </div>
+                        
+                            <button type="submit" class="btn text btn-outline-primary ml-3 mt-2" id="submit">Create</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_script %}
+{% load static %}
+<script src="{% static "/js/digitsfilter.js"%}"></script>
+{% endblock %}

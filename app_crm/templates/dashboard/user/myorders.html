@@ -1,0 +1,60 @@
+{% extends 'dashboard.html' %}
+{% block extra_head %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static "/vendor/datatables/dataTables.bootstrap4.min.css"%}">
+{% endblock %}
+{% block content %}
+{% load i18n %}
+{% language 'en' %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">My orders</h1>
+    <a class="btn btn-outline-primary" href="/dashboard/user/create" role="button">Create order</a>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="dataTable" width="100%" cellspacing="0" class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col" class="sortable">Order #</th>
+                        <th scope="col" class="sortable">Month</th>
+                        <th scope="col" class="sortable">Start date</th>
+                        <th scope="col" class="sortable">Renewal date</th>
+                        <th scope="col" class="sortable">Status</th>
+                        <th scope="col" class="sortable">Actions</th>
+                    </tr>
+                </thead>
+                
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td scope="col" class="sortable">{{ order.order }}</td>
+                        <td scope="col" class="sortable">{{ order.month }}</td>
+                        <td scope="col" class="sortable">{{ order.start_date }}</td>
+                        <td scope="col" class="sortable">{{ order.renewal_date }}</td>
+                        <td scope="col" class="sortable">{{ order.status.name }}</td>
+                        <td scope="col" class="sortable">
+                            <a href="/dashboard/user/edit/{{ order.id }}/" title="Edit this order">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                            <a href="/dashboard/chatroom/{{ order.id }}/" title="Messages">
+                                <i class="fa fa-comment"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                
+            </table>
+        </div>
+    </div>
+</div>
+{% endlanguage %}
+{% endblock %}
+{% block extra_script %}
+{% load static %}
+<script src="{% static "/vendor/datatables/jquery.dataTables.min.js"%}"></script>
+<script src="{% static "/vendor/datatables/dataTables.bootstrap4.min.js"%}"></script>
+<script src="{% static "/js/datatables.js"%}"></script>
+{% endblock %}

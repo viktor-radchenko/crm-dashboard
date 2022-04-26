@@ -1,0 +1,422 @@
+{% extends 'dashboard.html' %}
+{% block extra_head %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static "/vendor/datatables/dataTables.bootstrap4.min.css"%}">
+<link rel="stylesheet" type="text/css" href="{% static "/css/deliverables.css"%}">
+{% endblock %}
+{% block content %}
+{% load custom_tags %}
+{% load i18n %}
+{% language 'en' %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Deliverables</h1>
+    <div>
+    <a class="btn btn-outline-primary ml-1 mr-1" href="/dashboard/admin/editinfo/{{ order.id }}/" role="button">Edit info</a>
+    <a class="btn btn-outline-primary ml-1 mr-1" href="/dashboard/admin/edit/{{ order.id }}/" role="button">Edit order</a>
+    </div>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="form-group col-12 mb-4">
+            <p>
+                <strong>Order #: </strong>{{ order.order }}, 
+                {% if order.company_name %}<strong>Company name: </strong>{{ order.company_name }}, {% endif %}
+                {% if order.package %}<strong>Package: </strong>{{ order.package.template.title }}, {% endif %}
+                {% if addons %}<strong>Addons: </strong>{% for addon in addons %}{{ addon.template.title }}{% endfor %}, {% endif %}
+                <strong>Renewal date: </strong>{{ order.renewal_date }}
+            </p>
+
+            {% if order.analytics_account %}<p><strong>Google properties access: </strong>{{ order.analytics_account }}</p>{% endif %}
+
+            <p>
+                {% if order.link1 %}
+                <a href="{{ order.link1 }}" target="_blank">Google drive</a>
+                <br>
+                {% endif %}
+                {% if order.link2 %}
+                <a href="{{ order.link2 }}" target="_blank">Trello card</a>
+                <br>
+                {% endif %}
+                {% if order.link3 %}
+                <a href="{{ order.link3 }}" target="_blank">Workbook</a>
+                <br>
+                {% endif %}
+                {% if order.link4 %}
+                <a href="{{ order.link4 }}" target="_blank">Link 4</a>
+                {% endif %}
+            </p>
+            <p>
+                {% if order.note %}
+                <strong>Note: </strong>
+                <pre>{{ order.note }}</pre>
+                {% endif %}
+            </p>
+        </div>
+        <hr>
+        <div class="table-responsive">
+            <table id="dataTable" width="100%" cellspacing="0" class="table table-bordered table-sm" style="text-align:center;">
+                <thead>
+                    <tr style="background-color:#F5F5F5;">
+                        <th scope="col" class="sortable" style="width: 20.5%">Title</th>
+                        <th scope="col" class="sortable" style="width: 9%">Start date</th>
+                        <th scope="col" class="sortable" style="width: 9%">End date</th>
+                        <th scope="col" class="sortable" style="width: 9%">Assignee</th>
+                        <th scope="col" class="sortable" style="width: 10%">Status</th>
+                        <th scope="col" class="sortable" style="width: 20%">Notes</th>
+                        <th scope="col" class="sortable" style="width: 10%">Report link</th>
+                        <th scope="col" class="sortable" style="width: 12.5%">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for m in month %}
+                    <tr scope="col" style="background-color:#F5F5F5;"><td>MONTH {{ m }}</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    {% for t in task|dictsort:"ordering" %}
+                    {% if t.month == m %}
+                    <tr class="table">
+                        <td scope="col" class="sortable" style="background-color:#F5F5F5;">{{ t.template_task.title }}</td>
+                        <td scope="col" class="sortable" style="background-color: {{ t.status.color }};">{% if t.start_date == None %}{%else%}{{ t.start_date }}{% endif %}</td>
+                        <td scope="col" class="sortable" style="background-color: {{ t.status.color }};">{% if t.end_date == None %}{%else%}{{ t.end_date }}{% endif %}</td>
+                        <td scope="col" class="sortable" style="background-color: {{ t.status.color }};">{% if t.completed_by == None %}{% elif t.completed_by.first_name or t.completed_by.last_name %}{{ t.completed_by.first_name }} {{ t.completed_by.last_name }}{%else%}{{ t.completed_by.email }}{% endif %}</td>
+                        <td scope="col" class="sortable" style="background-color: {{ t.status.color }};">{{ t.status.name }}</td>
+                        <td scope="col" class="sortable" style="background-color: {{ t.status.color }}; word-break: break-all;">{% if t.notes %}<div><p class="half-note m-0">{{ t.notes|slice:":20" }} <a href="#" class="show-hide-btn">more</a></p><p class="full-note m-0 d-none">{{ t.notes }} <a href="#" class="show-hide-btn">less</a></p></div>{% endif %}</td>
+                        <td scope="col" class="sortable" style="background-color: {{ t.status.color }};">{% if t.report_link %}<a href="{{ t.report_link }}" target="_blank">View report</a>{% endif %}</td>
+                        <td scope="col" class="sortable"><a class="btn btn-primary btn-sm mr-1" href="#" role="button"  data-toggle="modal" data-target="#taskModalP{{ t.id }}">Manage task</a></td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                    {% for addon in addons %}
+                    {% for addontask in addon.tasks.all|dictsort:"ordering" %}
+                    {% if addontask.month == m %}
+                    <tr class="table">
+                        <td scope="col" class="sortable" style="background-color:#F5F5F5;">{{ addontask.template_task.title }}</td>
+                        <td scope="col" class="sortable" style="background-color: {{ addontask.status.color }};">{% if addontask.start_date == None %}{%else%}{{ addontask.start_date }}{% endif %}</td>
+                        <td scope="col" class="sortable" style="background-color: {{ addontask.status.color }};">{% if addontask.end_date == None %}{%else%}{{ addontask.end_date }}{% endif %}</td>
+                        <td scope="col" class="sortable" style="background-color: {{ addontask.status.color }};">{% if addontask.completed_by == None %}{% elif addontask.completed_by.first_name or addontask.completed_by.last_name %}{{ addontask.completed_by.first_name }} {{ addontask.completed_by.last_name }}{%else%}{{ addontask.completed_by.email }}{% endif %}</td>
+                        <td scope="col" class="sortable" style="background-color: {{ addontask.status.color }};">{{ addontask.status.name }}</td>
+                        <td scope="col" class="sortable" style="background-color: {{ addontask.status.color }}; word-break: break-all;">{% if addontask.notes %}<div><p class="half-note m-0">{{ addontask.notes|slice:":20" }} <a href="#" class="show-hide-btn">more</a></p><p class="full-note m-0 d-none">{{ addontask.notes }} <a href="#" class="show-hide-btn">less</a></p></div>{% endif %}</td>
+                        <td scope="col" class="sortable" style="background-color: {{ addontask.status.color }};">{% if addontask.report_link %}<a href="{{ addontask.report_link }}" target="_blank">View report</a>{% endif %}</td>
+                        <td scope="col" class="sortable"><a class="btn btn-primary btn-sm mr-1" href="#" role="button" data-toggle="modal" data-target="#taskModalA{{ addontask.id }}">Manage task</a></td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                    {% endfor %}
+                    <tr scope="col"><td><p></p></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% for t in task %}
+<div class="modal fade" id="taskModalP{{ t.id }}" tabindex="-1" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+
+                <ul class="nav nav-tabs" id="myTab{{ t.id }}" role="tablist">
+                    <li class="nav-item" role="presentation">
+                      <a class="nav-link active" id="home-tab{{ t.id }}" data-toggle="tab" href="#home{{ t.id }}" role="tab" aria-controls="home{{ t.id }}" aria-selected="true">{{ t.template_task.title }}</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                      <a class="nav-link" id="profile-tab{{ t.id }}" data-toggle="tab" href="#profile{{ t.id }}" role="tab" aria-controls="profile{{ t.id }}" aria-selected="false">Send</a>
+                    </li>
+                  </ul>
+
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div class="tab-content" id="myTabContent{{ t.id }}">
+
+                    <div class="tab-pane fade show active" id="home{{ t.id }}" role="tabpanel" aria-labelledby="home-tab{{ t.id }}">
+                        <form method="POST" id="pform{{ t.id }}" action="/dashboard/admin/{{ order.id }}/deliverables/task/{{ t.id }}/">
+                            {% csrf_token %}
+
+                                <div class="form-group col-12 mb-4">
+                                    <label class="text ml-1" for="start">Start date:</label>
+                                    <input type="date" class="form-control mb-2" name="start_date" id="start" value="{{ t.start_date|date:'Y-m-d' }}">
+
+                                    <label class="text ml-1" for="end">End date:</label>
+                                    <input type="date" class="form-control mb-2" name="end_date" id="end" value="{{ t.end_date|date:'Y-m-d' }}">
+                                </div>
+
+                                <div class="form-group col-12 mb-4">
+                                    <label class="text ml-1" for="select-completed">Assignee:</label>
+                                    <select name="completed" id="select-completed" class="form-control mb-2" required>
+                                        <option value="None">None</option>
+                                        {% for user in users %}
+                                        <option value="{{ user.id }}" {% if user.id == t.completed_by.id %}selected="selected"{% endif %}>{% if user.first_name or user.last_name %}{{ user.first_name }} {{ user.last_name }} | {% endif %}{{ user.email }}</option>
+                                        {% endfor %}
+                                    </select>
+                                
+                                    <label class="text ml-1" for="select-status">Status:</label>
+                                    <select name="status" id="select-status" class="form-control" required>
+                                        {% for status in statuses %}
+                                        <option value="{{ status.id }}" {% if status.id == t.status.id %}selected="selected"{% endif %}>{{ status.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-12 mb-4">
+                                    <label class="text ml-1" for="select-tasks">Tasks:</label>
+                                    <select name="addtasks" id="select-tasks" class="form-control" multiple>
+                                        {% for x in task %}
+                                        {% if x.month == t.month and x.id != t.id %}
+                                        <option value="{{ x.id }}" >{{ x.template_task.title }}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                        {% for ad in addons %}
+                                        {% for adt in ad.tasks.all %}
+                                        {% if adt.month == t.month %}
+                                        <option value="{{ adt.id }}" >{{ adt.template_task.title }}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-12 mb-4">
+                                    <label class="text ml-1" for="report_link">Report link:</label>
+                                    <input type="text" class="form-control mb-2" name="report_link" id="report_link" value="{{ t.report_link }}">
+
+                                    <label class="text ml-1" for="note">Note:</label>
+                                    <textarea class="form-control mb-2" name="note" id="note">{{ t.notes }}</textarea>
+                                </div>
+
+                                <div class="modal-footer" style="display: flex; justify-content: center; align-items: center;">
+                                    <button type="submit" class="btn text btn-outline-primary" id="buttpform{{ t.id }}" form="pform{{ t.id }}">Submit</button>
+                                    <button class="btn text btn-outline-primary" type="button" data-dismiss="modal">Cancel</button>
+                                </div>
+                        </form>
+                    </div>
+
+                    <div class="tab-pane fade" id="profile{{ t.id }}" role="tabpanel" aria-labelledby="profile-tab{{ t.id }}">
+                        <select name="theforms" class="custom-select fformselect mb-2">
+                            <option value=""></option>
+                            {% for form in forms %}
+                            <option value="customform{{ t.id }}-{{ form.id }}">{{ form.title }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <div class="form-forms">
+                        {% for form in forms %}
+                        <form method="POST" action="/dashboard/admin/{{ order.id }}/deliverables/form/{{ form.id }}/" id="customform{{ t.id }}-{{ form.id }}" style="display: none;">
+                            {% csrf_token %}
+
+                            <div class="form-group card col-12 p-1">
+                            {% for itemorder in form.orderinfos|get_item:'orderinfos' %}
+                                <label for="">{{ itemorder|remove_underscore }}</label>
+                                <input type="text" class="form-control" name="{{ itemorder }}" value="{{ order|get_attr:itemorder }}">
+                            {% endfor %}
+                            </div>
+
+                            {% for formitem in form.data %}
+                            {% with ft=form.data|get_item:formitem %}
+                            {% if ft.type == 0 %}
+                                <div class="form-group card col-12 p-1">
+                                    <label for="">{{ ft.title }}</label>
+                                    <input type="text" class="form-control" name="{{ form.id}}:{{ formitem }}">
+                                </div>
+                            {% elif ft.type == 1 %}
+                                <div class="form-group card col-12 p-1">
+                                    <label for="">{{ ft.title }}</label>
+                                    {% for x in ft.items %}
+                                    <div class="form-check col-12">
+                                        <input type="checkbox" class="form-check-input" name="{{ form.id}}:{{ formitem }}" value="{{ x }}">
+                                        <label for="">{{ x }}</label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            {% elif ft.type == 2 %}
+                            <div class="form-group card col-12 p-1">
+                            <label for="">{{ ft.title }}</label>
+                            {% for x in ft.items %}
+                            <div class="form-check col-12">
+                                <input type="radio" class="form-radio-input" name="{{ form.id}}:{{ formitem }}" value="{{ x }}">
+                                <label for="">{{ x }}</label>
+                            </div>
+                            {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% endwith %}
+                            {% endfor %}
+                            <div class="form-group col-12 p-1">
+                                <label>Note:</label>
+                                <textarea name="formnote" class="form-control" rows="3"></textarea>
+                            </div>
+
+                            <button type="submit" class="btn text btn-outline-primary" form="customform{{ t.id }}-{{ form.id }}">Submit</button>
+                        </form>
+                        {% endfor %}
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% for addon in addons %}
+{% for addontask in addon.tasks.all %}
+<div class="modal fade" id="taskModalA{{ addontask.id }}" tabindex="-1" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+
+                <ul class="nav nav-tabs" id="amyTab{{ addontask.id }}" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link active" id="ahome-tab{{ addontask.id }}" data-toggle="tab" href="#ahome{{ addontask.id }}" role="tab" aria-controls="ahome{{ addontask.id }}" aria-selected="true">{{ addontask.template_task.title }}</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="aprofile-tab{{ addontask.id }}" data-toggle="tab" href="#aprofile{{ addontask.id }}" role="tab" aria-controls="aprofile{{ addontask.id }}" aria-selected="false">Send</a>
+                    </li>
+                </ul>
+
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="tab-content" id="amyTabContent{{ addontask.id }}">
+
+                    <div class="tab-pane fade show active" id="ahome{{ addontask.id }}" role="tabpanel" aria-labelledby="ahome-tab{{ addontask.id }}">
+                        <form method="POST" id="aform{{ addontask.id }}" action="/dashboard/admin/{{ order.id }}/deliverables/task/{{ addontask.id }}/">
+                            {% csrf_token %}
+
+                                <div class="form-group col-12 mb-4">
+                                    <label class="text ml-1" for="start">Start date:</label>
+                                    <input type="date" class="form-control mb-2" name="start_date" id="start" value="{{ addontask.start_date|date:'Y-m-d' }}">
+
+                                    <label class="text ml-1" for="end">End date:</label>
+                                    <input type="date" class="form-control mb-2" name="end_date" id="end" value="{{ addontask.end_date|date:'Y-m-d' }}">
+                                </div>
+
+                                <div class="form-group col-12 mb-4">
+                                    <label class="text ml-1" for="select-completed">Assignee:</label>
+                                    <select name="completed" id="select-completed" class="form-control mb-2" required>
+                                        <option value="None">None</option>
+                                        {% for user in users %}
+                                        <option value="{{ user.id }}" {% if user.id == addontask.completed_by.id %}selected="selected"{% endif %}>{% if user.first_name or user.last_name %}{{ user.first_name }} {{ user.last_name }} | {% endif %}{{ user.email }}</option>
+                                        {% endfor %}
+                                    </select>
+                                
+                                    <label class="text ml-1" for="select-status">Status:</label>
+                                    <select name="status" id="select-status" class="form-control" required>
+                                        {% for status in statuses %}
+                                        <option value="{{ status.id }}" {% if status.id == addontask.status.id %}selected="selected"{% endif %}>{{ status.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-12 mb-4">
+                                    <label class="text ml-1" for="select-tasks">Tasks:</label>
+                                    <select name="addtasks" id="select-tasks" class="form-control" multiple>
+                                        {% for x in task %}
+                                        {% if x.month == addontask.month %}
+                                        <option value="{{ x.id }}" >{{ x.template_task.title }}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                        {% for ad in addons %}
+                                        {% for adt in ad.tasks.all %}
+                                        {% if adt.month == addontask.month and adt.id != addontask.id %}
+                                        <option value="{{ adt.id }}" >{{ adt.template_task.title }}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-12 mb-4">
+                                    <label class="text ml-1" for="report_link">Report link:</label>
+                                    <input type="text" class="form-control mb-2" name="report_link" id="report_link" value="{{ addontask.report_link }}">
+
+                                    <label class="text ml-1" for="note">Note:</label>
+                                    <textarea class="form-control mb-2" name="note" id="note">{{ addontask.notes }}</textarea>
+                                </div>
+
+                                <div class="modal-footer" style="display: flex; justify-content: center; align-items: center;">
+                                    <button type="submit" class="btn text btn-outline-primary" id="buttaform{{ addontask.id }}" form="aform{{ addontask.id }}">Submit</button>
+                                    <button class="btn text btn-outline-primary" type="button" data-dismiss="modal">Cancel</button>
+                                </div>
+                        </form>
+                    </div>
+
+                    <div class="tab-pane fade" id="aprofile{{ addontask.id }}" role="tabpanel" aria-labelledby="aprofile-tab{{ addontask.id }}">
+                        <select name="theforms" class="custom-select fformselect mb-2">
+                            <option value=""></option>
+                            {% for form in forms %}
+                            <option value="customform{{ addontask.id }}-{{ form.id }}">{{ form.title }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <div class="form-forms">
+                            {% for form in forms %}
+                            <form method="POST" action="/dashboard/admin/{{ order.id }}/deliverables/form/{{ form.id }}/" id="customform{{ addontask.id }}-{{ form.id }}" style="display: none;">
+                                {% csrf_token %}
+
+                                <div class="form-group card col-12 p-1">
+                                {% for itemorder in form.orderinfos|get_item:'orderinfos' %}
+                                    <label for="">{{ itemorder|remove_underscore }}</label>
+                                    <input type="text" class="form-control" name="{{ itemorder }}" value="{{ order|get_attr:itemorder }}">
+                                {% endfor %}
+                                </div>
+
+                                {% for formitem in form.data %}
+                                {% with ft=form.data|get_item:formitem %}
+                                {% if ft.type == 0 %}
+                                    <div class="form-group card col-12 p-1">
+                                        <label for="">{{ ft.title }}</label>
+                                        <input type="text" class="form-control" name="{{ form.id}}:{{ formitem }}">
+                                    </div>
+                                {% elif ft.type == 1 %}
+                                    <div class="form-group card col-12 p-1">
+                                        <label for="">{{ ft.title }}</label>
+                                        {% for x in ft.items %}
+                                        <div class="form-check col-12">
+                                            <input type="checkbox" class="form-check-input" name="{{ form.id}}:{{ formitem }}" value="{{ x }}">
+                                            <label for="">{{ x }}</label>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                {% elif ft.type == 2 %}
+                                <div class="form-group card col-12 p-1">
+                                <label for="">{{ ft.title }}</label>
+                                {% for x in ft.items %}
+                                <div class="form-check col-12">
+                                    <input type="radio" class="form-radio-input" name="{{ form.id}}:{{ formitem }}" value="{{ x }}">
+                                    <label for="">{{ x }}</label>
+                                </div>
+                                {% endfor %}
+                                </div>
+                                {% endif %}
+                                {% endwith %}
+                                {% endfor %}
+                                <div class="form-group col-12 p-1">
+                                    <label>Note:</label>
+                                    <textarea name="formnote" class="form-control" rows="3"></textarea>
+                                </div>
+                                
+                                <button type="submit" class="btn text btn-outline-primary" form="customform{{ addontask.id }}-{{ form.id }}">Submit</button>
+                            </form>
+                            {% endfor %}
+                            </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endfor %}
+{% endlanguage %}
+{% endblock %}
+{% block extra_script %}
+{% load static %}
+<script src="{% static "/js/deliverablesforms.js"%}"></script>
+{% endblock %}

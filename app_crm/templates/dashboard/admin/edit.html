@@ -1,0 +1,133 @@
+{% extends 'dashboard.html' %}
+{% block extra_head %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static "/css/selectize/selectize.bootstrap4.min.css"%}">
+{% endblock %}
+{% block content %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Edit order</h1>
+</div>
+
+<div class="row align-items-center justify-content-center">
+    <div class="col-xl-6 col-lg-8 col-md-10 col-sm-12">
+        <div class="card shadow mb-4 p-2">
+            <div class="row">
+                <div class="col-12 mb-3 mt-3">
+                    <div class="form-group col-12 mb-4">
+                        <p>Email: <strong>{{ order.owner.email }}</strong></p>
+                        <p>First name: <strong>{% if order.owner.first_name %}{{ order.owner.first_name }}{% else %}-{% endif %}</strong></p>
+                        <p>Last name: <strong>{% if order.owner.last_name %}{{ order.owner.last_name }}{% else %}-{% endif %}</strong></p>
+                        {% if request.user.is_superuser %}<a href="#" data-toggle="modal" data-target="#confirmModal">delete this order</a>{% endif %}
+                    </div>
+                    <hr>
+                    <form method="POST">
+                        {% csrf_token %}
+
+                            <div class="form-group col-12 mb-4">
+                                <label class="text ml-1" for="select-owner">User:</label>
+                                <select name="own" id="select-owner" class="form-control mb-2" required>
+                                    {% for user in users %}
+                                    <option value="{{ user.id }}" {% if user.id == order.owner.id %}selected="selected"{% endif %}>{{ user.first_name }} {{ user.last_name }} {{ user.email }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group col-12 mb-4">
+                                <label class="text ml-1" for="start">Start date:</label>
+                                <input type="date" class="form-control mb-2" name="start_date" id="start" value="{% if order.start_date == None %}{% now 'Y-m-d'%}{% else %}{{ order.start_date|date:'Y-m-d' }}{% endif %}">
+
+                                <label class="text ml-1" for="renewal">Renewal date:</label>
+                                <input type="date" class="form-control mb-2" name="renewal_date" id="renewal" value="{% if order.renewal_date == None %}{% now 'Y-m-d'%}{% else %}{{ order.renewal_date|date:'Y-m-d' }}{% endif %}">
+                            </div>
+
+                            <div class="form-group col-12 mb-4">
+                                <label class="text ml-1" for="month">Month:</label>
+                                <input type="number" min="1" class="form-control mb-2" name="month" id="month" value="{{ order.month }}" required>
+                            
+                                <label class="text ml-1" for="select-status">Status:</label>
+                                <select name="status" id="select-status" class="form-control" required>
+                                    {% for status in statuses %}
+                                    <option value="{{ status.id }}" {% if status.id == order.status.id %}selected="selected"{% endif %}>{{ status.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <hr>
+
+                            <div class="form-group col-12 mb-4">
+                                <label class="text ml-1" for="select-pack">Package:</label>
+                                <select name="package" id="select-pack" class="form-control" required>
+                                    {% if order.package %}
+                                    <option value="default" selected="selected">{{ order.package.template.title }}</option>
+                                    <option value="None">None</option>
+                                    {% else %}
+                                    <option value="None" {% if not order.package_id %}selected="selected"{% endif %}>None</option>
+                                    {% for p in package %}
+                                    <option value="{{ p.id }}">{{ p.title }} (template)</option>
+                                    {% endfor %}
+                                    {% endif %}
+                                </select>
+                            </div>
+
+                            <div class="form-group col-12 mb-4">
+                                <label class="text ml-1" for="select-addon">Addon:</label>
+                                <select name="addon" id="select-addon" class="form-control" multiple>
+                                    {% for addon in addons %}
+                                    <option value="{{ addon.template.id }}" selected="selected">{{ addon.template.title }}</option>
+                                    {% endfor %}
+                                    {% for template_addon in template_addons %}
+                                    {% if template_addon.id not in template_addons_ids %}
+                                    <option value="{{ template_addon.id }}">{{ template_addon.title }} (template)</option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                                <small>Ctrl to select multiple or cancel selection</small>
+                            </div>
+
+                            <hr>
+
+                            <div class="form-group col-12 mb-4">
+                                <label class="text ml-1" for="link_1">Google drive:</label>
+                                <input type="text" class="form-control mb-2" name="link1" id="link_1" value="{{ order.link1 }}">
+
+                                <label class="text ml-1" for="link_2">Trello card:</label>
+                                <input type="text" class="form-control mb-2" name="link2" id="link_2" value="{{ order.link2 }}">
+
+                                <label class="text ml-1" for="link_3">Workbook:</label>
+                                <input type="text" class="form-control mb-2" name="link3" id="link_3" value="{{ order.link3 }}">
+
+                                <label class="text ml-1" for="link_4">Link 4:</label>
+                                <input type="text" class="form-control mb-2" name="link4" id="link_4" value="{{ order.link4 }}">
+
+                                <label class="text ml-1" for="note">Note:</label>
+                                <textarea class="form-control mb-2" name="note" id="note">{{ order.note }}</textarea>
+                            </div>
+                        
+                            <button type="submit" class="btn text btn-outline-primary ml-3 mt-2" id="submit">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="deleteModal" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModal">Are you sure you want to delete this order and everything related to it?</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">After deletion, it will be impossible to restore the data.</div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                <a class="btn btn-primary" href="/dashboard/admin/delete/{{order.id}}/">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_script %}
+{% load static %}
+<script src="{% static "/js/digitsfilter.js"%}"></script>
+{% endblock %}

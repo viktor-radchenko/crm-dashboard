@@ -1,0 +1,131 @@
+{% extends 'dashboard.html' %}
+{% block content %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Create form</h1>
+</div>
+
+<div class="row align-items-center justify-content-center">
+    <div class="col-xl-6 col-lg-8 col-md-10 col-sm-12">
+        <div class="card shadow mb-4 p-2">
+            <div class="row">
+                <div class="col-12 mb-3 mt-3">
+                    <form method="POST" name="thisform" id="thisform" onsubmit="setVals()">
+                        {% csrf_token %}
+                        
+                            <div class="form-group col-12 mb-4">
+                                <label class="text ml-1" for="formname">Form name:</label>
+                                <input type="text" class="form-control mb-2" name="formname" autofocus="" id="formname" required>
+                            </div>
+
+
+
+                            <div class="form-group form-check col-12 ml-4">
+                                <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="order" id="order" >
+                                <label class="form-check-label" for="order">Order #</label>
+                            </div>
+
+                            <div class="form-group form-check col-12 ml-4">
+                                <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="company_name"  id="company_name" >
+                                <label class="form-check-label" for="company_name">Company name</label>
+                            </div>
+
+                            <div class="form-group form-check col-12 ml-4">
+                                <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="company_address"  id="company_address" >
+                                <label class="form-check-label" for="company_address">Company address</label>
+                            </div>
+
+                            <div class="form-group form-check col-12 ml-4">
+                                <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="company_city"  id="company_city" >
+                                <label class="form-check-label" for="company_city">Company city</label>
+                            </div>
+
+                            <div class="form-group form-check col-12 ml-4">
+                                <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="company_state"  id="company_state" >
+                                <label class="form-check-label" for="company_state">Company state</label>
+                            </div>
+
+                            <div class="form-group form-check col-12 ml-4">
+                                <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="company_zip"  id="company_zip" >
+                                <label class="form-check-label" for="company_zip">Company zip</label>
+                            </div>
+
+                            <div class="form-group form-check col-12 ml-4">
+                                <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="company_country"  id="company_country" >
+                                <label class="form-check-label" for="company_country">Company country</label>
+                            </div>
+
+                            <div class="form-group form-check col-12 ml-4">
+                                <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="company_phone"  id="company_phone" >
+                                <label class="form-check-label" for="company_phone">Company phone</label>
+                            </div>
+
+                            <div class="form-group form-check col-12 ml-4">
+                                <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="website_url"  id="website_url" >
+                                <label class="form-check-label" for="website_url">Website url</label>
+                            </div>
+
+                            <div class="form-group form-check col-12 ml-4">
+                                <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="company_email"  id="company_email" >
+                                <label class="form-check-label" for="company_email">Company email</label>
+                            </div>
+
+                            <div class="form-group form-check col-12 ml-4">
+                                <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="company_description"  id="company_description" >
+                                <label class="form-check-label" for="company_description">Company description</label>
+                            </div>
+
+                            <div class="form-group form-check col-12 ml-4">
+                                <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="logo_image"  id="logo_image" >
+                                <label class="form-check-label" for="logo_image">Logo image</label>
+                            </div>
+
+                            <div class="form-group form-check col-12 ml-4">
+                                <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="map_url"  id="map_url" >
+                                <label class="form-check-label" for="map_url">Map url</label>
+                            </div>
+
+                            <div class="form-group form-check col-12 ml-4">
+                                <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="website_login_url"  id="website_login_url" >
+                                <label class="form-check-label" for="website_login_url">Website login url</label>
+                            </div>
+
+                            <div class="form-group form-check col-12 ml-4">
+                                <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="web_username"  id="web_username" >
+                                <label class="form-check-label" for="web_username">Web username</label>
+                            </div>
+
+                            <div class="form-group form-check col-12 ml-4">
+                                <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="web_password"  id="web_password" >
+                                <label class="form-check-label" for="web_password">Web password</label>
+                            </div>
+
+                            <div class="form-group form-check col-12 ml-4">
+                                <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="analytics_account"  id="analytics_account" >
+                                <label class="form-check-label" for="analytics_account">Analytics account</label>
+                            </div>
+
+                            <hr>
+
+                            <div class="form-group col-12 mb-4">
+                            <button class="btn btn-primary add_text_field" type="button">Add text field</button>
+                            <button class="btn btn-primary add_checkbox_field" type="button">Add checkbox field</button>
+                            <button class="btn btn-primary add_radio_field" type="button">Add radio field</button>
+                            </div>
+
+                            <div class="col-12 mb-4 spe-container">
+                            </div>
+
+                            <input type="hidden" name="totalcount" id="totalcount">
+                        
+                            <button type="submit" class="btn text btn-outline-primary mt-4 ml-2" form="thisform" id="submit">Create</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_script %}
+{% load static %}
+<script src="{% static "/js/createform.js"%}"></script>
+{% endblock %}

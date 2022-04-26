@@ -1,0 +1,11 @@
+# directories
+.venv/
+readme/
+.vscode/
+__pycache__/
+
+# files
+.env
+.env*
+.DS_Store
+*.pyc

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>login</title>
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static "/css/signin.css" %}">
+    <link rel="shortcut icon" href="{% static "/img/ico/favicon.svg" %}">
+</head>
+<body>
+    <div class="card">
+        <h1 class="sign-in">Sign in</h1>
+        <div class="login-card">
+            <form method="POST" action="" class="login-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <div class="form-item">
+                        <label for="email" class="input-label">Email</label>
+                        <input type="text" name="email" class="input-field" autocapitalize="off" autocorrect="off" autocomplete="email" autofocus="autofocus">
+                    </div>
+                    <div class="form-item">
+                        <label for="password" class="input-label">Password</label>
+                        <input type="password" name="password" class="input-field" autocomplete="current-password">
+                    </div>
+                    <div class="form-item">
+                        <button type="submit" class="submit-button">Sign in</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="register-card">
+            <div class="register-link">
+                <a href="/signup" class="register-link-a">Create an account</a>
+            </div>
+        </div>
+    </div>
+{% if error_message %}
+<script type="text/javascript">
+alert("{{ error_message }}")
+</script>
+{% endif %}
+</body>
+</html>
