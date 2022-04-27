@@ -41,13 +41,6 @@
 
   <hr class="sidebar-divider">
 
-  {% if messages|length == 0 %}
-  <div class="container mt-5 mb-5">
-    <div class="d-flex justify-content-center row">
-      No messages yet
-    </div>
-  </div>
-  {% else %}
   <div class="container mt-5 mb-5">
     <div class="d-flex justify-content-center row">
         {% for msg in messages %} 
@@ -145,8 +138,7 @@
     </div>
   </div>
 </div>
-{% endif %}
-</div>
+
 {% endblock %}
 {% block extra_script %}
 {% load static %}

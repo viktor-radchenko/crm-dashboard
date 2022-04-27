@@ -1005,7 +1005,6 @@ class manageUser:
                     ).first()
                     if client_user:
                         if client_user.is_client and not client_user.is_registered:
-                            # do some shit
                             client_user.first_name = request.POST["first-name"]
                             client_user.last_name = request.POST["last-name"]
                             client_user.set_password(request.POST["password"])
@@ -1019,6 +1018,7 @@ class manageUser:
                             last_name=request.POST["last-name"],
                             email=request.POST["email"],
                             password=request.POST["password"],
+                            is_staff=True,
                         )
                         auth.login(request, user)
                         return True
