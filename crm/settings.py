@@ -38,7 +38,7 @@ DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 if not DEBUG:
     sentry_sdk.init(
-    dsn="https://1bf6ad6ab9cc46dab0a4c3b1a127d3c1@o1223236.ingest.sentry.io/6367396",
+    dsn=os.getenv('SENTRY_API', ''),
     integrations=[DjangoIntegration()],
 
     traces_sample_rate=1.0,
