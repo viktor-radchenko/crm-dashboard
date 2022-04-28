@@ -14,6 +14,9 @@ from pathlib import Path
 
 import dotenv
 
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -33,7 +36,16 @@ SECRET_KEY = os.environ["SECRET_KEY"]
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ["www.searchmanager.pro", "searchmanager.pro", "localhost", "127.0.0.1"]
+if not DEBUG:
+    sentry_sdk.init(
+    dsn="https://1bf6ad6ab9cc46dab0a4c3b1a127d3c1@o1223236.ingest.sentry.io/6367396",
+    integrations=[DjangoIntegration()],
+
+    traces_sample_rate=1.0,
+    send_default_pii=True
+)
+
+ALLOWED_HOSTS = ["www.searchmanager.pro", "searchmanager.pro", "localhost", "164.92.192.14"]
 
 
 # Application definition
@@ -139,3 +151,10 @@ GRAPH_MODELS = {
     "all_applications": True,
     "group_models": True,
 }
+
+# Email settings
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_PORT = os.getenv('EMAIL_PORT')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_USE_TLS = True

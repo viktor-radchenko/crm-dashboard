@@ -1,13 +1,18 @@
-from django.contrib.auth.hashers import make_password
-from django.contrib.auth import get_user_model
+import logging
+
+from django.core.mail import send_mail
+from django.conf import settings
 
 
-User = get_user_model()
+def send_email_to_client(subject, body, recepients):
+    try:
+        from_email = settings.EMAIL_HOST_USER
 
-
-def populate_db():
-    for i in range(1, 2):
-        manager = User(
-            email=f"manager{i}@manager.com", password=make_password("Testing321")
+        send_mail(
+            subject,
+            body,
+            from_email,
+            recepients
         )
-        manager.save()
+    except Exception as e:
+        logging.error("Exception: " + str(e))
