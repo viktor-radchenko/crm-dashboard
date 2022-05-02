@@ -980,9 +980,6 @@ class Form(models.Model):
 
 class ZapierApi(models.Model):
     apikey = models.CharField(max_length=5000)
-    created_by = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE, related_name="zapierapi"
-    )
 
     def editKey(request):
         if ZapierApi.objects.filter(id=1).exists():
