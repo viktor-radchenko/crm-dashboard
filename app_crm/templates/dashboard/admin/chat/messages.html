@@ -20,15 +20,20 @@
           <h5>Order info:</h5>
         </div>
         
-        <div class="order-links" style="font-size: 20px; text-align: right;">
-          <a href="/dashboard/admin/editinfo/{{ order.id }}/" title="Edit info" class="mr-1"><i class="fa fa-pencil-alt"></i></a>
-          <a href="/dashboard/admin/edit/{{ order.id }}/" title="Edit this order" class="mr-1"><i class="fa fa-edit"></i></a>
-          <a href="/dashboard/admin/{{ order.id }}/deliverables/" title="Deliverables page" class="mr-1"><i class="fa fa-file"></i></a>
-          {% if order.link1 %}<a href="{{ order.link1 }}" target="_blank" title="google drive" class="mr-1" ><i class="fab fa-google-drive"></i></a>{% endif %}
-          {% if order.link2 %}<a href="{{ order.link2 }}" target="_blank" title="trello card" class="mr-1" ><i class="fab fa-trello"></i></a>{% endif %}
-          {% if order.link3 %}<a href="{{ order.link3 }}" target="_blank" title="workbook" class="mr-1" ><i class="fas fa-table"></i></a>{% endif %}
-          {% if order.link4 %}<a href="{{ order.link4 }}" target="_blank" title="link 4" class="mr-1" ><i class="fas fa-external-link-alt"></i></a>{% endif %}
-        </div>
+          <div class="order-links" style="font-size: 20px; text-align: right;">
+            {% if order.owner == request.user and not request.user.is_client  %}
+              <a href="/dashboard/admin/editinfo/{{ order.id }}/" title="Edit info" class="mr-1"><i class="fa fa-pencil-alt"></i></a>
+              <a href="/dashboard/admin/edit/{{ order.id }}/" title="Edit this order" class="mr-1"><i class="fa fa-edit"></i></a>
+              <a href="/dashboard/admin/{{ order.id }}/deliverables/" title="Deliverables page" class="mr-1"><i class="fa fa-file"></i></a>
+              {% if order.link1 %}<a href="{{ order.link1 }}" target="_blank" title="google drive" class="mr-1" ><i class="fab fa-google-drive"></i></a>{% endif %}
+              {% if order.link2 %}<a href="{{ order.link2 }}" target="_blank" title="trello card" class="mr-1" ><i class="fab fa-trello"></i></a>{% endif %}
+              {% if order.link3 %}<a href="{{ order.link3 }}" target="_blank" title="workbook" class="mr-1" ><i class="fas fa-table"></i></a>{% endif %}
+              {% if order.link4 %}<a href="{{ order.link4 }}" target="_blank" title="link 4" class="mr-1" ><i class="fas fa-external-link-alt"></i></a>{% endif %}
+            {% else %}
+              <a href="/dashboard/user/edit/{{ order.id }}/" title="Edit this order"><i class="fa fa-edit"></i></a>
+            {% endif %}
+          </div>
+       
       </div>
 
       <hr class="sidebar-divider">
@@ -128,10 +133,10 @@
           
                 <div class="message-avatar" style="max-width: 100px; width: 100%;">
                   <div class="avata-circle" style="width: 80px; height: 80px; background-color: #f3f4f7; color: #979797; border-radius: 50%; text-align: center; line-height: 80px; font-size: 25px;">
-                    {% if msg.author.first_name and msg.author.last_name %}
-                      {{msg.author.first_name|make_list|first}}{{msg.author.last_name|make_list|first}}
+                    {% if m.author.first_name and m.author.last_name %}
+                      {{m.author.first_name|make_list|first}}{{m.author.last_name|make_list|first}}
                     {% else %}
-                      {{msg.author.email|make_list|index_filter:0|title}}{{msg.author.email|make_list|index_filter:1|title}}
+                      {{m.author.email|make_list|index_filter:0|title}}{{m.author.email|make_list|index_filter:1|title}}
                     {% endif %}
                   </div>
                 </div>
