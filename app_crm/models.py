@@ -1021,6 +1021,7 @@ class manageUser:
                         email=request.POST["email"],
                         password=request.POST["password"],
                         is_staff=True,
+                        is_registered=True,
                         is_active=False
                     )
 
@@ -1082,6 +1083,13 @@ class manageUser:
             return True
         else:
             return False
+
+    def checkIfNeedsConfirmation(request):
+        user = CustomUser.objects.filter(email=request.POST["email"]).first()
+        if user:
+            if user.is_registered and not user.is_active:
+                return True
+        return False
 
     def logoutUser(request):
         auth.logout(request)
@@ -1160,7 +1168,7 @@ class manageUser:
         if not client or client.created_by != request.user:
             return
 
-        if not client.is_registered:
+        if not client.is_registered and request.POST.get("email"):
             client.email = request.POST.get("email")
         client.first_name = request.POST.get("first_name")
         client.last_name = request.POST.get("last_name")

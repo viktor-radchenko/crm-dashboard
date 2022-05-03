@@ -28,6 +28,9 @@ class sign:
             return redirect("/dashboard/admin/allorders/")
         else:
             if request.method == "POST":
+                if manageUser.checkIfNeedsConfirmation(request):
+                    messages.warning(request, "You need to confirm your account first. Please check your email")
+                    return redirect("/")
                 if manageUser.loginUser(request):
                     return redirect("/dashboard/admin/allorders/")
                 else:
@@ -42,7 +45,7 @@ class sign:
         else:
             if request.method == "POST":
                 if manageUser.createUser(request):
-                    return redirect("/dashboard/profile/")
+                    return render(request, "confirm_email.html")
                 else:
                     context = {}
                     context["error_message"] = "This account already exists"
@@ -74,7 +77,8 @@ class sign:
 
     def activateAccount(request, uri, token):
         if manageUser.activateUser(request, uri, token):
-            return HttpResponse('Thank you for your email confirmation. Now you can login your account.')
+            messages.success(request, "You have successfully activated you account")
+            return redirect('/')
         return HttpResponse('Activation link is invalid!')
 
     def logout(request):
