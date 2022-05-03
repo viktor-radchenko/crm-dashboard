@@ -1,6 +1,7 @@
 {% extends 'dashboard.html' %}
 {% block extra_head %}
 {% load static %}
+{% load custom_tags %}
 <link rel="stylesheet" type="text/css" href="{% static "/vendor/datatables/dataTables.bootstrap4.min.css"%}">
 {% endblock %}
 {% block content %}
@@ -8,108 +9,153 @@
   <h1 class="h3 mb-0 text-gray-800">Order #{{ order.id }} - messages</h1>
 </div>
 
-<div class="card shadow mb-4">
+<div class="card shadow mb-4" style="line-height: 1.2;">
 
   <!-- *** Order detail section *** -->
-  <div class="d-flex justify-content-center row p-3">
-    <div class="col-md-12" style="max-height: 20vh;">
-      <div class="d-flex flex-column flex-wrap p-3">
-        <div class="col1 d-flex flex-row">
-          <div style="max-width: 255px;width: 100%;">
-            <h5>Order details:</h5>
-          </div>
-          <div class="d-flex flex-column flex-wrap" style="max-height: 100px;justify-content: space-evenly;width: 100%;">
-            <div><strong>Name</strong>: {{order.company_name}}</div>
-            <div><strong>Address</strong>: {{order.company_address}}</div>
-            <div><strong>City</strong>: {{order.company_city}}</div>
-            <div><strong>State</strong>: {{order.company_state}}</div>
-            <div><strong>Zip</strong>: {{order.company_zip}}</div>
-            <div><strong>Country</strong>: {{order.company_country}}</div>
-            <div><strong>Phone</strong>: {{order.company_phone}}</div>
-            <div><strong>Url</strong>: {{order.website_url}}</div>
-            <div><strong>Email</strong>: {{order.company_email}}</div>
-            <div><strong>Start date</strong>: {{ order.start_date }}</div>
-            <div><strong>Renewal date</strong>: {{ order.renewal_date }}</div>
-            <div><strong>Status</strong>: {{ order.status }}</div>
-            <div><strong>Package</strong>: {{ order.package }}</div>
-          </div>
+  <div class="order-info d-flex p-5">
+    <div class="oder-details w-100">
+      <div class="order-navigation d-flex justify-content-between">
+        
+        <div class="order-title" style="max-width: 100px; width: 100%;">
+          <h5>Order info:</h5>
+        </div>
+        
+        <div class="order-links" style="font-size: 20px; text-align: right;">
+          <a href="/dashboard/admin/editinfo/{{ order.id }}/" title="Edit info" class="mr-1"><i class="fa fa-pencil-alt"></i></a>
+          <a href="/dashboard/admin/edit/{{ order.id }}/" title="Edit this order" class="mr-1"><i class="fa fa-edit"></i></a>
+          <a href="/dashboard/admin/{{ order.id }}/deliverables/" title="Deliverables page" class="mr-1"><i class="fa fa-file"></i></a>
+          {% if order.link1 %}<a href="{{ order.link1 }}" target="_blank" title="google drive" class="mr-1" ><i class="fab fa-google-drive"></i></a>{% endif %}
+          {% if order.link2 %}<a href="{{ order.link2 }}" target="_blank" title="trello card" class="mr-1" ><i class="fab fa-trello"></i></a>{% endif %}
+          {% if order.link3 %}<a href="{{ order.link3 }}" target="_blank" title="workbook" class="mr-1" ><i class="fas fa-table"></i></a>{% endif %}
+          {% if order.link4 %}<a href="{{ order.link4 }}" target="_blank" title="link 4" class="mr-1" ><i class="fas fa-external-link-alt"></i></a>{% endif %}
+        </div>
+      </div>
+
+      <hr class="sidebar-divider">
+
+      <div class="order-details">
+        <div class="d-flex flex-column flex-wrap" style="max-height: 100px;justify-content: space-evenly;width: 100%;">
+          <div><strong>Name</strong>: {{order.company_name}}</div>
+          <div><strong>Address</strong>: {{order.company_address}}</div>
+          <div><strong>City</strong>: {{order.company_city}}</div>
+          <div><strong>State</strong>: {{order.company_state}}</div>
+          <div><strong>Zip</strong>: {{order.company_zip}}</div>
+          <div><strong>Country</strong>: {{order.company_country}}</div>
+          <div><strong>Phone</strong>: {{order.company_phone}}</div>
+          <div><strong>Url</strong>: {{order.website_url}}</div>
+          <div><strong>Email</strong>: {{order.company_email}}</div>
+          <div><strong>Start date</strong>: {{ order.start_date|default_if_none:"" }}</div>
+          <div><strong>Renewal date</strong>: {{ order.renewal_date|default_if_none:"" }}</div>
+          <div><strong>Status</strong>: {{ order.status|default_if_none:"" }}</div>
+          <div><strong>Package</strong>: {{ order.package|default_if_none:"" }}</div>
+        </div>
+      </div>
+
+      <hr class="sidebar-divider">
+
+      <div class="order-input">
+        <div class="mt-2 mb-2">
+          <form class="w-100" method="POST">
+            <div class="p-1">New message</div>
+            {% csrf_token %}
+            <div class="d-flex flex-row align-items-start">
+              <textarea class="form-control ml-1 shadow-none textarea" style="height: 15rem;" name="message-body"></textarea>
+            </div>
+            <div class="mt-2 text-right">
+              <button type="submit" class="btn text btn-outline-primary ml-3 mt-2" id="submit">Send</button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
+
   </div>
+ 
+  <hr class="sidebar-divider"> 
 
-  <hr class="sidebar-divider">
+  <!-- *** Order messages container *** -->
+  <div class="mt-5 mb-5 pr-5 pl-5">
 
-  <!-- *** Order messages *** -->
-  <div class="container mt-5 mb-5">
-    
-    <div class="d-flex justify-content-center row">
-      <div class="col-md-12" style="overflow-y: scroll; max-height: 60vh;">
-      {% for msg in messages %} 
-        <div class="d-flex flex-column comment-section">
-          <div class="bg-white p-2">
-            <div class="d-flex flex-row user-info">
-              <div class="d-flex flex-column mb-3">
+    <div class="col-md-12">
+      {% for msg in chat_messages %}
+        <div class="message-container d-flex w-100 pt-2">
+          
+          <div class="message-avatar" style="max-width: 100px; width: 100%;">
+            <div class="avata-circle" style="width: 80px; height: 80px; background-color: #f3f4f7; color: #979797; border-radius: 50%; text-align: center; line-height: 80px; font-size: 25px;">
+              {% if msg.author.first_name and msg.author.last_name %}
+                {{msg.author.first_name|make_list|first}}{{msg.author.last_name|make_list|first}}
+              {% else %}
+                {{msg.author.email|make_list|index_filter:0|title}}{{msg.author.email|make_list|index_filter:1|title}}
+              {% endif %}
+            </div>
+          </div>
+          
+          <div class="message-details d-flex flex-column justify-content-between w-100">
+            <div class="message-author-info d-flex justify-content-between">
+              <div class="d-flex flex-column">
                 <span class="d-block font-weight-bold name">
                   {% if msg.author.first_name or msg.author.last_name %} {{ msg.author.first_name }} {{ msg.author.last_name }} | {% endif %}{{ msg.author.email }}
                 </span>
                 <span class="date text-black-50">{{ msg.date_added }}</span>
               </div>
+              
               {% if msg.author == request.user %}
-              <a class="btn btn-sm shadow-none ml-auto" href="/dashboard/chatroom/edit/{{msg.id}}/">
-                <i class="fa fa-edit"></i>
-                Edit
-              </a>
+                <a class="btn btn-sm shadow-none ml-auto" href="/dashboard/chatroom/edit/{{msg.id}}/"><i class="fa fa-edit pr-2"></i>Edit</a>
               {% endif %}
             </div>
-            <div class="mt-2 editable-message">
+            <div class="message-body">
               <p class="comment-text">{{ msg.body|linebreaks|urlize }}</p>
             </div>
-          </div>
-          {% if not msg.replies.all %}
-          <div class="bg-white">
-            <div class="d-flex flex-row justify-content-end">
-              <btn class="btn btn-outline-primary btn-sm shadow-none reply-btn ml-3" data-message-id="{{ msg.id }}">
-                <i class="fa fa-share"></i>
-                <span class="ml-1">Reply
-                </span>
-              </btn>
-            </div>
-            <hr class="sidebar-divider">
-          </div>
-          {% endif %}
-        </div>
-
-        {% if msg.replies.all %}
-
-        {% for m in msg.replies.all|dictsort:"date_added" %}
-        <div class="ml-5 pl-5">
-          <hr class="sidebar-divider">
-          <div class="d-flex flex-column comment-section">
-            <div class="bg-white p-2">
-              <div class="d-flex flex-row user-info">
-                <div class="d-flex flex-column mb-3">
-                  <span class="d-block font-weight-bold name">
-                    {% if m.author.first_name or m.author.last_name %}{{ m.author.first_name }} {{ m.author.last_name }}
-                    | {% endif %}{{ m.author.email }}
+            {% if not msg.replies.all %}
+              <div class="d-flex flex-row justify-content-end">
+                <btn class="btn btn-outline-primary btn-sm shadow-none reply-btn ml-3" data-message-id="{{ msg.id }}">
+                  <i class="fa fa-share"></i>
+                  <span class="ml-1">Reply
                   </span>
-                  <span class="date text-black-50">{{ m.date_added }}</span>
-                </div>
-                {% if m.author == request.user %}
-                <a class="btn btn-sm shadow-none ml-auto" href="/dashboard/chatroom/edit/{{m.id}}/">
-                  <i class="fa fa-edit"></i>
-                  Edit
-                </a>
-                {% endif %}
+                </btn>
               </div>
-              <div class="mt-2">
-                <p class="comment-text">{{ m.body|linebreaks|urlize }}</p>
-              </div>
-            </div>
+            {% endif %}
+
           </div>
         </div>
-        {% endfor %}
-        <div class="bg-white">
+        
+        <!-- *** message replies *** -->
+        {% if msg.replies.all %}
+          {% for m in msg.replies.all|dictsort:"date_added" %}
+            <div class="reply-container ml-auto" style="max-width: 90%; width: 100%;">
+              <hr class="sidebar-divider">
+              <div class="message-container d-flex w-100 pt-2">
+          
+                <div class="message-avatar" style="max-width: 100px; width: 100%;">
+                  <div class="avata-circle" style="width: 80px; height: 80px; background-color: #f3f4f7; color: #979797; border-radius: 50%; text-align: center; line-height: 80px; font-size: 25px;">
+                    {% if msg.author.first_name and msg.author.last_name %}
+                      {{msg.author.first_name|make_list|first}}{{msg.author.last_name|make_list|first}}
+                    {% else %}
+                      {{msg.author.email|make_list|index_filter:0|title}}{{msg.author.email|make_list|index_filter:1|title}}
+                    {% endif %}
+                  </div>
+                </div>
+                
+                <div class="message-details d-flex flex-column justify-content-between w-100">
+                  <div class="message-author-info d-flex justify-content-between">
+                    <div class="d-flex flex-column">
+                      <span class="d-block font-weight-bold name">
+                        {% if m.author.first_name or m.author.last_name %} {{ m.author.first_name }} {{ m.author.last_name }} | {% endif %}{{ m.author.email }}
+                      </span>
+                      <span class="date text-black-50">{{ m.date_added }}</span>
+                    </div>
+                    
+                    {% if m.author == request.user %}
+                      <a class="btn btn-sm shadow-none ml-auto" href="/dashboard/chatroom/edit/{{m.id}}/"><i class="fa fa-edit pr-2"></i>Edit</a>
+                    {% endif %}
+                  </div>
+                  <div class="message-body">
+                    <p class="comment-text">{{ m.body|linebreaks|urlize }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
           <div class="d-flex flex-row justify-content-end">
             <btn class="btn btn-outline-primary btn-sm shadow-none reply-btn ml-3" data-message-id="{{ msg.id }}">
               <i class="fa fa-share"></i>
@@ -117,30 +163,16 @@
               </span>
             </btn>
           </div>
-        </div>
+        {% endif %}
         <hr class="sidebar-divider">
-      </div>
-      {% endif %}
       {% endfor %}
     </div>
+
   </div>
 
-  <!-- *** New message form *** -->
-  <div class="container mt-5 mb-5">
-    <form class="p-2 ml-auto w-100" method="POST">
-      <div class="p-2">New message</div>
-      {% csrf_token %}
-      <div class="d-flex flex-row align-items-start">
-        <textarea class="form-control ml-1 shadow-none textarea" style="height: 15rem;" name="message-body"></textarea>
-      </div>
-      <div class="mt-2 text-right">
-        <button type="submit" class="btn text btn-outline-primary ml-3 mt-2" id="submit">Send</button>
-      </div>
-    </form>
-  </div>
 </div>
 
-{% endblock %}
+{% endblock content %}
 {% block extra_script %}
 {% load static %}
 <script src="{% static "/vendor/datatables/jquery.dataTables.min.js"%}"></script>

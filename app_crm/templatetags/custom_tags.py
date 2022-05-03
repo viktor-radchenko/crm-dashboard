@@ -28,3 +28,7 @@ def remove_underscore(var):
 @register.filter
 def get_getlist(dictionary, key):
     return list(map(int, dictionary.getlist(key)))
+
+@register.filter(name="index_filter")
+def index_filter(indexable, i):
+    return indexable[i]
