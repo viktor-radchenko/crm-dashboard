@@ -1,7 +1,10 @@
 import re
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import render, redirect
+from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth import get_user_model
+
 from app_crm.models import (
     Order,
     Package,
@@ -46,6 +49,34 @@ class sign:
                     return render(request, "signup.html", context)
             return render(request, "signup.html")
 
+    def invitationSignUp(request, uuid):
+        if request.user.is_authenticated:
+            return redirect("/dashboard/admin/allorders/")
+        user = get_user_model().objects.filter(uuid=uuid).first()
+        if not user:
+            messages.error(request, "No client found with this id. Contact administrator and request new confirmation link")
+            return redirect("/")
+        if request.method == "POST":
+            if manageUser.createClientUser(request):
+               return redirect("/dashboard/profile/")
+            else:
+                context = {}
+                context["error_message"] = "This account already exists"
+                return render(request, "signup.html", context)
+
+        context = dict(
+            email = user.email,
+            first_name = user.first_name,
+            last_name = user.last_name
+        )
+
+        return render(request, "signup.html", context)
+
+    def activateAccount(request, uri, token):
+        if manageUser.activateUser(request, uri, token):
+            return HttpResponse('Thank you for your email confirmation. Now you can login your account.')
+        return HttpResponse('Activation link is invalid!')
+
     def logout(request):
         manageUser.logoutUser(request)
         return redirect("/")
@@ -80,11 +111,16 @@ class dash:
 
         def createCustomOrder(request):
             if request.user.is_staff:
+                clients = request.user.client.all()
+                if not clients:
+                    messages.warning(request, 'You need to add a client first')
+                    return redirect("/dashboard/admin/clients/create/")
                 if request.method == "POST":
                     Order.createCustomOrder(request)
                     return redirect("/dashboard/admin/allorders")
                 context = {}
                 context["users"] = manageUser.getAllClients(request)
+                context['client_tag'] = settings.CLIENT_TAG
                 return render(request, "dashboard/admin/createcustom.html", context)
             else:
                 return redirect("/")
@@ -170,9 +206,13 @@ class dash:
         def clientsCreate(request):
             if request.user.is_staff:
                 if request.method == "POST":
-                    client = manageUser.createClient(request)
-                    if client:
-                        return redirect("/dashboard/admin/clients/")
+                    if request.POST.get("email") or (request.POST.get("first_name") or request.POST.get("last_name")):
+                        client = manageUser.createClient(request)
+                        if client:
+                            return redirect("/dashboard/admin/clients/")
+                        messages.error(request, "Client with this email is already created")
+                    else:
+                        messages.error(request, "Form cannot be empty. Please fill in one of the fileds below")
                 return render(request, "dashboard/admin/clients/create.html")
             else:
                 return redirect("/")
@@ -180,18 +220,34 @@ class dash:
         def clientsEdit(request, id):
             if request.user.is_staff:
                 if request.method == "POST":
+                    email = request.POST.get("email")
+                    if email:
+                        if manageUser.checkExistingClientByEmail(email):
+                            messages.error(request, "This email is already taken. Try another email")
+                            return redirect(f"/dashboard/admin/clients/edit/{id}/")
                     manageUser.editClient(request, id)
-                    return redirect("/dashboard/admin/clients/")
+                    return redirect(f"/dashboard/admin/clients/edit/{id}/")
                 context = {}
                 client = manageUser.getClientById(request, id)
                 if not client:
                     return redirect("/")
-                context["email"] = client.email
+                context["email"] = client.email if settings.CLIENT_TAG not in client.email else '' 
                 context["first_name"] = client.first_name
                 context["last_name"] = client.last_name
+                context["id"] = client.id
+                context["registered"] = client.is_registered
+                context["disabled"] = 'disabled' if client.is_active and client.is_registered else ''
                 return render(request, "dashboard/admin/clients/edit.html", context)
             else:
                 return redirect("/")
+
+        def clientsSendInvitation(request, id):
+            error = manageUser.sendInvitationUrl(request, id)
+            if error:
+                messages.error(request, error)
+            else:    
+                messages.success(request, "Invitation has been sent")
+            return redirect(f"/dashboard/admin/clients/edit/{id}/")
 
         def clientsRemove(request, id):
             if request.user.is_staff:

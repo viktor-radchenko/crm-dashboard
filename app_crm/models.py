@@ -1,4 +1,5 @@
 import re
+import secrets
 
 import requests
 import json
@@ -6,6 +7,18 @@ import json
 from django.db import models
 from app_users.models import CustomUser
 from django.contrib import auth
+from django.contrib.sites.shortcuts import get_current_site
+from django.conf import settings
+
+from app_crm.utils import send_email_to_client, account_activation_token
+
+from django.contrib.auth import login, authenticate
+
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.encoding import force_bytes, force_text
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.template.loader import render_to_string
+
 
 # Create your models here.
 
@@ -1001,24 +1014,64 @@ class manageUser:
                         email=request.POST["email"]
                     ).first()
                     if client_user:
+                        return False
+                    user = CustomUser.objects.create_user(
+                        first_name=request.POST["first-name"],
+                        last_name=request.POST["last-name"],
+                        email=request.POST["email"],
+                        password=request.POST["password"],
+                        is_staff=True,
+                        is_active=False
+                    )
+
+                    uri = urlsafe_base64_encode(force_bytes(user.pk))
+                    token = account_activation_token.make_token(user)
+
+                    mail_subject = 'Activate your account'
+                    url = f"{request._current_scheme_host}/signup/activate/{uri}/{token}/"
+
+                    body = render_to_string('email/acc_active_email.html', {
+                        'user': user,
+                        'url': url,
+                    })
+
+                    send_email_to_client(mail_subject, body, [user.email])
+                    return True
+
+    def activateUser(request, uri, token):
+        try:
+            uid = force_text(urlsafe_base64_decode(uri))
+            user = CustomUser.objects.get(pk=uid)
+        except(TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
+            user = None
+        
+        if user is not None and account_activation_token.check_token(user, token):
+            user.is_active = True
+            user.save()
+            
+            auth.login(request, user)
+            return True
+        return False
+
+
+    def createClientUser(request):
+        if request.POST["email"] and request.POST["password"]:
+            if request.POST["password"] == request.POST["repeat-password"]:
+                if len(request.POST["password"]) >= 6:
+                    client_user = CustomUser.objects.filter(
+                        email=request.POST["email"]
+                    ).first()
+                    if client_user:
                         if client_user.is_client and not client_user.is_registered:
                             client_user.first_name = request.POST["first-name"]
                             client_user.last_name = request.POST["last-name"]
                             client_user.set_password(request.POST["password"])
+                            client_user.is_registered = True
+                            client_user.is_active = True
                             client_user.save()
                             auth.login(request, client_user)
                             return True
                         return False
-                    else:
-                        user = CustomUser.objects.create_user(
-                            first_name=request.POST["first-name"],
-                            last_name=request.POST["last-name"],
-                            email=request.POST["email"],
-                            password=request.POST["password"],
-                            is_staff=True,
-                        )
-                        auth.login(request, user)
-                        return True
 
     def loginUser(request):
         user = auth.authenticate(
@@ -1044,11 +1097,11 @@ class manageUser:
         request.user.save()
 
     def getAllUsers():
-        users = CustomUser.objects.all()
+        users = CustomUser.objects.all().exclude(is_registered=False)
         return users
 
     def getAllClients(request):
-        clients = CustomUser.objects.filter(created_by=request.user, is_active=True)
+        clients = CustomUser.objects.filter(created_by=request.user)
         return clients
 
     def getClientById(request, id):
@@ -1057,11 +1110,19 @@ class manageUser:
             return None
         return client
 
+    def getClientUserByUuid(uuid):
+        client = CustomUser.objects.filter(uuid=uuid)
+        if not client:
+            return None
+        return client
+
     def createClient(request):
         if request.user.is_staff:
             if CustomUser.objects.filter(email=request.POST.get("email")).first():
                 return False
             email = request.POST.get("email")
+            if not email:
+                email = f'{settings.CLIENT_TAG}-{secrets.token_hex(16)}@searchmanager.pro'
             first_name = request.POST.get("first_name")
             last_name = request.POST.get("last_name")
             client = CustomUser.objects.create(
@@ -1071,20 +1132,38 @@ class manageUser:
                 created_by=request.user,
                 is_registered=False,
                 is_client=True,
+                is_active=False,
             )
             client.set_unusable_password()
             client.save()
             return client
 
+    def checkExistingClientByEmail(email):
+        return CustomUser.objects.filter(email=email).first()
+
+    def sendInvitationUrl(request, id):
+        client = CustomUser.objects.get(id=id)
+        if not client or client.created_by != request.user:
+            return "You do not have permission to invite this user"
+
+        url = f"{request._current_scheme_host}/signup/invitation/{client.uuid}/"
+        
+        body = f"You have been invited to SearchManager.pro. Follow this link to create an account and manage your orders: {url}"
+        
+        send_email_to_client("SearchManager.pro - client invitation", body, [client.email])
+        # do some cool stuff with sending emails
+        #   - generate url with uuid
+        #   - send email
+
     def editClient(request, id):
         client = CustomUser.objects.get(id=id)
         if not client or client.created_by != request.user:
             return
-        first_name = request.POST.get("first_name")
-        last_name = request.POST.get("last_name")
 
-        client.first_name = first_name
-        client.last_name = last_name
+        if not client.is_registered:
+            client.email = request.POST.get("email")
+        client.first_name = request.POST.get("first_name")
+        client.last_name = request.POST.get("last_name")
         client.save()
 
     def removeClient(request, id):
@@ -1092,7 +1171,9 @@ class manageUser:
         if not client or client.created_by != request.user:
             return False
         client.is_active = False
+        client.is_deleted = True
 
+        client.save()
         return True
 
     def getUser(id):

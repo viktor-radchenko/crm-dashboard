@@ -140,6 +140,21 @@
                 </nav>
 
                 <div class="container-fluid">
+
+                    <div class="row col-12">
+                        {% if messages %}
+                            {% for msg in messages %}
+                            <div class="alert {{ msg.tags }} alert-dismissible fade show w-100" role="alert">
+                                {{ msg }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+        
+
                     {% block content %}
                     {% endblock %}
                 </div>

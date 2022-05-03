@@ -13,12 +13,17 @@
                         {% csrf_token %}
 
                             <div class="form-group col-12 mb-4">
-                                <label class="text ml-1" for="select-user">User:</label>
+                                <label class="text ml-1" for="select-user">Client:</label>
                                 <select name="userid" id="select-user" class="form-control" required>
                                     <option value="{{request.user.id}}">{% if request.user.first_name or request.user.last_name %}{{ request.user.first_name }} {{ request.user.last_name }} | {% endif %}{{ request.user.email }}</option>
                                     <option disabled>──────────</option>
                                     {% for user in users %}
-                                    <option value="{{ user.id }}" selected="selected">{% if user.first_name or user.last_name %}{{ user.first_name }} {{ user.last_name }} | {% endif %}{{ user.email }}</option>
+                                    <option value="{{ user.id }}" selected="selected">
+                                        {% if user.first_name or user.last_name %}{{ user.first_name }} {{ user.last_name }}{% endif %}
+                                        {% if not client_tag in user.email %}
+                                             | {{ user.email }}
+                                        {% endif %}
+                                    </option>
                                     {% endfor %}
                                 </select>
                             </div>

@@ -8,7 +8,13 @@ app_name = "app_crm"
 
 urlpatterns = [
     path("", views.sign.signin),
-    path("signup/", views.sign.signup),
+    path("signup/", include(
+        [
+            path("", views.sign.signup),
+            path("invitation/<str:uuid>/", views.sign.invitationSignUp),
+            path("activate/<uri>/<token>/", views.sign.activateAccount),
+        ]
+    )),
     path("logout/", views.sign.logout),
     path(
         "dashboard/",
@@ -122,6 +128,9 @@ urlpatterns = [
                             path("clients/create/", views.dash.admin.clientsCreate),
                             path(
                                 "clients/edit/<int:id>/", views.dash.admin.clientsEdit
+                            ),
+                            path(
+                                "clients/sendinvitation/<int:id>/", views.dash.admin.clientsSendInvitation
                             ),
                             path(
                                 "clients/remove/<int:id>/",

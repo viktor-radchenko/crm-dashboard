@@ -1,3 +1,5 @@
+import secrets
+
 from django.db import models
 from django.conf import settings
 
@@ -21,6 +23,7 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
         extra_fields.setdefault("is_active", True)
+        extra_fields.setdefault("is_registered", True)
 
         if extra_fields.get("is_staff") is not True:
             raise ValueError(_("Superuser must have is_staff=True."))
@@ -33,11 +36,14 @@ class CustomUser(AbstractUser):
     username = None
     email = models.EmailField(_("email address"), unique=True)
 
+    is_deleted = models.BooleanField("deleted", default=False)
     is_client = models.BooleanField("user_type", default=False)
-    is_registered = models.BooleanField("is_registered", default=True)
+    is_registered = models.BooleanField("is_registered", default=False)
     created_by = models.ForeignKey(
         "self", on_delete=models.SET_NULL, blank=True, null=True, related_name="client"
     )
+
+    uuid = models.CharField(max_length=255, default=secrets.token_hex(32))
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []

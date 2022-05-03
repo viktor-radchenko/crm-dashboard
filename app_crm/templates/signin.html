@@ -11,6 +11,16 @@
 </head>
 <body>
     <div class="card">
+        {% if messages %}
+                    {% for msg in messages %}
+                            <div class="alert {{ msg.tags }} alert-dismissible fade show w-100" role="alert">
+                                {{ msg }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                    {% endfor %}
+                {% endif %}
         <h1 class="sign-in">Sign in</h1>
         <div class="login-card">
             <form method="POST" action="" class="login-form">
@@ -41,5 +51,10 @@
 alert("{{ error_message }}")
 </script>
 {% endif %}
+
+<script src="{% static "/vendor/jquery/jquery.min.js"%}"></script>
+<script src="{% static "/vendor/bootstrap/js/bootstrap.bundle.min.js"%}"></script>
+
+{% block extra_script %}{% endblock %}
 </body>
 </html>

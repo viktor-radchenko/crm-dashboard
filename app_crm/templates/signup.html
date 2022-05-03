@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,33 +9,52 @@
     {% load static %}
     <link rel="stylesheet" href="{% static "/css/signup.css" %}">
     <link rel="shortcut icon" href="{% static "/img/ico/favicon.svg" %}">
+
+    {% block extra_head %}{% endblock %}
 </head>
+
 <body>
     <div class="card">
+        {% if messages %}
+        {% for msg in messages %}
+        <div class="alert {{ msg.tags }} alert-dismissible fade show w-100" role="alert">
+            {{ msg }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {% endfor %}
+        {% endif %}
         <h1 class="sign-up">Sign up</h1>
         <div class="register-card">
             <form method="POST" action="" class="register-form">
                 {% csrf_token %}
+
                 <div class="form-group">
                     <div class="form-item">
                         <label for="first-name" class="input-label">First name</label>
-                        <input type="text" name="first-name" class="input-field" autocapitalize="off" autocorrect="off" autocomplete="name" autofocus="autofocus" required>
+                        <input type="text" name="first-name" class="input-field" autocapitalize="off" autocorrect="off"
+                            autocomplete="name" value="{% if first_name %}{{first_name}}{% else %}{{''}}{% endif %}" required>
                     </div>
                     <div class="form-item">
                         <label for="last-name" class="input-label">Last name</label>
-                        <input type="text" name="last-name" class="input-field" autocapitalize="off" autocorrect="off" autocomplete="family-name">
+                        <input type="text" name="last-name" class="input-field" autocapitalize="off" autocorrect="off"
+                            autocomplete="family-name" value="{% if last_name %}{{last_name}}{% else %}{{''}}{% endif %}">
                     </div>
                     <div class="form-item">
                         <label for="email" class="input-label">Email</label>
-                        <input type="email" name="email" class="input-field" autocapitalize="off" autocorrect="off" autocomplete="email" required>
+                        <input type="email" name="email" class="input-field" autocapitalize="off" autocorrect="off"
+                            autocomplete="email" value="{% if email %}{{email}}{% else %}{{''}}{% endif %}" required>
                     </div>
                     <div class="form-item">
                         <label for="password" class="input-label">Password</label>
-                        <input type="password" name="password" id="id_password1" class="input-field" minlength="6" autocomplete="new-password" required>
+                        <input type="password" name="password" id="id_password1" class="input-field" minlength="6"
+                            autocomplete="new-password" required>
                     </div>
                     <div class="form-item">
                         <label for="password" class="input-label">Repeat password</label>
-                        <input type="password" name="repeat-password" id="id_password2" class="input-field" minlength="6" autocomplete="new-password" required>
+                        <input type="password" name="repeat-password" id="id_password2" class="input-field"
+                            minlength="6" autocomplete="new-password" required>
                     </div>
                     <div class="form-item">
                         <button type="submit" class="submit-button">Sign up</button>
@@ -44,11 +64,17 @@
         </div>
     </div>
 
-<script src="{% static "/js/matchpassword.js"%}"></script>
-{% if error_message %}
-<script type="text/javascript">
-alert("{{ error_message }}")
-</script>
-{% endif %}
+    <script src="{% static "/js/matchpassword.js"%}"></script>
+    {% if error_message %}
+    <script type="text/javascript">
+        alert("{{ error_message }}")
+    </script>
+    {% endif %}
+
+    <script src="{% static "/vendor/jquery/jquery.min.js"%}"></script>
+    <script src="{% static "/vendor/bootstrap/js/bootstrap.bundle.min.js"%}"></script>
+
+    {% block extra_script %}{% endblock %}
 </body>
+
 </html>

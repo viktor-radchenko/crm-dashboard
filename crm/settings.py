@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 
 import dotenv
+from django.contrib.messages import constants as messages
 
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
@@ -157,4 +158,15 @@ EMAIL_HOST = os.getenv('EMAIL_HOST')
 EMAIL_PORT = os.getenv('EMAIL_PORT')
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-EMAIL_USE_TLS = True
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'False') == 'True'
+
+
+MESSAGE_TAGS = {
+        messages.DEBUG: 'alert-secondary',
+        messages.INFO: 'alert-info',
+        messages.SUCCESS: 'alert-success',
+        messages.WARNING: 'alert-warning',
+        messages.ERROR: 'alert-danger',
+ }
+
+CLIENT_TAG = os.getenv("CLIENT_TAG", '__service')
