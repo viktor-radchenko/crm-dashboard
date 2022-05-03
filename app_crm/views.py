@@ -622,10 +622,11 @@ class dash:
 
                     msg.save()
                     # send notification to zap
+
                     return redirect(f"/dashboard/chatroom/{order.id}/")
                 context = {}
                 context["order"] = order
-                context["messages"] = order.message.filter(parent__isnull=True)
+                context["chat_messages"] = order.message.filter(parent__isnull=True)
                 return render(request, "dashboard/admin/chat/messages.html", context)
             return redirect("/")
 
