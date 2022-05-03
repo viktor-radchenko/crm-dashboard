@@ -6,7 +6,7 @@
 {% endblock %}
 {% block content %}
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
-  <h1 class="h3 mb-0 text-gray-800">Order #{{ order.id }} - messages</h1>
+  <h1 class="h3 mb-0 text-gray-800">Order #{{ order.order }} - messages</h1>
 </div>
 
 <div class="card shadow mb-4" style="line-height: 1.2;">
@@ -21,7 +21,7 @@
         </div>
         
           <div class="order-links" style="font-size: 20px; text-align: right;">
-            {% if order.owner == request.user and not request.user.is_client  %}
+            {% if not request.user.is_client %}
               <a href="/dashboard/admin/editinfo/{{ order.id }}/" title="Edit info" class="mr-1"><i class="fa fa-pencil-alt"></i></a>
               <a href="/dashboard/admin/edit/{{ order.id }}/" title="Edit this order" class="mr-1"><i class="fa fa-edit"></i></a>
               <a href="/dashboard/admin/{{ order.id }}/deliverables/" title="Deliverables page" class="mr-1"><i class="fa fa-file"></i></a>

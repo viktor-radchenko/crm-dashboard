@@ -622,7 +622,7 @@ class dash:
 
                     msg.save()
                     # send notification to zap
-
+                    Order.sendMessageNotification(request, msg)
                     return redirect(f"/dashboard/chatroom/{order.id}/")
                 context = {}
                 context["order"] = order

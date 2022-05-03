@@ -360,6 +360,32 @@ class Order(models.Model):
         orders = Order.objects.filter(owner=request.user.id)
         return orders
 
+    def sendMessageNotification(request, msg):
+        zap = ZapierApi.objects.filter(id=1).first()
+        if zap:
+
+            recepients = []
+            if msg.author == msg.order.owner:
+                recepients.append(msg.author.created_by.email)
+            else:
+                recepients.append(msg.order.owner.email)
+
+            dataset = dict(
+                order=msg.order.order,
+                author=f"{msg.author.first_name} ({msg.author.email})",
+                body=msg.body,
+                date_added=msg.date_added.strftime('%d-%m-%Y %H:%M'),
+                url=f"{request._current_scheme_host}/dashboard/chatroom/{msg.order.id}/",
+                recepients=recepients
+            )
+            try:
+                r = requests.post("https:/qweklqjljlqwjeq.com", data=json.dumps(dataset))
+                return r.ok
+            except:
+                return False            
+        return False
+
+
     def sendAllInfo(id):
         order = Order.objects.get(id=id)
         if ZapierApi.objects.filter(id=1).exists():
@@ -1028,7 +1054,7 @@ class manageUser:
                     uri = urlsafe_base64_encode(force_bytes(user.pk))
                     token = account_activation_token.make_token(user)
 
-                    mail_subject = 'Activate your account'
+                    mail_subject = 'SearchManager.pro - Activate your account'
                     url = f"{request._current_scheme_host}/signup/activate/{uri}/{token}/"
 
                     body = render_to_string('email/acc_active_email.html', {
@@ -1156,12 +1182,13 @@ class manageUser:
 
         url = f"{request._current_scheme_host}/signup/invitation/{client.uuid}/"
         
-        body = f"You have been invited to SearchManager.pro. Follow this link to create an account and manage your orders: {url}"
+        body = render_to_string('email/acc_active_email.html', {
+                        'client': client,
+                        'url': url,
+                    })
+
         
         send_email_to_client("SearchManager.pro - client invitation", body, [client.email])
-        # do some cool stuff with sending emails
-        #   - generate url with uuid
-        #   - send email
 
     def editClient(request, id):
         client = CustomUser.objects.get(id=id)
