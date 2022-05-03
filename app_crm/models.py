@@ -379,7 +379,7 @@ class Order(models.Model):
                 recepients=recepients
             )
             try:
-                r = requests.post("https:/qweklqjljlqwjeq.com", data=json.dumps(dataset))
+                r = requests.post(zap.apikey, data=json.dumps(dataset))
                 return r.ok
             except:
                 return False            
