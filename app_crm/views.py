@@ -226,7 +226,7 @@ class dash:
                 if request.method == "POST":
                     email = request.POST.get("email")
                     if email:
-                        if manageUser.checkExistingClientByEmail(email):
+                        if not manageUser.checkEmailAvailable(request, email):
                             messages.error(request, "This email is already taken. Try another email")
                             return redirect(f"/dashboard/admin/clients/edit/{id}/")
                     manageUser.editClient(request, id)

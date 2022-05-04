@@ -1172,8 +1172,14 @@ class manageUser:
             client.save()
             return client
 
-    def checkExistingClientByEmail(email):
-        return CustomUser.objects.filter(email=email).first()
+    def checkEmailAvailable(request, email):
+        user = CustomUser.objects.filter(email=email).first()
+        if user:
+            if user.created_by != request.user:
+                return False
+            if not user.is_registered:
+                return True
+        return True
 
     def sendInvitationUrl(request, id):
         client = CustomUser.objects.get(id=id)
@@ -1196,7 +1202,8 @@ class manageUser:
             return
 
         if not client.is_registered and request.POST.get("email"):
-            client.email = request.POST.get("email")
+            if client.email != request.POST.get("email"):
+                client.email = request.POST.get("email")
         client.first_name = request.POST.get("first_name")
         client.last_name = request.POST.get("last_name")
         client.save()
