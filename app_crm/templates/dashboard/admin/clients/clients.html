@@ -23,17 +23,7 @@
                     {% for client in clients %}
                     <tr>
                         <th scope="col" class="sortable">
-                            {% if not "__service" in client.email %}
-                                {{ client.email }} | {% if client.first_name or client.last_name %}
-                                    {{ client.first_name }} {{ client.last_name }}
-                                {% endif %}
-                            {% else %}
-                                {% if client.first_name or client.last_name %}
-                                    {{ client.first_name }} {{ client.last_name }}
-                                {% endif %}
-                            {% endif %}
-                            
-                            
+                            {{ client.first_name }} {{ client.last_name }}
                         </th>
                         <th scope="col" class="sortable">
                             <a href="/dashboard/admin/clients/edit/{{ client.id }}/" title="Edit this form" class="mr-1"><i class="fa fa-pencil-alt"></i></a>

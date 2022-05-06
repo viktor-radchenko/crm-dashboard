@@ -89,9 +89,8 @@
                 <thead>
                     <tr>
                         <th scope="col" class="sortable">Order #</th>
+                        <th scope="col" class="sortable">Client</th>
                         <th scope="col" class="sortable">Company name</th>
-                        <th scope="col" class="sortable">Start date</th>
-                        <th scope="col" class="sortable">Renewal date</th>
                         <th scope="col" class="sortable">Status</th>
                         <th scope="col" class="sortable">Month</th>
                         <th scope="col" class="sortable">Package</th>
@@ -104,9 +103,8 @@
                     {% for order in orders %}
                     <tr>
                         <td scope="col" class="sortable">{{ order.order }}</td>
+                        <td scope="col" class="sortable">{{ order.owner.first_name }}</td>
                         <td scope="col" class="sortable">{{ order.company_name }}</td>
-                        <td scope="col" class="sortable">{% if order.start_date == None %}{%else%}{{ order.start_date }}{% endif %}</td>
-                        <td scope="col" class="sortable">{% if order.renewal_date == None %}{%else%}{{ order.renewal_date }}{% endif %}</td>
                         <td scope="col" class="sortable">{% if order.status.name == None %}{%else%}<span style="display: block; background-color: {{ order.status.color }};">{{ order.status.name }}</span>{% endif %}</td>
                         <td scope="col" class="sortable">Month {{ order.month }}</td>
                         <td scope="col" class="sortable">{% if order.package == None %}{%else%}<span style="display: block; background-color: {{ order.package.template.color }};">{{ order.package }}</span>{% endif %}</td>
@@ -116,7 +114,7 @@
                             <a href="/dashboard/admin/edit/{{ order.id }}/" title="Edit this order" class="mr-1"><i class="fa fa-edit"></i></a>
                             <a href="/dashboard/admin/{{ order.id }}/deliverables/" title="Deliverables page" class="mr-1"><i class="fa fa-file"></i></a>
                             <a href="/dashboard/admin/{{ order.id }}/deliverables/form/all/" title="Send to Zapier" class="mr-1"><i class="fa fa-paper-plane"></i></a>
-                            <a href="/dashboard/chatroom/{{ order.id }}/" title="View messages" class="mr-1"><i class="fa fa-comment"></i></a>
+                            <a href="/dashboard/chatroom/{{ order.id }}/" title="View messages" class="mr-1"><i class="fa fa-envelope"></i></a>
                             <a href="/dashboard/admin/cancel/{{ order.id }}/" title="Set status 'canceled'" class="mr-1"><i class="fa fa-times"></i></a>
                             {% if order.link1 %}<a href="{{ order.link1 }}" target="_blank" title="google drive" class="mr-1" ><i class="fab fa-google-drive"></i></a>{% endif %}
                             {% if order.link2 %}<a href="{{ order.link2 }}" target="_blank" title="trello card" class="mr-1" ><i class="fab fa-trello"></i></a>{% endif %}

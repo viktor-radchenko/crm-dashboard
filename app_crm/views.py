@@ -211,8 +211,10 @@ class dash:
             if request.user.is_staff:
                 if request.method == "POST":
                     if request.POST.get("email") or (request.POST.get("first_name") or request.POST.get("last_name")):
-                        client = manageUser.createClient(request)
+                        client, has_many_clients = manageUser.createClient(request)
                         if client:
+                            if not has_many_clients:
+                                return redirect("/dashboard/admin/create/")
                             return redirect("/dashboard/admin/clients/")
                         messages.error(request, "Client with this email is already created")
                     else:

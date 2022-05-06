@@ -1152,6 +1152,7 @@ class manageUser:
 
     def createClient(request):
         if request.user.is_staff:
+            first_client = len(request.user.client.all())
             if CustomUser.objects.filter(email=request.POST.get("email")).first():
                 return False
             email = request.POST.get("email")
@@ -1170,7 +1171,7 @@ class manageUser:
             )
             client.set_unusable_password()
             client.save()
-            return client
+            return client, first_client
 
     def checkEmailAvailable(request, email):
         user = CustomUser.objects.filter(email=email).first()

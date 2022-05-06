@@ -36,10 +36,13 @@
                         <td scope="col" class="sortable">{{ order.status.name }}</td>
                         <td scope="col" class="sortable">
                             <a href="/dashboard/user/edit/{{ order.id }}/" title="Edit this order">
-                                <i class="fa fa-edit"></i>
+                                <i class="fa fa-pencil-alt"></i>
+                            </a>
+                            <a href="/dashboard/admin/{{ order.id }}/deliverables/" title="Deliverables page" class="mr-1">
+                                <i class="fa fa-file"></i>
                             </a>
                             <a href="/dashboard/chatroom/{{ order.id }}/" title="Messages">
-                                <i class="fa fa-comment"></i>
+                                <i class="fa fa-envelope"></i>
                             </a>
                         </td>
                     </tr>
