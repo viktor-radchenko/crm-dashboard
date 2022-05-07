@@ -31,6 +31,7 @@
               {% if order.link4 %}<a href="{{ order.link4 }}" target="_blank" title="link 4" class="mr-1" ><i class="fas fa-external-link-alt"></i></a>{% endif %}
             {% else %}
               <a href="/dashboard/user/edit/{{ order.id }}/" title="Edit this order"><i class="fa fa-pencil-alt"></i></a>
+              <a href="/dashboard/admin/{{ order.id }}/deliverables/" title="Deliverables page" class="mr-1"><i class="fa fa-file"></i></a>
             {% endif %}
           </div>
        
