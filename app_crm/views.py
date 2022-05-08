@@ -174,21 +174,22 @@ class dash:
                 return redirect("/")
 
         def deliverables(request, id):
-            if request.user.is_staff:
-                order = Order.getOrderById(request, id)
-                context = {}
-                if order.package != None:
-                    context["package"] = order.package
-                    context["task"] = order.package.tasks.all()
-                context["order"] = order
-                context["statuses"] = Status.getAllStatuses(request)
-                context["addons"] = order.addon.all()
-                context["users"] = manageUser.getStaffUsers()
-                context["month"] = list(range(1, order.month + 1))
-                context["forms"] = Form.getAllForms(request)
-                return render(request, "dashboard/admin/deliverables.html", context)
-            else:
+            order = Order.getOrderById(request, id)
+            if not order:
+                messages.warning(request, "This order does not exist or you do not have permission to access it")
                 return redirect("/")
+            context = {}
+            if order.package != None:
+                context["package"] = order.package
+                context["task"] = order.package.tasks.all()
+            context["order"] = order
+            context["statuses"] = Status.getAllStatuses(request)
+            context["addons"] = order.addon.all()
+            context["users"] = manageUser.getStaffUsers()
+            context["month"] = list(range(1, order.month + 1))
+            context["forms"] = Form.getAllForms(request)
+            return render(request, "dashboard/admin/deliverables.html", context)
+                
 
         def task(request, oid, id):
             if request.user.is_staff:

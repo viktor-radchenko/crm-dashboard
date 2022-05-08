@@ -71,16 +71,12 @@ class Order(models.Model):
 
     def getOrderById(request, id):
         order = Order.objects.get(id=id)
-        if order.owner == None:
-            if request.user.is_staff:
-                return order
-            else:
-                return False
+        if not order:
+            return False
+        if order.owner == request.user or order.owner.created_by == request.user:
+            return order
         else:
-            if order.owner.id == request.user.id or request.user.is_staff:
-                return order
-            else:
-                return False
+            return False
 
     def createCustomOrder(request):
         order_num = re.sub("\D", "", request.POST["order"])
