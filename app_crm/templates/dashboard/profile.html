@@ -38,7 +38,7 @@
                         <div class="form-group col-12">
                             <p class="text">Date joined: {{ request.user.date_joined }}</p>
                         </div>
-                        {% if request.user.is_superuser %}<div class="form-group col-12"><small><a href="/dashboard/admin/editkey/">edit Zapier API key</a></small></div>{% endif %}
+                        {% if request.user.is_staff %}<div class="form-group col-12"><small><a href="/dashboard/admin/editkey/">edit Zapier API key</a></small></div>{% endif %}
                     </form>
                 </div>
             </div>

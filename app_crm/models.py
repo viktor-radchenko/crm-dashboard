@@ -1,5 +1,6 @@
 import re
 import secrets
+from statistics import mode
 
 import requests
 import json
@@ -357,14 +358,14 @@ class Order(models.Model):
         return orders
 
     def sendMessageNotification(request, msg):
-        zap = ZapierApi.objects.filter(id=1).first()
+        zap = request.user.key.first()
         if zap:
-
             recepients = []
             if msg.author == msg.order.owner:
                 recepients.append(msg.author.created_by.email)
             else:
-                recepients.append(msg.order.owner.email)
+                if msg.order.owner.is_registered:
+                    recepients.append(msg.order.owner.email)
 
             dataset = dict(
                 order=msg.order.order,
@@ -372,7 +373,8 @@ class Order(models.Model):
                 body=msg.body,
                 date_added=msg.date_added.strftime('%d-%m-%Y %H:%M'),
                 url=f"{request._current_scheme_host}/dashboard/chatroom/{msg.order.id}/",
-                recepients=recepients
+                recepients=recepients,
+                message_type="chat_message"
             )
             try:
                 r = requests.post(zap.apikey, data=json.dumps(dataset))
@@ -382,46 +384,51 @@ class Order(models.Model):
         return False
 
 
-    def sendAllInfo(id):
+    def sendAllInfo(request, id):
         order = Order.objects.get(id=id)
-        if ZapierApi.objects.filter(id=1).exists():
-            deliv_link = (
-                "https://searchmanager.pro/dashboard/admin/"
-                + str(order.id)
-                + "/deliverables/"
-            )
-            apikey = ZapierApi.objects.get(id=1)
+        if order.owner.created_by != request.user:
+            return False, "You don't have permission to use this API"
+        apikey = request.user.key.first()
+        if not apikey:
+            return False, 'No Zapier API key provided. You can add one <a href="/dashboard/admin/editkey/">here</a>'
+        deliv_link = (
+            "https://searchmanager.pro/dashboard/admin/"
+            + str(order.id)
+            + "/deliverables/"
+        )
+        apikey = ZapierApi.objects.get(id=1)
 
-            dataset = {
-                "order": order.order,
-                "company_name": order.company_name,
-                "company_address": order.company_address,
-                "company_city": order.company_city,
-                "company_state": order.company_state,
-                "company_zip": order.company_zip,
-                "company_country": order.company_country,
-                "company_phone": order.company_phone,
-                "website_url": order.website_url,
-                "company_email": order.company_email,
-                "company_description": order.company_description,
-                "logo_image": order.logo_image,
-                "map_url": order.map_url,
-                "website_login_url": order.website_login_url,
-                "web_username": order.web_username,
-                "web_password": order.web_password,
-                "analytics_account": order.analytics_account,
-                "deliverables_url": deliv_link,
-            }
+        dataset = {
+            "order": order.order,
+            "company_name": order.company_name,
+            "company_address": order.company_address,
+            "company_city": order.company_city,
+            "company_state": order.company_state,
+            "company_zip": order.company_zip,
+            "company_country": order.company_country,
+            "company_phone": order.company_phone,
+            "website_url": order.website_url,
+            "company_email": order.company_email,
+            "company_description": order.company_description,
+            "logo_image": order.logo_image,
+            "map_url": order.map_url,
+            "website_login_url": order.website_login_url,
+            "web_username": order.web_username,
+            "web_password": order.web_password,
+            "analytics_account": order.analytics_account,
+            "deliverables_url": deliv_link,
+            "message_type": "all_info"
+        }
 
-            r = requests.post(apikey.apikey, data=json.dumps(dataset))
-            return r.ok
-        else:
-            return False
+        r = requests.post(apikey.apikey, data=json.dumps(dataset))
+        return r.ok, "Data has been sent successfully"
 
     def sendForm(request, id, formid):
         order = Order.objects.get(id=id)
-        if ZapierApi.objects.filter(id=1).exists():
-            apikey = ZapierApi.objects.get(id=1)
+        if order.owner.created_by != request.user:
+            return False, "You don't have permission to use this API"
+        apikey = request.user.key.first()
+        if apikey:
             form = Form.objects.get(id=formid)
 
             orderfields = form.orderinfos.get("orderinfos")
@@ -452,11 +459,12 @@ class Order(models.Model):
             dataset["form_note"] = request.POST.get("formnote")
 
             dataset["form_name"] = form.title
+            dataset["message_type"] = "form_info"
 
             r = requests.post(apikey.apikey, data=json.dumps(dataset))
             return r.ok
         else:
-            return False
+            return False, 'No Zapier API key provided. You can add one <a href="/dashboard/admin/editkey/">here</a>'
 
     def getOrdersByFilter(request):
         filters = {}
@@ -1015,15 +1023,17 @@ class Form(models.Model):
 
 class ZapierApi(models.Model):
     apikey = models.CharField(max_length=5000)
+    created_by = models.ForeignKey(CustomUser, null=True, on_delete=models.CASCADE, related_name='key')
 
     def editKey(request):
-        if ZapierApi.objects.filter(id=1).exists():
-            ZapierApi.objects.filter(id=1).update(apikey=request.POST.get("apikey"))
-        else:
-            ZapierApi.objects.create(id=1, apikey=request.POST.get("apikey"))
+        key = request.user.key.first()
+        if not key:
+            ZapierApi.objects.create(apikey=request.POST.get("apikey"), created_by=request.user)
+        key.apikey=request.POST.get("apikey")
+        key.save()
 
-    def getKey():
-        key = ZapierApi.objects.filter(id=1)
+    def getKey(request):
+        key = request.user.key.first()
         return key
 
 

@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
+from django.utils.safestring import mark_safe
 
 from app_crm.models import (
     Order,
@@ -367,12 +368,12 @@ class dash:
                 return redirect("/")
 
         def keyEdit(request):
-            if request.user.is_superuser:
+            if request.user.is_staff:
                 if request.method == "POST":
                     ZapierApi.editKey(request)
                     return redirect("/dashboard/profile/")
                 context = {}
-                context["key"] = ZapierApi.getKey()
+                context["key"] = ZapierApi.getKey(request)
                 return render(request, "dashboard/admin/editkey.html", context)
             else:
                 return redirect("/")
@@ -540,24 +541,24 @@ class dash:
         class send:
             def sendAllInfo(request, id):
                 if request.user.is_staff:
-                    send = Order.sendAllInfo(id)
+                    send, msg = Order.sendAllInfo(request, id)
                     if send:
-                        return redirect("/dashboard/admin/allorders/")
+                        messages.success(request, msg)
                     else:
-                        return handler500(request)
+                        messages.error(request, mark_safe(msg))
+                    return redirect("/dashboard/admin/allorders/")
                 else:
                     return redirect("/")
 
             def sendForm(request, id, formid):
                 if request.user.is_staff:
                     if request.method == "POST":
-                        send = Order.sendForm(request, id, formid)
+                        send, msg = Order.sendForm(request, id, formid)
                         if send:
-                            return redirect(
-                                "/dashboard/admin/" + str(id) + "/deliverables/"
-                            )
+                            messages.success(request, msg)
                         else:
-                            return handler500(request)
+                            messages.error(request, mark_safe(msg))
+                        return redirect("/dashboard/admin/" + str(id) + "/deliverables/")
                     else:
                         return handler404(request)
                 else:
