@@ -1187,7 +1187,7 @@ class manageUser:
         if request.user.is_staff:
             first_client = len(request.user.client.all())
             if CustomUser.objects.filter(email=request.POST.get("email")).first():
-                return False
+                return False, first_client
             email = request.POST.get("email")
             if not email:
                 email = f'{settings.CLIENT_TAG}-{secrets.token_hex(16)}@searchmanager.pro'
