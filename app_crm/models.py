@@ -358,22 +358,18 @@ class Order(models.Model):
         return orders
 
     def sendMessageNotification(request, msg):
-        zap = request.user.key.first()
+        if request.user.is_client:
+            zap = request.user.created_by.key.first()
+        else:
+            zap = request.user.key.first()
         if zap:
-            recepients = []
-            if msg.author == msg.order.owner:
-                recepients.append(msg.author.created_by.email)
-            else:
-                if msg.order.owner.is_registered:
-                    recepients.append(msg.order.owner.email)
-
             dataset = dict(
                 order=msg.order.order,
                 author=f"{msg.author.first_name} ({msg.author.email})",
                 body=msg.body,
                 date_added=msg.date_added.strftime('%d-%m-%Y %H:%M'),
                 url=f"{request._current_scheme_host}/dashboard/chatroom/{msg.order.id}/",
-                recepients=recepients,
+                recepients=msg.recepient,
                 message_type="chat_message"
             )
             try:
@@ -382,6 +378,14 @@ class Order(models.Model):
             except:
                 return False            
         return False
+
+    def getUnreadMessages(request, orders):
+        recepient = request.user.email
+        unread = []
+        for ord in orders:
+            if ord.message.filter(recepient=recepient, is_read=False):
+                unread.append(ord.id)
+        return unread
 
 
     def sendAllInfo(request, id):
@@ -1275,11 +1279,13 @@ class manageUser:
 class Message(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="message")
     author = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    recepient = models.EmailField(max_length=255, null=True, blank=True)
     body = models.TextField()
     date_added = models.DateTimeField(auto_now_add=True)
     parent = models.ForeignKey(
         "self", on_delete=models.CASCADE, null=True, blank=True, related_name="replies"
     )
+    is_read = models.BooleanField(default=False)
 
     class Meta:
         ordering = ("-date_added",)

@@ -124,6 +124,7 @@
 
           </div>
         </div>
+        {% if msg.recepient == request.user.email %} {{msg|read_it|default_if_none:""}} {% endif %}
         
         <!-- *** message replies *** -->
         {% if msg.replies.all %}
@@ -161,6 +162,7 @@
                 </div>
               </div>
             </div>
+            {% if m.recepient == request.user.email %} {{m|read_it|default_if_none:""}} {% endif %}
           {% endfor %}
           <div class="d-flex flex-row justify-content-end">
             <btn class="btn btn-outline-primary btn-sm shadow-none reply-btn ml-3" data-message-id="{{ msg.id }}">

@@ -110,6 +110,7 @@ class dash:
                     context["orders"] = Order.getOrdersByFilter(request)
                 else:
                     context["orders"] = Order.getAllOrders(request)
+                context['unread_messages'] = Order.getUnreadMessages(request, context['orders'])
                 return render(request, "dashboard/admin/allorders.html", context)
             else:
                 return redirect("/dashboard/user/myorders/")
@@ -573,6 +574,7 @@ class dash:
             ):
                 context = {}
                 context["orders"] = Order.getUserOrders(request)
+                context['unread_messages'] = Order.getUnreadMessages(request, context['orders'])
                 return render(request, "dashboard/user/myorders.html", context)
             else:
                 return redirect("/")
@@ -616,7 +618,14 @@ class dash:
             ):
                 if request.method == "POST":
                     body = request.POST.get("message-body", "")
-                    msg = Message(order=order, author=request.user, body=body)
+                    recepient = None
+                    if request.user == order.owner:
+                        recepient = order.owner.created_by.email
+                    else:
+                        # don't include service emails
+                        if not settings.CLIENT_TAG in order.owner.email:
+                            recepient = order.owner.email
+                    msg = Message(order=order, author=request.user, body=body, recepient=recepient)
 
                     # check if message is reply
                     is_reply = int(request.POST.get("replyto", 0))

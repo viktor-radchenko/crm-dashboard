@@ -41,7 +41,7 @@
                             <a href="/dashboard/admin/{{ order.id }}/deliverables/" title="Deliverables page" class="mr-1">
                                 <i class="fa fa-file"></i>
                             </a>
-                            <a href="/dashboard/chatroom/{{ order.id }}/" title="Messages">
+                            <a href="/dashboard/chatroom/{{ order.id }}/" title="Messages" class="{% if order.id in unread_messages %} text-danger{% endif %}">
                                 <i class="fa fa-envelope"></i>
                             </a>
                         </td>

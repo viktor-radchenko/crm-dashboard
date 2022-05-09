@@ -32,3 +32,9 @@ def get_getlist(dictionary, key):
 @register.filter(name="index_filter")
 def index_filter(indexable, i):
     return indexable[i]
+
+@register.filter(name="read_it")
+def read_it(msg):
+    if not msg.is_read:
+        msg.is_read = True
+        msg.save()
