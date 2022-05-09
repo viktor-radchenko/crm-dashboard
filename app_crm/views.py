@@ -21,6 +21,7 @@ from app_crm.models import (
     ZapierApi,
     Message,
 )
+from app_users.models import CustomUser
 
 
 class sign:
@@ -30,7 +31,9 @@ class sign:
         else:
             if request.method == "POST":
                 if manageUser.checkIfNeedsConfirmation(request):
-                    messages.warning(request, "You need to confirm your account first. Please check your email")
+                    messages.warning(request, mark_safe(
+                        f'You need to confirm your account first. Please check your email. You can re-send activation link by clicking <a href="/signup/confirmation/resend/">here</a>')
+                    )
                     return redirect("/")
                 if manageUser.loginUser(request):
                     return redirect("/dashboard/admin/allorders/")
@@ -52,6 +55,18 @@ class sign:
                     context["error_message"] = "This account already exists"
                     return render(request, "signup.html", context)
             return render(request, "signup.html")
+
+    def resendConfirmation(request):
+        if request.user.is_authenticated:
+            return redirect("/dashboard/admin/allorders/")
+        if request.method == "POST":
+            success, message = manageUser.resendConfirmation(request)
+            if success:
+                messages.success(request, message)
+            else:
+                messages.warning(request, message)
+            return redirect("/")
+        return render(request, 'resend_confirm_email.html')
 
     def invitationSignUp(request, uuid):
         if request.user.is_authenticated:

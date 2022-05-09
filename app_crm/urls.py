@@ -11,6 +11,7 @@ urlpatterns = [
     path("signup/", include(
         [
             path("", views.sign.signup),
+            path("confirmation/resend/", views.sign.resendConfirmation),
             path("invitation/<str:uuid>/", views.sign.invitationSignUp),
             path("activate/<uri>/<token>/", views.sign.activateAccount),
         ]

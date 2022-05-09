@@ -1079,6 +1079,25 @@ class manageUser:
                     send_email_to_client(mail_subject, body, [user.email])
                     return True
 
+    def resendConfirmation(request):
+        email = request.POST.get("email")
+        user = CustomUser.objects.filter(email=email, is_active=False).first()
+        if user:
+            uri = urlsafe_base64_encode(force_bytes(user.pk))
+            token = account_activation_token.make_token(user)
+
+            mail_subject = 'SearchManager.pro - Activate your account'
+            url = f"{request._current_scheme_host}/signup/activate/{uri}/{token}/"
+
+            body = render_to_string('email/acc_active_email.html', {
+                'user': user,
+                'url': url,
+            })
+
+            send_email_to_client(mail_subject, body, [user.email])
+            return True, "Confirmation link has been sent. Check your email"
+        return False, "We will send you a confirmation link if this account is registered. Check your email"
+
     def activateUser(request, uri, token):
         try:
             uid = force_text(urlsafe_base64_decode(uri))
