@@ -43,12 +43,17 @@ class CustomUser(AbstractUser):
         "self", on_delete=models.SET_NULL, blank=True, null=True, related_name="client"
     )
 
-    uuid = models.CharField(max_length=255, default=secrets.token_hex(32))
+
+    def generate_uuid():
+        return secrets.token_hex(32)
+
+    uuid = models.CharField(max_length=255, default=generate_uuid)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
     objects = CustomUserManager()
+
 
     def __str__(self):
         return self.email

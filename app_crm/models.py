@@ -299,7 +299,7 @@ class Order(models.Model):
         user_ids.append(request.user.id)
         for client in request.user.client.all():
             user_ids.append(client.id)
-        orders = Order.objects.filter(owner__in=user_ids)
+        orders = Order.objects.filter(owner__in=user_ids).exclude(owner__is_deleted=True)
         return orders
 
     def createUserOrder(request):
@@ -362,6 +362,9 @@ class Order(models.Model):
             zap = request.user.created_by.key.first()
         else:
             zap = request.user.key.first()
+        # check if no recepient in case client is not registered
+        if not msg.recepient:
+            return False
         if zap:
             dataset = dict(
                 order=msg.order.order,
@@ -1033,8 +1036,9 @@ class ZapierApi(models.Model):
         key = request.user.key.first()
         if not key:
             ZapierApi.objects.create(apikey=request.POST.get("apikey"), created_by=request.user)
-        key.apikey=request.POST.get("apikey")
-        key.save()
+        else:
+            key.apikey=request.POST.get("apikey")
+            key.save()
 
     def getKey(request):
         key = request.user.key.first()
@@ -1145,7 +1149,7 @@ class manageUser:
         return users
 
     def getAllClients(request):
-        clients = CustomUser.objects.filter(created_by=request.user)
+        clients = CustomUser.objects.filter(created_by=request.user).exclude(is_deleted=True)
         return clients
 
     def getClientById(request, id):
@@ -1199,7 +1203,7 @@ class manageUser:
 
         url = f"{request._current_scheme_host}/signup/invitation/{client.uuid}/"
         
-        body = render_to_string('email/acc_active_email.html', {
+        body = render_to_string('email/client_invite_email.html', {
                         'client': client,
                         'url': url,
                     })
@@ -1224,6 +1228,7 @@ class manageUser:
         if not client or client.created_by != request.user:
             return False
         client.is_active = False
+        client.is_registered = False
         client.is_deleted = True
 
         client.save()
@@ -1265,7 +1270,7 @@ class manageUser:
             user.save()
 
     def getNormalUsers(request):
-        return request.user.client.all()
+        return request.user.client.all().exclude(is_deleted=True)
 
     def getStaffUsers():
         users = CustomUser.objects.filter(is_active=True, is_staff=True)
@@ -1273,7 +1278,12 @@ class manageUser:
 
     def deleteUser(request, id):
         if request.user.is_superuser:
-            CustomUser.objects.filter(id=id).delete()
+            user = CustomUser.objects.filter(id=id).first()
+            user.is_active = False
+            user.is_deleted = True
+            user.is_staff = False
+            user.is_registered = False
+            user.save()
 
 
 class Message(models.Model):
