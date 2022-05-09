@@ -6,7 +6,7 @@ import requests
 import json
 
 from django.db import models
-from app_users.models import CustomUser
+from app_users.models import CustomUser, UserReplication
 from django.contrib import auth
 from django.contrib.sites.shortcuts import get_current_site
 from django.conf import settings
@@ -1139,9 +1139,14 @@ class manageUser:
         )
         if user is not None:
             auth.login(request, user)
-            return True
+            return True, ""
         else:
-            return False
+            deactivated_user = UserReplication.objects.filter(old_email=request.POST.get("email")).first()
+            if deactivated_user:
+                user_replica = CustomUser.objects.filter(email=deactivated_user.new_email).first()
+                if user_replica.is_deleted and not user_replica.is_active:
+                    return False, "This user is either deleted or deactivated. Please contact your administrator to resolve it"
+            return False, "We couldn't find an account with this credentials"
 
     def checkIfNeedsConfirmation(request):
         user = CustomUser.objects.filter(email=request.POST["email"]).first()
@@ -1250,6 +1255,12 @@ class manageUser:
         client.is_registered = False
         client.is_deleted = True
 
+        new_email = f'{settings.CLIENT_TAG}-{secrets.token_hex(16)}@searchmanager.pro'
+
+        replicated_user = UserReplication(old_email=client.email, new_email=new_email, user_uuid=client.uuid, original_user=client)
+        replicated_user.save()
+
+        client.email = new_email
         client.save()
         return True
 
@@ -1302,6 +1313,13 @@ class manageUser:
             user.is_deleted = True
             user.is_staff = False
             user.is_registered = False
+
+            new_email = f'{settings.CLIENT_TAG}-{secrets.token_hex(16)}@searchmanager.pro'
+
+            replicated_user = UserReplication(old_email=user.email, new_email=new_email, user_uuid=user.uuid, original_user=user)
+            replicated_user.save()
+
+            user.email = new_email
             user.save()
 
 

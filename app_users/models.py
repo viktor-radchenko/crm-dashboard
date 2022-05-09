@@ -43,7 +43,6 @@ class CustomUser(AbstractUser):
         "self", on_delete=models.SET_NULL, blank=True, null=True, related_name="client"
     )
 
-
     def generate_uuid():
         return secrets.token_hex(32)
 
@@ -57,3 +56,14 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.email
+
+
+class UserReplication(models.Model):
+    new_email = models.EmailField(max_length=255)
+    old_email = models.EmailField(max_length=255)
+    deleted_on = models.DateTimeField(auto_now_add=True)
+    user_uuid = models.CharField(max_length=255)
+    original_user = models.ForeignKey(CustomUser, on_delete=models.SET_DEFAULT, default=None, related_name="replicated_user")
+
+    def __str__(self):
+        return f"Replication for {self.old_email}"

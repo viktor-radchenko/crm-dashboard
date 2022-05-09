@@ -35,12 +35,12 @@ class sign:
                         f'You need to confirm your account first. Please check your email. You can re-send activation link by clicking <a href="/signup/confirmation/resend/">here</a>')
                     )
                     return redirect("/")
-                if manageUser.loginUser(request):
+                success, message = manageUser.loginUser(request)
+                if success:
                     return redirect("/dashboard/admin/allorders/")
                 else:
-                    context = {}
-                    context["error_message"] = "Wrong email or password"
-                    return render(request, "signin.html", context)
+                    messages.warning(request, message)
+                    return render(request, "signin.html")
             return render(request, "signin.html")
 
     def signup(request):
