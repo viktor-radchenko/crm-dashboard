@@ -1,21 +1,17 @@
 import re
 import secrets
-from statistics import mode
 
 import requests
 import json
 
 from django.db import models
+from django.core.exceptions import ValidationError
 from app_users.models import CustomUser, UserReplication
 from django.contrib import auth
-from django.contrib.sites.shortcuts import get_current_site
 from django.conf import settings
 
-from app_crm.utils import send_email_to_client, account_activation_token
+from app_crm.utils import send_email_to_client, account_activation_token, _delete_user, _create_statuses
 
-from django.contrib.auth import login, authenticate
-
-from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
@@ -82,7 +78,9 @@ class Order(models.Model):
     def createCustomOrder(request):
         order_num = re.sub("\D", "", request.POST["order"])
         userid = CustomUser.objects.get(id=request.POST["userid"])
-        stat = Status.objects.filter(val=1).first()
+
+        # create statuses:
+        stat = request.user.status.filter(val=1).first()
         Order(
             order=order_num,
             company_name=request.POST["company_name"],
@@ -898,7 +896,7 @@ class Addon(models.Model):
 class Status(models.Model):
     name = models.CharField(max_length=500)
     color = models.CharField(max_length=500)
-    val = models.IntegerField(default=None, null=True, unique=True)
+    val = models.IntegerField()
     created_by = models.ForeignKey(
         CustomUser, on_delete=models.CASCADE, related_name="status"
     )
@@ -927,7 +925,7 @@ class Status(models.Model):
         return Status.objects.filter(id=id, created_by=request.user).first()
 
     def editStatus(request, id):
-        status = Status.objects.filter(id=id, created_by=request.user)
+        status = Status.objects.filter(id=id, created_by=request.user).first()
         if status:
             status.update(
                 name=request.POST.get("name"),
@@ -1077,6 +1075,9 @@ class manageUser:
                     })
 
                     send_email_to_client(mail_subject, body, [user.email])
+
+                    # create statuses for the user
+                    _create_statuses(user, Status)
                     return True
 
     def resendConfirmation(request):
@@ -1151,7 +1152,7 @@ class manageUser:
     def checkIfNeedsConfirmation(request):
         user = CustomUser.objects.filter(email=request.POST["email"]).first()
         if user:
-            if user.is_registered and not user.is_active:
+            if user.is_registered and not user.is_active and not user.is_client:
                 return True
         return False
 
@@ -1251,17 +1252,7 @@ class manageUser:
         client = CustomUser.objects.get(id=id)
         if not client or client.created_by != request.user:
             return False
-        client.is_active = False
-        client.is_registered = False
-        client.is_deleted = True
-
-        new_email = f'{settings.CLIENT_TAG}-{secrets.token_hex(16)}@searchmanager.pro'
-
-        replicated_user = UserReplication(old_email=client.email, new_email=new_email, user_uuid=client.uuid, original_user=client)
-        replicated_user.save()
-
-        client.email = new_email
-        client.save()
+        _delete_user(client)
         return True
 
     def getUser(id):
@@ -1309,18 +1300,9 @@ class manageUser:
     def deleteUser(request, id):
         if request.user.is_superuser:
             user = CustomUser.objects.filter(id=id).first()
-            user.is_active = False
-            user.is_deleted = True
-            user.is_staff = False
-            user.is_registered = False
-
-            new_email = f'{settings.CLIENT_TAG}-{secrets.token_hex(16)}@searchmanager.pro'
-
-            replicated_user = UserReplication(old_email=user.email, new_email=new_email, user_uuid=user.uuid, original_user=user)
-            replicated_user.save()
-
-            user.email = new_email
-            user.save()
+            for i in user.client.all():
+                _delete_user(i)
+            _delete_user(user)            
 
 
 class Message(models.Model):

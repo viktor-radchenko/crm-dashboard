@@ -132,7 +132,7 @@ class dash:
 
         def createCustomOrder(request):
             if request.user.is_staff:
-                clients = request.user.client.all()
+                clients = request.user.client.all().exclude(is_deleted=True)
                 if not clients:
                     messages.warning(request, 'You need to add a client first')
                     return redirect("/dashboard/admin/clients/create/")
