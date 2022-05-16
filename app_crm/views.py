@@ -378,7 +378,7 @@ class dash:
 
         def formsRemove(request, id):
             if request.user.is_staff:
-                Form.removeForm(id)
+                Form.removeForm(request, id)
                 return redirect("/dashboard/admin/forms/")
             else:
                 return redirect("/")
