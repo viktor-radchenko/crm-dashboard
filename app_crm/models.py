@@ -401,7 +401,6 @@ class Order(models.Model):
             + str(order.id)
             + "/deliverables/"
         )
-        apikey = ZapierApi.objects.get(id=1)
 
         dataset = {
             "order": order.order,
@@ -424,9 +423,11 @@ class Order(models.Model):
             "deliverables_url": deliv_link,
             "message_type": "all_info"
         }
-
-        r = requests.post(apikey.apikey, data=json.dumps(dataset))
-        return r.ok, "Data has been sent successfully"
+        try:
+            r = requests.post(apikey.apikey, data=json.dumps(dataset))
+            return r.ok, "Data has been sent successfully"
+        except:
+            return False, "We were unable to send data to Zapier. Please check you Zapier API key url is correct"
 
     def sendForm(request, id, formid):
         order = Order.objects.get(id=id)
