@@ -468,7 +468,7 @@ class Order(models.Model):
             dataset["message_type"] = "form_info"
 
             r = requests.post(apikey.apikey, data=json.dumps(dataset))
-            return r.ok
+            return r.ok, "Form was sent successfully"
         else:
             return False, 'No Zapier API key provided. You can add one <a href="/dashboard/admin/editkey/">here</a>'
 
