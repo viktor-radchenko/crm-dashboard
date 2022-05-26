@@ -58,13 +58,11 @@
                                 <select name="package" id="select-pack" class="form-control" required>
                                     {% if order.package %}
                                     <option value="default" selected="selected">{{ order.package.template.title }}</option>
-                                    <option value="None">None</option>
-                                    {% else %}
-                                    <option value="None" {% if not order.package_id %}selected="selected"{% endif %}>None</option>
-                                    {% for p in package %}
-                                    <option value="{{ p.id }}">{{ p.title }} (template)</option>
-                                    {% endfor %}
                                     {% endif %}
+                                    {% for p in package %}
+                                    <option value="{{ p.id }}">{{ p.title }}</option>
+                                    {% endfor %}
+                                    <option value="None" {% if not order.package_id %}selected="selected"{% endif %}>None</option>
                                 </select>
                             </div>
 
