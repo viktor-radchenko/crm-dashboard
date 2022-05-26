@@ -78,7 +78,7 @@
                         <td scope="col" class="sortable" style="background-color: {{ t.status.color }};">{% if t.end_date == None %}{%else%}{{ t.end_date|date:"M d, Y" }}{% endif %}</td>
                         <td scope="col" class="sortable" style="background-color: {{ t.status.color }};">{{ t.status.name }}</td>
                         <td scope="col" class="sortable" style="background-color: {{ t.status.color }}; word-break: break-all;">{% if t.notes %}<div><p class="half-note m-0">{{ t.notes|slice:":20" }} <a href="#" class="show-hide-btn">more</a></p><p class="full-note m-0 d-none">{{ t.notes }} <a href="#" class="show-hide-btn">less</a></p></div>{% endif %}</td>
-                        <td scope="col" class="sortable" style="background-color: {{ t.status.color }};">{% if t.report_link %}<a href="{{ t.report_link }}" target="_blank">View report</a>{% endif %}</td>
+                        <td scope="col" class="sortable">{% if t.report_link %}<a href="{{ t.report_link }}" target="_blank">View report</a>{% endif %}</td>
                         <td scope="col" class="sortable"><a class="btn btn-primary btn-sm mr-1" href="#" role="button"  data-toggle="modal" data-target="#taskModalP{{ t.id }}">Manage task</a></td>
                     </tr>
                     {% endif %}
@@ -92,7 +92,7 @@
                         <td scope="col" class="sortable" style="background-color: {{ addontask.status.color }};">{% if addontask.end_date == None %}{%else%}{{ addontask.end_date|date:"M d, Y" }}{% endif %}</td>
                         <td scope="col" class="sortable" style="background-color: {{ addontask.status.color }};">{{ addontask.status.name }}</td>
                         <td scope="col" class="sortable" style="background-color: {{ addontask.status.color }}; word-break: break-all;">{% if addontask.notes %}<div><p class="half-note m-0">{{ addontask.notes|slice:":20" }} <a href="#" class="show-hide-btn">more</a></p><p class="full-note m-0 d-none">{{ addontask.notes }} <a href="#" class="show-hide-btn">less</a></p></div>{% endif %}</td>
-                        <td scope="col" class="sortable" style="background-color: {{ addontask.status.color }};">{% if addontask.report_link %}<a href="{{ addontask.report_link }}" target="_blank">View report</a>{% endif %}</td>
+                        <td scope="col" class="sortable">{% if addontask.report_link %}<a href="{{ addontask.report_link }}" target="_blank">View report</a>{% endif %}</td>
                         <td scope="col" class="sortable"><a class="btn btn-primary btn-sm mr-1" href="#" role="button" data-toggle="modal" data-target="#taskModalA{{ addontask.id }}">Manage task</a></td>
                     </tr>
                     <tr scope="col"><td><p></p></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
@@ -116,7 +116,7 @@
                       <a class="nav-link active" id="home-tab{{ t.id }}" data-toggle="tab" href="#home{{ t.id }}" role="tab" aria-controls="home{{ t.id }}" aria-selected="true">{{ t.template_task.title }}</a>
                     </li>
                     <li class="nav-item" role="presentation">
-                      <a class="nav-link" id="profile-tab{{ t.id }}" data-toggle="tab" href="#profile{{ t.id }}" role="tab" aria-controls="profile{{ t.id }}" aria-selected="false">Send</a>
+                      <a class="nav-link" id="profile-tab{{ t.id }}" data-toggle="tab" href="#profile{{ t.id }}" role="tab" aria-controls="profile{{ t.id }}" aria-selected="false">Order</a>
                     </li>
                   </ul>
 
@@ -133,21 +133,10 @@
                             {% csrf_token %}
 
                                 <div class="form-group col-12 mb-4">
-                                    <label class="text ml-1" for="start">Start date:</label>
-                                    <input type="date" class="form-control mb-2" name="start_date" id="start" value="{{ t.start_date|date:'Y-m-d' }}">
+                                    
+                                    <label class="text ml-1" for="report_link">Report link:</label>
+                                    <input type="text" class="form-control mb-2" name="report_link" id="report_link" value="{{ t.report_link }}">
 
-                                    <label class="text ml-1" for="end">Due date:</label>
-                                    <input type="date" class="form-control mb-2" name="end_date" id="end" value="{{ t.end_date|date:'Y-m-d' }}">
-                                </div>
-
-                                <div class="form-group col-12 mb-4">
-                                
-                                    <label class="text ml-1" for="select-status">Status:</label>
-                                    <select name="status" id="select-status" class="form-control" required>
-                                        {% for status in statuses %}
-                                        <option value="{{ status.id }}" {% if status.id == t.status.id %}selected="selected"{% endif %}>{{ status.name }}</option>
-                                        {% endfor %}
-                                    </select>
                                 </div>
 
                                 <div class="form-group col-12 mb-4">
@@ -169,9 +158,25 @@
                                 </div>
 
                                 <div class="form-group col-12 mb-4">
-                                    <label class="text ml-1" for="report_link">Report link:</label>
-                                    <input type="text" class="form-control mb-2" name="report_link" id="report_link" value="{{ t.report_link }}">
+                                
+                                    <label class="text ml-1" for="select-status">Status:</label>
+                                    <select name="status" id="select-status" class="form-control" required>
+                                        {% for status in statuses %}
+                                        <option value="{{ status.id }}" {% if status.id == t.status.id %}selected="selected"{% endif %}>{{ status.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
 
+                                <div class="form-group col-12 mb-4">
+                                    
+                                    <label class="text ml-1" for="start">Start date:</label>
+                                    <input type="date" class="form-control mb-2" name="start_date" id="start" value="{{ t.start_date|date:'Y-m-d' }}">
+
+                                    <label class="text ml-1" for="end">Due date:</label>
+                                    <input type="date" class="form-control mb-2" name="end_date" id="end" value="{{ t.end_date|date:'Y-m-d' }}">
+                                </div>
+
+                                <div class="form-group col-12 mb-4">
                                     <label class="text ml-1" for="note">Note:</label>
                                     <textarea class="form-control mb-2" name="note" id="note">{{ t.notes }}</textarea>
                                 </div>
@@ -183,9 +188,9 @@
                         </form>
                     </div>
 
-                    <div class="tab-pane fade" id="profile{{ t.id }}" role="tabpanel" aria-labelledby="profile-tab{{ t.id }}">
+                    <div class="tab-pane fade" id="profile{{ t.id }}" role="tabpanel" aria-labelledby="profile-tab{{ t.id }}" style="min-height: 707px;">
                         <select name="theforms" class="custom-select fformselect mb-2">
-                            <option value=""></option>
+                            <option value="" disabled selected>Select form</option>
                             {% for form in forms %}
                             <option value="customform{{ t.id }}-{{ form.id }}">{{ form.title }}</option>
                             {% endfor %}
