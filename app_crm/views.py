@@ -415,9 +415,7 @@ class dash:
                     if request.method == "POST":
                         result = templatePackage.createPackage(request)
                         return redirect(
-                            "/dashboard/admin/template/package/edit/"
-                            + str(result)
-                            + "/"
+                            "/dashboard/admin/template/package/"
                         )
                     return render(
                         request, "dashboard/admin/template/create_package.html"
@@ -430,7 +428,7 @@ class dash:
                     if request.method == "POST":
                         templatePackage.editPackage(request, id)
                         return redirect(
-                            "/dashboard/admin/template/package/edit/" + str(id) + "/"
+                            "/dashboard/admin/template/package/"
                         )
                     context = {}
                     pack = templatePackage.getPackageById(id)
