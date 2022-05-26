@@ -121,11 +121,12 @@
                                 >
                                     <i class="fa fa-envelope"></i>
                             </a>
-                            <a href="/dashboard/admin/cancel/{{ order.id }}/" title="Set status 'canceled'" class="mr-1"><i class="fa fa-times"></i></a>
+                            
                             {% if order.link1 %}<a href="{{ order.link1 }}" target="_blank" title="google drive" class="mr-1" ><i class="fab fa-google-drive"></i></a>{% endif %}
                             {% if order.link2 %}<a href="{{ order.link2 }}" target="_blank" title="trello card" class="mr-1" ><i class="fab fa-trello"></i></a>{% endif %}
                             {% if order.link3 %}<a href="{{ order.link3 }}" target="_blank" title="workbook" class="mr-1" ><i class="fas fa-table"></i></a>{% endif %}
-                            {% if order.link4 %}<a href="{{ order.link4 }}" target="_blank" title="link 4" class="mr-1" ><i class="fas fa-external-link-alt"></i></a>{% endif %}
+                            {% if order.link4 %}<a href="{{ order.link4 }}" target="_blank" title="rank tracker" class="mr-1" ><i class="fas fa-chart-area"></i></a>{% endif %}
+                            <a href="/dashboard/admin/cancel/{{ order.id }}/" title="Set status 'canceled'" class="mr-1"><i class="fa fa-times"></i></a>
                         </td>
                     </tr>
                     {% endfor %}
