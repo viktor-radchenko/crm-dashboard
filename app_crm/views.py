@@ -105,10 +105,15 @@ class sign:
 class dash:
     def dashboardProfile(request):
         if request.user.is_authenticated:
-            if "editProfile" in request.POST:
-                manageUser.editProfile(request)
-            elif "editPassword" in request.POST:
-                manageUser.editPassword(request)
+            try:
+                if "editProfile" in request.POST:
+                    manageUser.editProfile(request)
+                    messages.success(request, "Profile successfully updated")
+                elif "editPassword" in request.POST:
+                    manageUser.editPassword(request)
+                    messages.success(request, "Password successfully updated")
+            except:
+                messages.error(request, "Something went wrong. Please check your input and try again")
             return render(request, "dashboard/profile.html")
         else:
             return redirect("/")

@@ -64,12 +64,14 @@
                         <th scope="col" class="sortable" style="width: 10%">Status</th>
                         <th scope="col" class="sortable" style="width: 32%">Notes</th>
                         <th scope="col" class="sortable" style="width: 6%">Report link</th>
-                        <th scope="col" class="sortable" style="width: 8%">Actions</th>
+                        {% if request.user.is_staff %}
+                            <th scope="col" class="sortable" style="width: 8%">Actions</th>
+                        {% endif %}
                     </tr>
                 </thead>
                 <tbody>
                     {% for m in month %}
-                    <tr scope="col" style="background-color:#F5F5F5;"><td>MONTH {{ m }}</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr scope="col" style="background-color:#F5F5F5;"><td>MONTH {{ m }}</td><td></td><td></td><td></td><td></td><td></td>{% if request.user.is_staff %}<td></td>{% endif %}</tr>
                     {% for t in task|dictsort:"ordering" %}
                     {% if t.month == m %}
                     <tr class="table">
@@ -79,7 +81,9 @@
                         <td scope="col" class="sortable" style="background-color: {{ t.status.color }};">{{ t.status.name }}</td>
                         <td scope="col" class="sortable" style="background-color: {{ t.status.color }}; word-break: break-all;">{% if t.notes %}<div><p class="half-note m-0">{{ t.notes|slice:":20" }} <a href="#" class="show-hide-btn">more</a></p><p class="full-note m-0 d-none">{{ t.notes }} <a href="#" class="show-hide-btn">less</a></p></div>{% endif %}</td>
                         <td scope="col" class="sortable">{% if t.report_link %}<a href="{{ t.report_link }}" target="_blank">View report</a>{% endif %}</td>
-                        <td scope="col" class="sortable"><a class="btn btn-primary btn-sm mr-1" href="#" role="button"  data-toggle="modal" data-target="#taskModalP{{ t.id }}">Manage task</a></td>
+                        {% if request.user.is_staff %}
+                            <td scope="col" class="sortable"><a class="btn btn-primary btn-sm mr-1" href="#" role="button"  data-toggle="modal" data-target="#taskModalP{{ t.id }}">Manage task</a></td>
+                        {% endif %}
                     </tr>
                     {% endif %}
                     {% endfor %}
@@ -93,9 +97,11 @@
                         <td scope="col" class="sortable" style="background-color: {{ addontask.status.color }};">{{ addontask.status.name }}</td>
                         <td scope="col" class="sortable" style="background-color: {{ addontask.status.color }}; word-break: break-all;">{% if addontask.notes %}<div><p class="half-note m-0">{{ addontask.notes|slice:":20" }} <a href="#" class="show-hide-btn">more</a></p><p class="full-note m-0 d-none">{{ addontask.notes }} <a href="#" class="show-hide-btn">less</a></p></div>{% endif %}</td>
                         <td scope="col" class="sortable">{% if addontask.report_link %}<a href="{{ addontask.report_link }}" target="_blank">View report</a>{% endif %}</td>
-                        <td scope="col" class="sortable"><a class="btn btn-primary btn-sm mr-1" href="#" role="button" data-toggle="modal" data-target="#taskModalA{{ addontask.id }}">Manage task</a></td>
+                        {% if request.user.is_staff %}
+                            <td scope="col" class="sortable"><a class="btn btn-primary btn-sm mr-1" href="#" role="button" data-toggle="modal" data-target="#taskModalA{{ addontask.id }}">Manage task</a></td>
+                        {% endif %}
                     </tr>
-                    <tr scope="col"><td><p></p></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                    <tr scope="col"><td><p></p></td><td></td><td></td><td></td><td></td><td></td>{% if request.user.is_staff %}<td></td>{% endif %}</tr>
                     {% endif %}
                     {% endfor %}
                     {% endfor %}
