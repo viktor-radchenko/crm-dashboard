@@ -546,15 +546,6 @@ class Task(models.Model):
             local_end_date = request.POST["end_date"]
             task.end_date = local_end_date
 
-        if request.POST["completed"] == "None":
-            local_completed_by = None
-            task.completed_by = local_completed_by
-        else:
-            local_completed_by = CustomUser.objects.get(
-                id=int(request.POST["completed"])
-            )
-            task.completed_by = local_completed_by
-
         local_status = Status.objects.get(id=int(request.POST["status"]))
         task.status = local_status
         task.report_link = request.POST["report_link"]
@@ -567,7 +558,6 @@ class Task(models.Model):
                 start_date=local_start_date,
                 status=local_status,
                 end_date=local_end_date,
-                completed_by=local_completed_by,
             )
 
     def getTaskById(id):
@@ -928,11 +918,10 @@ class Status(models.Model):
     def editStatus(request, id):
         status = Status.objects.filter(id=id, created_by=request.user).first()
         if status:
-            status.update(
-                name=request.POST.get("name"),
-                color=request.POST.get("color"),
-                val=request.POST.get("value"),
-            )
+            status.name=request.POST.get("name")
+            status.color=request.POST.get("color")
+            status.val=request.POST.get("value")
+            status.save()
 
     def removeStatus(request, id):
         status = Status.objects.filter(id=id, created_by=request.user).first()
