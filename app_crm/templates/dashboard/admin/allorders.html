@@ -58,7 +58,7 @@
                 </div>
                 <div class="input-group input-group-sm mb-1">
                     <div class="input-group-prepend w-25">
-                        <label class="input-group-text w-100" for="select-user">User</label>
+                        <label class="input-group-text w-100" for="select-user">Client</label>
                     </div>
                     <select class="custom-select" id="select-user" name="select-user">
                         <option value="">All</option>
@@ -110,13 +110,13 @@
                         <td scope="col" class="sortable">{% if order.package == None %}{%else%}<span style="display: block; background-color: {{ order.package.template.color }};">{{ order.package }}</span>{% endif %}</td>
                         <td scope="col" class="sortable">{% if order.addon == None %}{%else%}{% for add in order.addon.all %}<span style="display: block; margin: 1px; background-color: {{ add.template.color }};">{{ add.template.title }}</span>{% endfor %}{% endif %}</td>
                         <td scope="col" class="sortable">
-                            <a href="/dashboard/admin/editinfo/{{ order.id }}/" title="Edit info" class="mr-1"><i class="fa fa-pencil-alt"></i></a>
-                            <a href="/dashboard/admin/edit/{{ order.id }}/" title="Edit this order" class="mr-1"><i class="fa fa-edit"></i></a>
-                            <a href="/dashboard/admin/{{ order.id }}/deliverables/" title="Deliverables page" class="mr-1"><i class="fa fa-file"></i></a>
+                            <a href="/dashboard/admin/editinfo/{{ order.id }}/" title="Intake form" class="mr-1"><i class="fa fa-pencil-alt"></i></a>
+                            <a href="/dashboard/admin/edit/{{ order.id }}/" title="Edit order" class="mr-1"><i class="fa fa-edit"></i></a>
+                            <a href="/dashboard/admin/{{ order.id }}/deliverables/" title="Deliverables" class="mr-1"><i class="fa fa-file"></i></a>
                             <a href="/dashboard/admin/{{ order.id }}/deliverables/form/all/" title="Send to Zapier" class="mr-1"><i class="fa fa-paper-plane"></i></a>
                             <a 
                                 href="/dashboard/chatroom/{{ order.id }}/"
-                                title="View messages"
+                                title="Messages"
                                 class="mr-1 {% if order.id in unread_messages %} text-danger{% endif %}"
                                 >
                                     <i class="fa fa-envelope"></i>

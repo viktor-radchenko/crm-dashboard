@@ -6,7 +6,7 @@
 {% endblock %}
 {% block content %}
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
-  <h1 class="h3 mb-0 text-gray-800">Order #{{ order.order }} - messages</h1>
+  <h1 class="h3 mb-0 text-gray-800">Messages</h1>
 </div>
 
 <div class="card shadow mb-4" style="line-height: 1.2;">
@@ -87,13 +87,17 @@
         <div class="message-container d-flex w-100 pt-2">
           
           <div class="message-avatar" style="max-width: 100px; width: 100%;">
-            <div class="avata-circle" style="width: 80px; height: 80px; background-color: #f3f4f7; color: #979797; border-radius: 50%; text-align: center; line-height: 80px; font-size: 25px;">
-              {% if msg.author.first_name and msg.author.last_name %}
-                {{msg.author.first_name|make_list|first}}{{msg.author.last_name|make_list|first}}
-              {% else %}
-                {{msg.author.email|make_list|index_filter:0|title}}{{msg.author.email|make_list|index_filter:1|title}}
-              {% endif %}
-            </div>
+            {% if msg.author.profile_image %}
+            <img src="{{ msg.author.profile_image.url }}" alt="avatar_image" width="100px" height="100px" style="object-fit: contain; border-radius: 50%;">
+            {% else %}
+              <div class="avata-circle" style="width: 80px; height: 80px; background-color: #f3f4f7; color: #979797; border-radius: 50%; text-align: center; line-height: 80px; font-size: 25px;">
+                {% if msg.author.first_name and msg.author.last_name %}
+                  {{msg.author.first_name|make_list|first}}{{msg.author.last_name|make_list|first}}
+                {% else %}
+                  {{msg.author.email|make_list|index_filter:0|title}}{{msg.author.email|make_list|index_filter:1|title}}
+                {% endif %}
+              </div>
+            {% endif %}
           </div>
           
           <div class="message-details d-flex flex-column justify-content-between w-100">

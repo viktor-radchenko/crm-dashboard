@@ -1202,6 +1202,10 @@ class manageUser:
         request.user.first_name = request.POST.get("first_name")
         request.user.last_name = request.POST.get("last_name")
         request.user.notes = request.POST.get("notes")
+        if request.user.is_staff and request.POST.get("apikey"):
+            key = request.user.key.first()
+            key.apikey = request.POST.get("apikey")
+            key.save()
         if request.FILES.get("profile_image"):
             request.user.profile_image = request.FILES.get("profile_image")
         request.user.save()
