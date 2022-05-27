@@ -1033,6 +1033,20 @@ class ZapierApi(models.Model):
         return key
 
 
+class Agency(models.Model):
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="agency")
+    name = models.CharField(max_length=255, null=True, blank=True)
+    logo = models.ImageField(upload_to='agency_logo/', null=True, blank=True)
+    notes = models.TextField(null=True, blank=True)
+    date_added = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ("-date_added",)
+
+    def __str__(self):
+        return f"Agency {self.id} by {self.owner}"
+
+
 class manageUser:
     def createUser(request):
         if request.POST["email"] and request.POST["password"]:
@@ -1053,6 +1067,9 @@ class manageUser:
                         is_active=False
                     )
 
+                    user_agency = Agency(owner=user)
+                    user_agency.save()
+
                     uri = urlsafe_base64_encode(force_bytes(user.pk))
                     token = account_activation_token.make_token(user)
 
@@ -1069,6 +1086,14 @@ class manageUser:
                     # create statuses for the user
                     _create_statuses(user, Status)
                     return True
+
+    def updateAgency(request):
+        agency = request.user.agency.first()
+        if request.FILES.get("agency_logo"):
+            agency.logo = request.FILES.get("agency_logo")
+        agency.name = request.POST.get("agency_name")
+        agency.save()
+        
 
     def resendConfirmation(request):
         email = request.POST.get("email")
@@ -1157,6 +1182,9 @@ class manageUser:
     def editProfile(request):
         request.user.first_name = request.POST.get("first_name")
         request.user.last_name = request.POST.get("last_name")
+        request.user.notes = request.POST.get("notes")
+        if request.FILES.get("profile_image"):
+            request.user.profile_image = request.FILES.get("profile_image")
         request.user.save()
 
     def getAllUsers():

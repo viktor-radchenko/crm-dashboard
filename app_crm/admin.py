@@ -13,6 +13,7 @@ from app_crm.models import (
     Status,
     Form,
     ZapierApi,
+    Agency,
 )
 
 # Register your models here.
@@ -87,3 +88,8 @@ class Form(admin.ModelAdmin):
 @admin.register(ZapierApi)
 class ZapierApi(admin.ModelAdmin):
     list_display = ("apikey",)
+
+
+@admin.register(Agency)
+class Agency(admin.ModelAdmin):
+    list_display = ("owner",)

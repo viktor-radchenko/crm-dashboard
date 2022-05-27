@@ -3,6 +3,7 @@
 readme/
 .vscode/
 __pycache__/
+media/
 
 # files
 .env

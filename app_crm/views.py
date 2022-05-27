@@ -108,11 +108,14 @@ class dash:
             try:
                 if "editProfile" in request.POST:
                     manageUser.editProfile(request)
+                    manageUser.updateAgency(request)
                     messages.success(request, "Profile successfully updated")
+                    return redirect("/dashboard/profile/")
                 elif "editPassword" in request.POST:
                     manageUser.editPassword(request)
                     messages.success(request, "Password successfully updated")
-            except:
+                    return redirect("/dashboard/profile/")
+            except Exception as e:
                 messages.error(request, "Something went wrong. Please check your input and try again")
             return render(request, "dashboard/profile.html")
         else:

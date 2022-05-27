@@ -38,3 +38,7 @@ def read_it(msg):
     if not msg.is_read:
         msg.is_read = True
         msg.save()
+
+@register.filter(name="get_agency_info")
+def get_agency_info(obj):
+    return obj.getAgencyInfo()

@@ -11,12 +11,10 @@
         <div class="card shadow mb-4">
             <div class="row">
                 <div class="col-12 mt-3">
-                    <form method="POST" name="editProfile" action="">
+                    <form method="POST" name="editProfile" enctype="multipart/form-data" action="">
                     {% csrf_token %}
                         <div class="form-group col-12">
-                            <label class="text">Email</label>
-                            <input type="text" class="form-control" value="{{ request.user.email }}" disabled>
-                            <p class="text font-weight-light mt-1 ml-1"><small>You can change <a class="" href="" data-toggle="modal" data-target="#editPassword">password</a></small></p>
+                            <h4 class="mt-3 text-center">Profile</h4>
                         </div>
 
                         <div class="form-group col-12">
@@ -29,15 +27,60 @@
                             <input type="text" class="form-control" name="last_name" value="{{ request.user.last_name }}" id="last_name" >
                         </div>
 
-                        <button type="submit" class="btn text btn-outline-primary ml-3 mt-2" name="editProfile" value="True">Update name</button>
+                        <div class="form-group col-12">
+                            <label class="text">Email</label>
+                            <input type="text" class="form-control" value="{{ request.user.email }}" disabled>
+                            <p class="text font-weight-light mt-1 ml-1"><small>You can change <a class="" href="" data-toggle="modal" data-target="#editPassword">password</a></small></p>
+                        </div>
 
-                        
+                        <div class="form-group col-12">
+                            <label for="formFile" class="form-label">Profile image</label>
+                            <div class="row">
+                                {% if request.user.profile_image %}
+                                    <div class="col-3">
+                                        <img src="{{ request.user.profile_image.url }}" alt="profile_image" width="150px" height="150px">
+                                    </div>
+                                {% endif %}
+                                <div class="col-9">
+                                    <input class="form-control" type="file" id="formFile" name="profile_image">
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if request.user.is_staff %}
+                        <div class="form-group col-12">
+                            <h4 class="mt-5 text-center">Agency</h4>
+                        </div>
+
+                        <div class="form-group col-12">
+                            <label class="text" for="agency_name">Agency name</label>
+                            <input type="text" class="form-control" name="agency_name" value="{{ request.user.agency.first.name }}" id="agency_name" >
+                        </div>
+
+                        <div class="form-group col-12">
+                            <label for="agencyFormFile" class="form-label">Agency logo</label>
+                            <div class="row">
+                                {% if request.user.agency.first.logo %}
+                                    <div class="col-3">
+                                        <img src="{{ request.user.agency.first.logo.url }}" alt="agency_logo" style="object-fit:contain; max-width: 300px;">
+                                    </div>
+                                {% endif %}
+                                <div class="col-9">
+                                    <input class="form-control" type="file" id="agencyFormFile" name="agency_logo">
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="form-group col-12">
+                            <label class="text">Notes</label>
+                            <textarea type="text" class="form-control" name="notes" style="height: 120px;">{{ request.user.notes }}</textarea>
+                        </div>
+
+                        <button type="submit" class="btn text btn-outline-primary ml-3 mt-2" name="editProfile" value="True">Update name</button>
 
                         <hr>
 
-                        <div class="form-group col-12">
-                            <p class="text">Date joined: {{ request.user.date_joined }}</p>
-                        </div>
                         {% if request.user.is_staff %}<div class="form-group col-12"><small><a href="/dashboard/admin/editkey/">edit Zapier API key</a></small></div>{% endif %}
                     </form>
                 </div>
