@@ -87,3 +87,15 @@ div.agency-name {
 .gone{
   display:none;
 }
+
+.btn-primary > span {
+  padding-left: 15px;
+  padding-right: 15px;
+  min-width: 50px;
+}
+
+.btn-primary > i {
+  font-size: 15px;
+  background-color: #4165d1;
+  padding: 10px 10px;
+}

@@ -10,50 +10,51 @@
 {% language 'en' %}
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">Deliverables</h1>
-    <div>
-    <a class="btn btn-outline-primary ml-1 mr-1" href="/dashboard/admin/editinfo/{{ order.id }}/" role="button">Edit info</a>
-    <a class="btn btn-outline-primary ml-1 mr-1" href="/dashboard/admin/edit/{{ order.id }}/" role="button">Edit order</a>
-    </div>
 </div>
 
 <div class="card shadow mb-4">
     <div class="card-body">
         <div class="form-group col-12 mb-4">
-            <p>
-                <strong>Order #: </strong>{{ order.order }}, 
-                {% if order.company_name %}<strong>Company name: </strong>{{ order.company_name }}, {% endif %}
-                {% if order.package %}<strong>Package: </strong>{{ order.package.template.title }}, {% endif %}
-                {% if addons %}<strong>Addons: </strong>{% for addon in addons %}{{ addon.template.title }}{% endfor %}, {% endif %}
-                <strong>Renewal date: </strong>{{ order.renewal_date }}
-            </p>
 
-            {% if order.analytics_account %}<p><strong>Google properties access: </strong>{{ order.analytics_account }}</p>{% endif %}
+            <div class="order-navigation d-flex justify-content-between">
+        
+                <div class="order-title" style="max-width: 100px; width: 100%;">
+                  <h5>Order info:</h5>
+                </div>
+                
+                <div class="order-links" style="font-size: 20px; text-align: right;">        
+                  {% if not request.user.is_client %}
+                    <a href="/dashboard/admin/editinfo/{{ order.id }}/" class="btn btn-primary border-0 rounded-0 p-0">
+                        <i class="fa fa-pencil-alt align-middle" aria-hidden="true"></i>
+                        <span class="align-middle">Intake Form</span>
+                    </a>
 
-            <p>
-                {% if order.link1 %}
-                <a href="{{ order.link1 }}" target="_blank">Google drive</a>
-                <br>
-                {% endif %}
-                {% if order.link2 %}
-                <a href="{{ order.link2 }}" target="_blank">Trello card</a>
-                <br>
-                {% endif %}
-                {% if order.link3 %}
-                <a href="{{ order.link3 }}" target="_blank">Workbook</a>
-                <br>
-                {% endif %}
-                {% if order.link4 %}
-                <a href="{{ order.link4 }}" target="_blank">Link 4</a>
-                {% endif %}
-            </p>
-            <p>
-                {% if order.note %}
-                <strong>Note: </strong>
-                <pre>{{ order.note }}</pre>
-                {% endif %}
-            </p>
+
+                    <a href="/dashboard/admin/edit/{{ order.id }}/" class="btn btn-primary border-0 rounded-0 p-0">
+                      <i class="fa fa-edit align-middle" aria-hidden="true"></i>
+                      <span class="align-middle">Edit order</span>
+                    </a>
+                  {% else %}
+                    <a href="/dashboard/user/edit/{{ order.id }}/" class="btn btn-primary border-0 rounded-0 p-0">
+                        <i class="fa fa-edit align-middle" aria-hidden="true"></i>
+                        <span class="align-middle">Intake Form</span>
+                    </a>
+                  {% endif %}
+        
+                  <a href="/dashboard/chatroom/{{ order.id }}/" class="btn btn-primary border-0 rounded-0 p-0">
+                    <i class="fa fa-file align-middle" aria-hidden="true"></i>
+                    <span class="align-middle">Messages</span>
+                  </a>
+                </div>
+            </div>
+
+            <hr class="sidebar-divider">
+
+            {% block order-header %}
+                {% include "../order-header.html" %}
+            {% endblock %}
         </div>
-        <hr>
+
         <div class="table-responsive">
             <table id="dataTable" width="100%" cellspacing="0" class="table table-bordered table-sm" style="text-align:center;">
                 <thead>

@@ -12,52 +12,51 @@
 <div class="card shadow mb-4" style="line-height: 1.2;">
 
   <!-- *** Order detail section *** -->
-  <div class="order-info d-flex pt-5 pl-5 pr-5">
-    <div class="oder-details w-100">
+  <div class="order-info d-flex pl-5 pr-5">
+    <div class="oder-details w-100 pt-4">
       <div class="order-navigation d-flex justify-content-between">
         
         <div class="order-title" style="max-width: 100px; width: 100%;">
           <h5>Order info:</h5>
         </div>
         
-          <div class="order-links" style="font-size: 20px; text-align: right;">
-            {% if not request.user.is_client %}
-              <a href="/dashboard/admin/editinfo/{{ order.id }}/" title="Edit info" class="mr-1"><i class="fa fa-pencil-alt"></i></a>
-              <a href="/dashboard/admin/edit/{{ order.id }}/" title="Edit this order" class="mr-1"><i class="fa fa-edit"></i></a>
-              <a href="/dashboard/admin/{{ order.id }}/deliverables/" title="Deliverables page" class="mr-1"><i class="fa fa-file"></i></a>
-              {% if order.link1 %}<a href="{{ order.link1 }}" target="_blank" title="google drive" class="mr-1" ><i class="fab fa-google-drive"></i></a>{% endif %}
-              {% if order.link2 %}<a href="{{ order.link2 }}" target="_blank" title="trello card" class="mr-1" ><i class="fab fa-trello"></i></a>{% endif %}
-              {% if order.link3 %}<a href="{{ order.link3 }}" target="_blank" title="workbook" class="mr-1" ><i class="fas fa-table"></i></a>{% endif %}
-              {% if order.link4 %}<a href="{{ order.link4 }}" target="_blank" title="rank tracker" class="mr-1" ><i class="fas fa-external-link-alt"></i></a>{% endif %}
-            {% else %}
-              <a href="/dashboard/user/edit/{{ order.id }}/" title="Edit this order"><i class="fa fa-pencil-alt"></i></a>
-              <a href="/dashboard/admin/{{ order.id }}/deliverables/" title="Deliverables page" class="mr-1"><i class="fa fa-file"></i></a>
-            {% endif %}
-          </div>
+        <div class="order-links" style="font-size: 20px; text-align: right;">
+          
+
+          {% if not request.user.is_client %}
+
+            <a href="/dashboard/admin/editinfo/{{ order.id }}/" class="btn btn-primary border-0 rounded-0 p-0">
+              <i class="fa fa-pencil-alt align-middle" aria-hidden="true"></i>
+              <span class="align-middle">Intake Form</span>
+            </a>
+
+            <a href="/dashboard/admin/edit/{{ order.id }}/" class="btn btn-primary border-0 rounded-0 p-0">
+              <i class="fa fa-edit align-middle" aria-hidden="true"></i>
+              <span class="align-middle">Edit order</span>
+            </a>
+
+          {% else %}
+
+            <a href="/dashboard/user/edit/{{ order.id }}/" class="btn btn-primary border-0 rounded-0 p-0">
+              <i class="fa fa-pencil-alt align-middle" aria-hidden="true"></i>
+              <span class="align-middle">Intake Form</span>
+            </a>
+
+          {% endif %}
+
+          <a href="/dashboard/admin/{{ order.id }}/deliverables/" class="btn btn-primary border-0 rounded-0 p-0">
+            <i class="fa fa-file align-middle" aria-hidden="true"></i>
+            <span class="align-middle">Deliverables</span>
+          </a>
+        </div>
        
       </div>
 
       <hr class="sidebar-divider">
 
-      <div class="order-details">
-        <div class="d-flex flex-column flex-wrap" style="max-height: 100px;justify-content: space-evenly;width: 100%;">
-          <div><strong>Name</strong>: {{order.company_name}}</div>
-          <div><strong>Address</strong>: {{order.company_address}}</div>
-          <div><strong>City</strong>: {{order.company_city}}</div>
-          <div><strong>State</strong>: {{order.company_state}}</div>
-          <div><strong>Zip</strong>: {{order.company_zip}}</div>
-          <div><strong>Country</strong>: {{order.company_country}}</div>
-          <div><strong>Phone</strong>: {{order.company_phone}}</div>
-          <div><strong>Url</strong>: {{order.website_url}}</div>
-          <div><strong>Email</strong>: {{order.company_email}}</div>
-          <div><strong>Start date</strong>: {{ order.start_date|default_if_none:"" }}</div>
-          <div><strong>Renewal date</strong>: {{ order.renewal_date|default_if_none:"" }}</div>
-          <div><strong>Status</strong>: {{ order.status|default_if_none:"" }}</div>
-          <div><strong>Package</strong>: {{ order.package|default_if_none:"" }}</div>
-        </div>
-      </div>
-
-      <hr class="sidebar-divider">
+      {% block order-header %}
+        {% include "../../order-header.html" %}
+      {% endblock %}
 
       <div class="order-input mt-4">
         <div class="mt-2 mb-2">
@@ -138,13 +137,17 @@
               <div class="message-container d-flex w-100 pt-2">
           
                 <div class="message-avatar" style="max-width: 100px; width: 100%;">
-                  <div class="avata-circle" style="width: 80px; height: 80px; background-color: #f3f4f7; color: #979797; border-radius: 50%; text-align: center; line-height: 80px; font-size: 25px;">
-                    {% if m.author.first_name and m.author.last_name %}
-                      {{m.author.first_name|make_list|first}}{{m.author.last_name|make_list|first}}
+                  {% if msg.author.profile_image %}
+                    <img src="{{ msg.author.profile_image.url }}" alt="avatar_image" width="100px" height="100px" style="object-fit: contain; border-radius: 50%;">
                     {% else %}
-                      {{m.author.email|make_list|index_filter:0|title}}{{m.author.email|make_list|index_filter:1|title}}
+                      <div class="avata-circle" style="width: 80px; height: 80px; background-color: #f3f4f7; color: #979797; border-radius: 50%; text-align: center; line-height: 80px; font-size: 25px;">
+                        {% if msg.author.first_name and msg.author.last_name %}
+                          {{msg.author.first_name|make_list|first}}{{msg.author.last_name|make_list|first}}
+                        {% else %}
+                          {{msg.author.email|make_list|index_filter:0|title}}{{msg.author.email|make_list|index_filter:1|title}}
+                        {% endif %}
+                      </div>
                     {% endif %}
-                  </div>
                 </div>
                 
                 <div class="message-details d-flex flex-column justify-content-between w-100">
