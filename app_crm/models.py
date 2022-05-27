@@ -1,11 +1,13 @@
 import re
 import secrets
+from xml.dom.expatbuilder import Rejecter
 
 import requests
 import json
 
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.core import serializers
 from app_users.models import CustomUser, UserReplication
 from django.contrib import auth
 from django.conf import settings
@@ -1047,6 +1049,19 @@ class Agency(models.Model):
         return f"Agency {self.id} by {self.owner}"
 
 
+class Notification(models.Model):
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="notification")
+    is_read = models.BooleanField(default=False)
+    text = models.TextField(null=True, blank=True)
+    date_added = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ("-date_added",)
+
+    def __str__(self):
+        return f"Notification {self.id} for {self.owner}"
+
+
 class manageUser:
     def createUser(request):
         if request.POST["email"] and request.POST["password"]:
@@ -1093,7 +1108,11 @@ class manageUser:
             agency.logo = request.FILES.get("agency_logo")
         agency.name = request.POST.get("agency_name")
         agency.save()
-        
+
+    def getAllNotifications(request):
+        data = serializers.serialize('json', request.user.notification.all())
+        return data
+
 
     def resendConfirmation(request):
         email = request.POST.get("email")

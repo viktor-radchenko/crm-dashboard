@@ -15,6 +15,11 @@ urlpatterns = [
         ]
     )),
     path("logout/", views.sign.logout),
+    path("notifications/", include(
+        [
+            path("", views.dash.notifications),
+        ]
+    )),
     path(
         "dashboard/",
         include(

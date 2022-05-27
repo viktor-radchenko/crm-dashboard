@@ -1,5 +1,5 @@
-import re
-from django.http import Http404, HttpResponse
+import json 
+from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.conf import settings
 from django.contrib import messages
@@ -121,6 +121,9 @@ class dash:
         else:
             return redirect("/")
 
+    def notifications(request):
+        data = manageUser.getAllNotifications(request)
+        return JsonResponse(json.loads(data), safe=False)
     class admin:
         def allOrders(request):
             if request.user.is_staff:
