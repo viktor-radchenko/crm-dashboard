@@ -50,8 +50,8 @@ div.agency-name {
 }
 .notification-sidebar{
   position:fixed;
-  width:224px;
-  right:-224px;
+  width:300px;
+  right:-300px;
   height:100%;
   top:0px;
   z-index: 5;
@@ -60,19 +60,42 @@ div.agency-name {
 }
 .notification-sidebar{
   color:white;
-  text-align:center;
+}
+
+.notification-sidebar > hr, .notification-sidebar > ul > hr {
+  margin: 0 1rem 1rem;
+}
+
+.notification-sidebar > .sidebar-brand {
+  height: 4.375rem;
+  font-size: 1rem;
+  font-weight: 800;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: .05rem;
+  z-index: 1;
 }
 
 .notification-sidebar.active{
   right:0px;
 }
+.notification-bold {
+  font-weight: bold;
+}
 .notibox{
-  color:white;
-  width:calc(100% - 60px);
-  padding:15px;
-  margin:15px;
+  text-decoration: none;
+  list-style-type: none;
+  padding-inline-start: 0;
   border-radius:4px;
   position:relative;
+}
+.notibox > li {
+  padding: 0 20px 20px;
+}
+.notibox > li > a {
+  color: white !important;
+  text-align: left;
 }
 .cancel{
   position:absolute;

@@ -20,9 +20,10 @@ from app_crm.models import (
     Form,
     ZapierApi,
     Message,
+    Notification
 )
 from app_users.models import CustomUser
-
+from app_crm.utils import _add_notification
 
 class sign:
     def signin(request):
@@ -267,7 +268,7 @@ class dash:
                             messages.error(request, "This email is already taken. Try another email")
                             return redirect(f"/dashboard/admin/clients/edit/{id}/")
                     manageUser.editClient(request, id)
-                    return redirect(f"/dashboard/admin/clients/edit/{id}/")
+                    return redirect(f"/dashboard/admin/clients/")
                 context = {}
                 client = manageUser.getClientById(request, id)
                 if not client:
@@ -650,12 +651,12 @@ class dash:
                     body = request.POST.get("message-body", "")
                     recepient = None
                     if request.user == order.owner:
-                        recepient = order.owner.created_by.email
+                        recepient = order.owner.created_by
                     else:
                         # don't include service emails
                         if not settings.CLIENT_TAG in order.owner.email:
-                            recepient = order.owner.email
-                    msg = Message(order=order, author=request.user, body=body, recepient=recepient)
+                            recepient = order.owner
+                    msg = Message(order=order, author=request.user, body=body, recepient=recepient.email)
 
                     # check if message is reply
                     is_reply = int(request.POST.get("replyto", 0))

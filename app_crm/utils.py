@@ -66,3 +66,10 @@ def _create_intake_form(user, model):
         )
     except:
         pass
+
+def _add_notification(text, target, model, link):
+    model.objects.create(
+        owner=target,
+        link=link,
+        text=text,
+    )

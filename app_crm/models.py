@@ -12,7 +12,7 @@ from app_users.models import CustomUser, UserReplication
 from django.contrib import auth
 from django.conf import settings
 
-from app_crm.utils import send_email_to_client, account_activation_token, _delete_user, _create_statuses, _create_intake_form
+from app_crm.utils import send_email_to_client, account_activation_token, _delete_user, _create_statuses, _create_intake_form, _add_notification
 
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -310,7 +310,7 @@ class Order(models.Model):
         order_num = re.sub("\D", "", request.POST["order"])
         owner = CustomUser.objects.get(id=request.user.id)
         stat = Status.objects.filter(val=1).first()
-        Order(
+        order = Order(
             order=order_num,
             company_name=request.POST["company_name"],
             company_address=request.POST["company_address"],
@@ -333,7 +333,14 @@ class Order(models.Model):
             status=stat,
             owner=owner,
             month=1,
-        ).save()
+        )
+        order.save()
+
+        text = f'Your client {request.user.first_name} has created a new order'
+        link = f'/dashboard/admin/editinfo/{order.id}/'
+
+        _add_notification(text, target=request.user.created_by, model=Notification, link=link)
+
         return True
 
     def editUserOrder(request, id):
@@ -1058,6 +1065,7 @@ class Notification(models.Model):
     is_read = models.BooleanField(default=False)
     text = models.TextField(null=True, blank=True)
     date_added = models.DateTimeField(auto_now_add=True)
+    link = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
         ordering = ("-date_added",)
