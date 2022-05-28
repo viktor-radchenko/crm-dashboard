@@ -12,7 +12,7 @@ from app_users.models import CustomUser, UserReplication
 from django.contrib import auth
 from django.conf import settings
 
-from app_crm.utils import send_email_to_client, account_activation_token, _delete_user, _create_statuses
+from app_crm.utils import send_email_to_client, account_activation_token, _delete_user, _create_statuses, _create_intake_form
 
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -79,6 +79,9 @@ class Order(models.Model):
 
     def createCustomOrder(request):
         order_num = re.sub("\D", "", request.POST["order"])
+        client_selected = request.POST.get("userid", None)
+        if not client_selected:
+            return False, "You need to add a client first"
         userid = CustomUser.objects.get(id=request.POST["userid"])
 
         # create statuses:
@@ -107,6 +110,7 @@ class Order(models.Model):
             owner=userid,
             month=1,
         ).save()
+        return True, "Order successfully created"
 
     def deleteOrder(id):
         order = Order.objects.get(id=id)
@@ -1100,6 +1104,7 @@ class manageUser:
 
                     # create statuses for the user
                     _create_statuses(user, Status)
+                    _create_intake_form(user, Form)
                     return True
 
     def updateAgency(request):

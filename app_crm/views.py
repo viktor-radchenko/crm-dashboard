@@ -143,16 +143,18 @@ class dash:
 
         def createCustomOrder(request):
             if request.user.is_staff:
-                clients = request.user.client.all().exclude(is_deleted=True)
-                if not clients:
-                    messages.warning(request, 'You need to add a client first')
-                    return redirect("/dashboard/admin/clients/create/")
                 if request.method == "POST":
-                    Order.createCustomOrder(request)
-                    return redirect("/dashboard/admin/allorders")
+                    res, message = Order.createCustomOrder(request)
+                    if res:
+                        messages.success(request, message)
+                        return redirect("/dashboard/admin/allorders")
+                    else:
+                        messages.error(request, message)
+                        return redirect("/dashboard/admin/create/")
                 context = {}
                 context["users"] = manageUser.getAllClients(request)
                 context['client_tag'] = settings.CLIENT_TAG
+                context['form'] = request.user.form.filter(title="Intake form").first()
                 return render(request, "dashboard/admin/createcustom.html", context)
             else:
                 return redirect("/")
@@ -230,6 +232,7 @@ class dash:
 
         def allClients(request):
             if request.user.is_staff:
+                request.session['client_redirect'] = '/dashboard/admin/clients/'
                 context = {}
                 context["clients"] = manageUser.getAllClients(request)
                 context["client_tag"] = settings.CLIENT_TAG
@@ -239,13 +242,13 @@ class dash:
 
         def clientsCreate(request):
             if request.user.is_staff:
+                if "/dashboard/admin/create/" in request.META['HTTP_REFERER']:
+                    request.session['client_redirect'] = '/dashboard/admin/create/'
                 if request.method == "POST":
                     if request.POST.get("email") or (request.POST.get("first_name") or request.POST.get("last_name")):
-                        client, has_many_clients = manageUser.createClient(request)
+                        client, _ = manageUser.createClient(request)
                         if client:
-                            if not has_many_clients:
-                                return redirect("/dashboard/admin/create/")
-                            return redirect("/dashboard/admin/clients/")
+                            return redirect(request.session.get('client_redirect', '/dashboard/admin/clients/'))
                         messages.error(request, "Client with this email is already created")
                     else:
                         messages.error(request, "Form cannot be empty. Please fill in one of the fileds below")
