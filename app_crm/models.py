@@ -1276,6 +1276,8 @@ class manageUser:
 
         
         send_email_to_client("SearchManager.pro - client invitation", body, [client.email])
+        client.confirmation_sent = True
+        client.save()
 
     def editClient(request, id):
         client = CustomUser.objects.get(id=id)

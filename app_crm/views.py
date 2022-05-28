@@ -232,6 +232,7 @@ class dash:
             if request.user.is_staff:
                 context = {}
                 context["clients"] = manageUser.getAllClients(request)
+                context["client_tag"] = settings.CLIENT_TAG
                 return render(request, "dashboard/admin/clients/clients.html", context)
             else:
                 return redirect("/")
@@ -282,7 +283,7 @@ class dash:
                 messages.error(request, error)
             else:    
                 messages.success(request, "Invitation has been sent")
-            return redirect(f"/dashboard/admin/clients/edit/{id}/")
+            return redirect(f"/dashboard/admin/clients/")
 
         def clientsRemove(request, id):
             if request.user.is_staff:

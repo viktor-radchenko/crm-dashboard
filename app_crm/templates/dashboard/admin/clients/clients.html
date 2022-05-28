@@ -15,7 +15,9 @@
             <table id="dataTable" width="100%" cellspacing="0" class="table table-bordered">
                 <thead>
                     <tr>
-                        <th scope="col" class="sortable">Clients</th>
+                        <th scope="col" class="sortable">Name</th>
+                        <th scope="col" class="sortable">Email</th>
+                        <th scope="col" class="sortable">Account status</th>
                         <th scope="col" class="sortable">Action</th>
                     </tr>
                 </thead>
@@ -24,6 +26,20 @@
                     <tr>
                         <th scope="col" class="sortable">
                             {{ client.first_name }} {{ client.last_name }}
+                        </th>
+                        <th scope="col" class="sortable">
+                            {% if client_tag in client.email %}{% else %}{{client.email}}{% endif %}
+                        </th>
+                        <th scope="col" class="sortable">
+                            {% if client.is_registered and not client_tag in client.email%}
+                                <i class="fa fa-check" style="color: green;"></i>
+                            {% elif client_tag not in client.email and not client.is_registered and not client.confirmation_sent%}
+                                <a class="d-block ml-auto" href="/dashboard/admin/clients/sendinvitation/{{client.id}}/">Create account</a>
+                            {% elif client_tag not in client.email and client.confirmation_sent %}
+                                <i class="fa fa-hourglass" style="color: orange;"></i>
+                                <a class="ml-auto" href="/dashboard/admin/clients/sendinvitation/{{client.id}}/">Resend invitation link</a>
+                            {% else %}
+                            {% endif %}
                         </th>
                         <th scope="col" class="sortable">
                             <a href="/dashboard/admin/clients/edit/{{ client.id }}/" title="Edit this user" class="mr-1"><i class="fa fa-pencil-alt"></i></a>
