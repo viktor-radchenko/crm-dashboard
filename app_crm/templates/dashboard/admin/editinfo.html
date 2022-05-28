@@ -1,4 +1,5 @@
 {% extends 'dashboard.html' %}
+{% load custom_tags %}
 {% block content %}
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">Intake Form</h1>
@@ -46,11 +47,64 @@
             <div class="row">
                 <div class="col-12 mb-3 mt-3">
                     <div class="form-group col-12 mb-4">
-                        <p>Email: <strong>{{ order.owner.email }}</strong></p>
+                        <p>Email: <strong>{{ email }}</strong></p>
                         <p>First name: <strong>{% if order.owner.first_name %}{{ order.owner.first_name }}{% else %}-{% endif %}</strong></p>
                         <p>Last name: <strong>{% if order.owner.last_name %}{{ order.owner.last_name }}{% else %}-{% endif %}</strong></p>
                     </div>
                     <hr>
+                    {% if form %}
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        <div class="form-group col-12 mb-4">
+                            {% for itemorder in form.orderinfos|get_item:'orderinfos' %}
+    
+                                {% if itemorder == 'order' %}
+                                    <label class="text ml-1" for="order">Order #:</label>
+                                    <input type="text" class="form-control mb-2" name="order" maxlength="500" id="order" value="{{ order|get_attr:itemorder }}" required>
+                                {% else %}
+                                    <label class="text ml-1" for="">{{ itemorder|remove_underscore|title }}</label>
+                                    <input type="text" class="form-control mb-2" name="{{ itemorder }}" value="{{ order|get_attr:itemorder }}">
+                                {% endif %}
+                            {% endfor %}
+                            </div>
+    
+                            {% for formitem in form.data %}
+                            {% with ft=form.data|get_item:formitem %}
+                            {% if ft.type == 0 %}
+                                <div class="form-group col-12 mb-4">
+                                    <label for="">{{ ft.title }}</label>
+                                    <input type="text" class="form-control" name="{{ form.id}}:{{ formitem }}">
+                                </div>
+                            {% elif ft.type == 1 %}
+                                <div class="form-group col-12 mb-4">
+                                    <label for="">{{ ft.title }}</label>
+                                    {% for x in ft.items %}
+                                    <div class="form-check col-12">
+                                        <input type="checkbox" class="form-check-input" name="{{ form.id}}:{{ formitem }}" value="{{ x }}">
+                                        <label for="">{{ x }}</label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            {% elif ft.type == 2 %}
+                            <div class="form-group col-12 mb-4">
+                            <label for="">{{ ft.title }}</label>
+                            {% for x in ft.items %}
+                            <div class="form-check col-12">
+                                <input type="radio" class="form-radio-input" name="{{ form.id}}:{{ formitem }}" value="{{ x }}">
+                                <label for="">{{ x }}</label>
+                            </div>
+                            {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% endwith %}
+                            {% endfor %}
+    
+                            <button type="submit" class="btn text btn-outline-primary ml-3 mt-2">Create</button>
+
+                    </form>
+
+                    {% else %}
                     <form method="POST">
                         {% csrf_token %}
                         
@@ -112,6 +166,7 @@
                         
                             <button type="submit" class="btn text btn-outline-primary ml-3 mt-2" id="submit">Submit</button>
                     </form>
+                    {% endif %}
                 </div>
             </div>
         </div>

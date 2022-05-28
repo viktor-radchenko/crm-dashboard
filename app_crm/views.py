@@ -173,6 +173,8 @@ class dash:
                     return redirect("/dashboard/admin/allorders")
                 context = {}
                 context["order"] = Order.getOrderById(request, id)
+                context['email'] = context["order"].owner.email if settings.CLIENT_TAG not in context["order"].owner.email else ''
+                context['form'] = request.user.form.filter(title="Intake form").first()
                 return render(request, "dashboard/admin/editinfo.html", context)
             else:
                 return redirect("/")

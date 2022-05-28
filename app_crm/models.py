@@ -88,22 +88,22 @@ class Order(models.Model):
         stat = request.user.status.filter(val=1).first()
         Order(
             order=order_num,
-            company_name=request.POST["company_name"],
-            company_address=request.POST["company_address"],
-            company_city=request.POST["company_city"],
-            company_state=request.POST["company_state"],
-            company_zip=request.POST["company_zip"],
-            company_country=request.POST["company_country"],
-            company_phone=request.POST["company_phone"],
-            website_url=request.POST["website_url"],
-            company_email=request.POST["company_email"],
-            company_description=request.POST["company_description"],
-            logo_image=request.POST["logo_image"],
-            map_url=request.POST["map_url"],
-            website_login_url=request.POST["website_login_url"],
-            web_username=request.POST["web_username"],
-            web_password=request.POST["web_password"],
-            analytics_account=request.POST["analytics_account"],
+            company_name=           request.POST.get("company_name", ""),
+            company_address=        request.POST.get("company_address", ""),
+            company_city=           request.POST.get("company_city", ""),
+            company_state=          request.POST.get("company_state", ""),
+            company_zip=            request.POST.get("company_zip", ""),
+            company_country=        request.POST.get("company_country", ""),
+            company_phone=          request.POST.get("company_phone", ""),
+            website_url=            request.POST.get("website_url", ""),
+            company_email=          request.POST.get("company_email", ""),
+            company_description=    request.POST.get("company_description", ""),
+            logo_image=             request.POST.get("logo_image", ""),
+            map_url=                request.POST.get("map_url", ""),
+            website_login_url=      request.POST.get("website_login_url", ""),
+            web_username=           request.POST.get("web_username", ""),
+            web_password=           request.POST.get("web_password", ""),
+            analytics_account=      request.POST.get("analytics_account", ""),
             start_date=None,
             renewal_date=None,
             status=stat,
@@ -128,22 +128,22 @@ class Order(models.Model):
         ):
             return
         order.order = re.sub("\D", "", request.POST["order"])
-        order.company_name = request.POST["company_name"]
-        order.company_address = request.POST["company_address"]
-        order.company_city = request.POST["company_city"]
-        order.company_state = request.POST["company_state"]
-        order.company_zip = request.POST["company_zip"]
-        order.company_country = request.POST["company_country"]
-        order.company_phone = request.POST["company_phone"]
-        order.website_url = request.POST["website_url"]
-        order.company_email = request.POST["company_email"]
-        order.company_description = request.POST["company_description"]
-        order.logo_image = request.POST["logo_image"]
-        order.map_url = request.POST["map_url"]
-        order.website_login_url = request.POST["website_login_url"]
-        order.web_username = request.POST["web_username"]
-        order.web_password = request.POST["web_password"]
-        order.analytics_account = request.POST["analytics_account"]
+        order.company_name =            request.POST.get("company_name", "")
+        order.company_address =         request.POST.get("company_address", "")
+        order.company_city =            request.POST.get("company_city", "")
+        order.company_state =           request.POST.get("company_state", "")
+        order.company_zip =             request.POST.get("company_zip", "")
+        order.company_country =         request.POST.get("company_country", "")
+        order.company_phone =           request.POST.get("company_phone", "")
+        order.website_url =             request.POST.get("website_url", "")
+        order.company_email =           request.POST.get("company_email", "")
+        order.company_description =     request.POST.get("company_description", "")
+        order.logo_image =              request.POST.get("logo_image", "")
+        order.map_url =                 request.POST.get("map_url", "")
+        order.website_login_url =       request.POST.get("website_login_url", "")
+        order.web_username =            request.POST.get("web_username", "")
+        order.web_password =            request.POST.get("web_password", "")
+        order.analytics_account =       request.POST.get("analytics_account", "")
         order.save()
 
     def editOrder(request, id):
