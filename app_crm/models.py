@@ -9,7 +9,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.core import serializers
 from app_users.models import CustomUser, UserReplication
-from django.contrib import auth
+from django.contrib import auth, messages
 from django.conf import settings
 
 from app_crm.utils import send_email_to_client, account_activation_token, _delete_user, _create_statuses, _create_intake_form, _add_notification
@@ -379,7 +379,9 @@ class Order(models.Model):
         if zap:
             dataset = dict(
                 order=msg.order.order,
-                author=f"{msg.author.first_name} ({msg.author.email})",
+                name=msg.author.first_name,
+                email=msg.author.email,
+                company=msg.order.company_name,
                 body=msg.body,
                 date_added=msg.date_added.strftime('%d-%m-%Y %H:%M'),
                 url=f"{request._current_scheme_host}/dashboard/chatroom/{msg.order.id}/",
@@ -1034,6 +1036,15 @@ class ZapierApi(models.Model):
     created_by = models.ForeignKey(CustomUser, null=True, on_delete=models.CASCADE, related_name='key')
 
     def editKey(request):
+        # check if zapier key is empty -> delete it
+        zapier_key = request.POST.get("apikey")
+        if not zapier_key and request.user.key.first():
+            request.user.key.first().delete()
+            return
+        # validate zapier:
+        if 'zapier' not in zapier_key:
+            messages.error(request, "Your zapier hook url is invalid")
+            return
         key = request.user.key.first()
         if not key:
             ZapierApi.objects.create(apikey=request.POST.get("apikey"), created_by=request.user)
@@ -1116,6 +1127,8 @@ class manageUser:
                     return True
 
     def updateAgency(request):
+        if not request.user.is_staff:
+            return
         agency = request.user.agency.first()
         if request.FILES.get("agency_logo"):
             agency.logo = request.FILES.get("agency_logo")
@@ -1215,7 +1228,7 @@ class manageUser:
         request.user.first_name = request.POST.get("first_name")
         request.user.last_name = request.POST.get("last_name")
         request.user.notes = request.POST.get("notes")
-        if request.user.is_staff and request.POST.get("apikey"):
+        if request.user.is_staff:
             ZapierApi.editKey(request)
         if request.FILES.get("profile_image"):
             request.user.profile_image = request.FILES.get("profile_image")
