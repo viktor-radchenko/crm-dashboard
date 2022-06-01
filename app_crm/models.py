@@ -1067,6 +1067,11 @@ class Agency(models.Model):
     class Meta:
         ordering = ("-date_added",)
 
+    def set_default_agency_image(self):
+        if self.logo:
+            self.logo.delete(save=True)
+
+
     def __str__(self):
         return f"Agency {self.id} by {self.owner}"
 

@@ -38,6 +38,7 @@
                                         <img src="{{ request.user.profile_image.url }}" alt="profile_image" width="150px" height="150px">
                                     </div>
                                 {% endif %}
+                                <a href="/dashboard/profile/deleteImg">Remove profile image</a>
                                 <div class="col-9">
                                     <input class="form-control" type="file" id="formFile" name="profile_image">
                                 </div>
@@ -59,6 +60,7 @@
                                         <img src="{{ request.user.agency.first.logo.url }}" alt="agency_logo" style="object-fit:contain; max-width: 300px;">
                                     </div>
                                 {% endif %}
+                                <a href="/dashboard/profile/deleteAgencyLogo">Remove agency logo</a>
                                 <div class="col-9">
                                     <input class="form-control" type="file" id="agencyFormFile" name="agency_logo">
                                 </div>

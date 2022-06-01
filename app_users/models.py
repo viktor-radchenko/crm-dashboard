@@ -41,7 +41,7 @@ class CustomUser(AbstractUser):
     is_client = models.BooleanField("user_type", default=False)
     is_registered = models.BooleanField("is_registered", default=False)
     confirmation_sent = models.BooleanField("confirmation_sent", null=True, blank=True)
-    profile_image = models.ImageField(upload_to='profile_img/', default="profile_img/profile_default.jpeg")
+    profile_image = models.ImageField(upload_to='profile_img/', default="profile_img/profile_default.jpeg", blank=True)
     notes = models.TextField(null=True, blank=True)
     created_by = models.ForeignKey(
         "self", on_delete=models.SET_NULL, blank=True, null=True, related_name="client"
@@ -67,6 +67,15 @@ class CustomUser(AbstractUser):
         if agency.name:
             return f'<div class="sidebar-brand-text mx-3 agency-name">{agency.name.upper()}</div>'
         return '<div class="sidebar-brand-text mx-3">DASHBOARD</div>'
+
+    def set_default_image(self):
+        self.profile_image = "profile_img/profile_default.jpeg"
+        self.save()
+    
+    def set_default_agency_logo(self):
+        agency = self.agency.first()
+        agency.logo = None
+        agency.save()
 
     def __str__(self):
         return self.email

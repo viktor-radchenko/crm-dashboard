@@ -121,6 +121,14 @@ class dash:
             return render(request, "dashboard/profile.html")
         else:
             return redirect("/")
+    
+    def deleteImage(request):
+        request.user.set_default_image()
+        return redirect("/dashboard/profile/")
+
+    def deleteAgencyLogo(request):
+        request.user.set_default_agency_logo()
+        return redirect("/dashboard/profile/")
 
     def notifications(request):
         data = manageUser.getAllNotifications(request)

@@ -24,7 +24,13 @@ urlpatterns = [
         "dashboard/",
         include(
             [
-                path("profile/", views.dash.dashboardProfile),
+                path("profile/", include(
+                    [
+                        path("", views.dash.dashboardProfile),
+                        path("deleteImg/", views.dash.deleteImage),
+                        path("deleteAgencyLogo/", views.dash.deleteAgencyLogo),
+                    ]
+                )),
                 path(
                     "admin/",
                     include(
