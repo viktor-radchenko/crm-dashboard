@@ -78,7 +78,7 @@ class sign:
             return redirect("/")
         if request.method == "POST":
             if manageUser.createClientUser(request):
-               return redirect("/dashboard/profile/")
+               return redirect("/")
             else:
                 context = {}
                 context["error_message"] = "This account already exists"
