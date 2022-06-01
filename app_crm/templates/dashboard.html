@@ -119,9 +119,7 @@
                         <li class="nav-item">
                             <button class="notification-toggle pt-3">
                                 <i class="fas fa-bell"></i>
-                                {% if request.user.notification.all %}
-                                    <div class="notification-count"></div>
-                                {% endif %}
+                                    <div class="notification-count gone"></div>
                             </button>
                         </li>
 
@@ -130,7 +128,7 @@
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <img class="rounded-circle" src="{{request.user.profile_image.url}}" alt="" style="width: 75px; height: 75px;">
+                                <img class="rounded-circle" src="{{request.user.profile_image.url}}" alt="" style="width: 35px; height: 35px; display: inline-block; margin-right: 15px;">
                                 <span class="mr-2 d-lg-inline text-gray-600 small">{% if request.user.first_name %}{{ request.user.first_name }} {{ request.user.last_name }}{% else %}{{ request.user.email }}{% endif %}</span>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -183,14 +181,15 @@
         </div>
         <hr class="sidebar-divider">
         {% if request.user.notification.all %}
-            {% for n in request.user.notification.all %}
             <ul class="notibox">
-            <li class="{% if not n.is_read %}notification-bold{% else %} {% endif%} ">
-                <a href="{{n.link}}">{{n.text}}</a><div class="cancel"><small>Mark read</small></div>
-            </li>
-            <hr class="sidebar-divider">
+                {% for n in request.user.notification.all %}
+                <li class="notification {% if not n.is_read %} notification-bold{% endif%}" data-id="{{n.id}}">
+                    <a href="/notifications/{{n.id}}/">{{n.text}}</a>
+                    <div class="cancel"><i class="fa fa-times"></i></div>
+                    <hr class="sidebar-divider">
+                </li>
+                {% endfor %}
             </ul>
-            {% endfor %}
         {% else %}
             <div class="">No new notifications</div>
         {% endif %}

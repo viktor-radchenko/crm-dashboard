@@ -53,6 +53,7 @@ div.agency-name {
   width:300px;
   right:-300px;
   height:100%;
+  overflow: auto;
   top:0px;
   z-index: 5;
   transition:all 0.3s;
@@ -89,24 +90,34 @@ div.agency-name {
   padding-inline-start: 0;
   border-radius:4px;
   position:relative;
+  overflow-y: auto;
 }
 .notibox > li {
-  padding: 0 20px 20px;
+  padding: 0 17px 0;
+  position: relative;
 }
 .notibox > li > a {
   color: white !important;
   text-align: left;
+  padding: 0 20px 0 0;
+  display: block;
 }
 .cancel{
   position:absolute;
   right:7px;
-  top:10px;
+  top:-7px;
   cursor:pointer;
   padding:3px;
   padding-left:8px;
   padding-right:8px;
   border-radius:20px;
+  display: none;
 }
+
+.notibox > li:hover > .cancel {
+  display: block;
+}
+
 .gone{
   display:none;
 }

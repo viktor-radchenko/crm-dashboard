@@ -130,9 +130,23 @@ class dash:
         request.user.set_default_agency_logo()
         return redirect("/dashboard/profile/")
 
-    def notifications(request):
+    def getAllNotifications(request):
         data = manageUser.getAllNotifications(request)
         return JsonResponse(json.loads(data), safe=False)
+
+    def getNotificationById(request, id):
+        notification = manageUser.getNotificationById(request, id)
+        if notification:
+            return redirect(notification.link)
+        return redirect("/")
+
+    def deleteNotification(request, id):
+        if manageUser.deleteNotification(request, id):
+            data = {'status': 'ok'}
+        else:
+            data = {'status': 'error'}
+        return JsonResponse(json.dumps(data), safe=False)
+
     class admin:
         def allOrders(request):
             if request.user.is_staff:

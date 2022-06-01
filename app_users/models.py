@@ -68,6 +68,9 @@ class CustomUser(AbstractUser):
             return f'<div class="sidebar-brand-text mx-3 agency-name">{agency.name.upper()}</div>'
         return '<div class="sidebar-brand-text mx-3">DASHBOARD</div>'
 
+    def get_unread_notifications(self):
+        return self.notification.filter(is_read=False)
+
     def set_default_image(self):
         self.profile_image = "profile_img/profile_default.jpeg"
         self.save()

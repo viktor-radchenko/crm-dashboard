@@ -1084,7 +1084,7 @@ class Notification(models.Model):
     link = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
-        ordering = ("-date_added",)
+        ordering = ("-id",)
 
     def __str__(self):
         return f"Notification {self.id} for {self.owner}"
@@ -1140,10 +1140,19 @@ class manageUser:
         agency.name = request.POST.get("agency_name")
         agency.save()
 
-    def getAllNotifications(request):
-        data = serializers.serialize('json', request.user.notification.all())
-        return data
+    def getNotificationById(request, id):
+        notification = request.user.notification.get(id=id)
+        if notification:
+            notification.is_read = True
+            notification.save()
+            return notification
 
+    def deleteNotification(request, id):
+        notification = request.user.notification.get(id=id)
+        if notification:
+            notification.delete()
+            return True
+        return False
 
     def resendConfirmation(request):
         email = request.POST.get("email")

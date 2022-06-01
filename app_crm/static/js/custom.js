@@ -1,13 +1,12 @@
 $(".notification-toggle").click(function (e) {
   e.stopPropagation();
-  console.log("toggling sidebar");
     $(".notification-sidebar").toggleClass('active');
-
 });
-$(".cancel").click(function () {
-  console.log("toggling visibility");
-    $(this).parent().toggleClass('gone');
 
+$(".cancel").click(function () {
+  $(this).parent().toggleClass('gone');
+  let id = $(this).parent().attr('data-id');
+  $.ajax({url: `/notifications/delete/${id}`});
 });
 
 $('#content-wrapper').click(function() {
@@ -15,3 +14,13 @@ $('#content-wrapper').click(function() {
     $(".notification-sidebar").removeClass('active');
   }
 })
+
+function processNotifications() {
+  let notifications = $('.notification.notification-bold');
+  console.log(notifications);
+  if (notifications.length > 0) {
+    $('.notification-count').removeClass("gone");
+  }
+};
+
+processNotifications();
