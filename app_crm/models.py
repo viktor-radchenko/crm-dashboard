@@ -1,3 +1,4 @@
+import logging
 import re
 import secrets
 from xml.dom.expatbuilder import Rejecter
@@ -18,6 +19,7 @@ from app_crm.utils import (
     _create_statuses,
     _create_intake_form,
     _add_notification,
+    send_backup_zap_to_email,
     send_mailjet_email,
 )
 
@@ -431,12 +433,7 @@ class Order(models.Model):
         order = Order.objects.get(id=id)
         if order.owner.created_by != request.user:
             return False, "You don't have permission to use this API"
-        apikey = request.user.key.first()
-        if not apikey:
-            return (
-                False,
-                'No Zapier API key provided. You can add one <a href="/dashboard/admin/editkey/">here</a>',
-            )
+        
         deliv_link = (
             "https://searchmanager.pro/dashboard/admin/"
             + str(order.id)
@@ -464,6 +461,28 @@ class Order(models.Model):
             "deliverables_url": deliv_link,
             "message_type": "all_info",
         }
+
+        apikey = request.user.key.first()
+        if not apikey:
+            try:
+                recipient = order.owner
+                subj = "SearchManager.pro - update on order deliverables"
+                body = render_to_string(
+                    "email/zap_backup.html",
+                    {
+                        "dataset": dataset,
+                    },
+                )
+
+                send_mailjet_email(recipient, subj, body)
+
+                return r.ok, "Data has been sent successfully"
+            except Exception as e:
+                logging.error("Exception: " + str(e))
+                return (
+                    False,
+                    "We were unable to send data to Zapier. Please check you Zapier API key url is correct",
+                )
         try:
             r = requests.post(apikey.apikey, data=json.dumps(dataset))
             return r.ok, "Data has been sent successfully"

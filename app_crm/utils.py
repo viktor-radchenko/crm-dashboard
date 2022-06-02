@@ -79,6 +79,9 @@ def _add_notification(text, target, model, link):
         text=text,
     )
 
+def send_backup_zap_to_email():
+    pass
+
 def send_mailjet_email(recipient, subj, body):
     try:
         api_key = os.getenv('MAILJET_API_KEY')
