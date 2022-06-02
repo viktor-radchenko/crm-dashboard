@@ -1,14 +1,19 @@
+import os
 import logging
 import secrets
 
+from mailjet_rest import Client
+
 from django.core.mail import send_mail
 from django.conf import settings
+from django.template.loader import render_to_string
+from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 
 from app_users.models import UserReplication
 
 
-def send_email_to_client(subject, body, recepients):
+def send_email_to_client(subject, body, recipients):
     try:
         from_email = settings.EMAIL_HOST_USER
 
@@ -16,7 +21,7 @@ def send_email_to_client(subject, body, recepients):
             subject,
             body,
             from_email,
-            recepients
+            recipients
         )
     except Exception as e:
         logging.error("Exception: " + str(e))
@@ -73,3 +78,35 @@ def _add_notification(text, target, model, link):
         link=link,
         text=text,
     )
+
+def send_mailjet_email(recipient, subj, body):
+    try:
+        api_key = os.getenv('MAILJET_API_KEY')
+        api_secret = os.getenv('MAILJET_SECRET_KEY')
+        mailjet = Client(auth=(api_key, api_secret), version='v3.1')
+
+        data = {
+        'Messages': [
+            {
+            "From": {
+                "Email": os.getenv('MAILJET_SENDER', "viktordevtest2022@gmail.com"),
+                "Name": "Viktor"
+            },
+            "To": [
+                {
+                "Email": recipient.email,
+                "Name": recipient.first_name
+                }
+            ],
+            "Subject": subj,
+            "TextPart": body,
+            "HTMLPart": body,
+            "CustomID": "AppGettingStartedTest"
+            }
+        ]
+        }
+        result = mailjet.send.create(data=data)
+        print(result.status_code)
+        print(result.json())
+    except Exception as e:
+        logging.error("Exception: " + str(e))

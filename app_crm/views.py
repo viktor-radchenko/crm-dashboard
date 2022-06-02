@@ -671,14 +671,14 @@ class dash:
             ):
                 if request.method == "POST":
                     body = request.POST.get("message-body", "")
-                    recepient = None
+                    recipient = None
                     if request.user == order.owner:
-                        recepient = order.owner.created_by
+                        recipient = order.owner.created_by
                     else:
                         # don't include service emails
                         if not settings.CLIENT_TAG in order.owner.email:
-                            recepient = order.owner
-                    msg = Message(order=order, author=request.user, body=body, recepient=recepient.email)
+                            recipient = order.owner
+                    msg = Message(order=order, author=request.user, body=body, recipient=recipient.email)
 
                     # check if message is reply
                     is_reply = int(request.POST.get("replyto", 0))
