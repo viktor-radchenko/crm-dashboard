@@ -79,8 +79,6 @@ def _add_notification(text, target, model, link):
         text=text,
     )
 
-def send_backup_zap_to_email():
-    pass
 
 def send_mailjet_email(recipient, subj, body):
     try:
@@ -113,3 +111,77 @@ def send_mailjet_email(recipient, subj, body):
         print(result.json())
     except Exception as e:
         logging.error("Exception: " + str(e))
+
+
+def _update_filters_in_session(request):
+    if request.GET.get("select_package", False):
+        request.session['select_package'] = list(
+            map(int, request.GET.getlist("select_package"))
+        )
+    else:
+        request.session['select_package'] = []
+
+    if request.GET.get("select_addon", False):
+        request.session['select_addon'] = list(
+            map(int, request.GET.getlist("select_addon"))
+        )
+    else:
+        request.session['select_addon'] = []
+
+    if request.GET.get("select_status", False):
+        request.session['select_status'] = list(
+            map(int, request.GET.getlist("select_status"))
+        )
+    else:
+        request.session['select_status'] = []
+    
+    if request.GET.get("select_user", False):
+        request.session['select_user'] = list(
+            map(int, request.GET.getlist("select_user"))
+        )
+    else:
+        request.session['select_user'] = []
+    
+    if request.GET.get("month", False):
+        request.session['month'] = int(request.GET.get("month"))
+    else:
+        request.session['month'] = []
+
+    if request.GET.get("show_archived", False):
+        request.session['show_archived'] = True
+    else:
+        request.session['show_archived'] = False
+
+
+def _clear_filters_in_session(request):
+    request.session['select_package'] = None
+    request.session['select_addon'] = None
+    request.session['select_status'] = None
+    request.session['select_user'] = None
+    request.session['month'] = None
+    request.session['show_archived'] = None
+
+
+def _get_filters_from_session(request):
+    filters = {}
+    if request.session.get('select_package'):
+        filters["package__template_id__in"] = request.session.get('select_package')
+    if request.session.get('select_addon'):
+        filters["addon__template_id__in"] = request.session.get('select_addon')
+    if request.session.get('select_status'):
+        filters["status__in"] = request.session.get('select_status')
+    if request.session.get('select_user'):
+        filters["owner__in"] = request.session.get('select_user')
+    if request.session.get('month'):
+        filters["month"] = request.session.get('month')
+    if request.session.get('show_archived'):
+        filters["is_archived"] = request.session.get('show_archived')
+
+    if not filters.get('owner__in') and not request.user.is_client:
+        user_ids = []
+        user_ids.append(request.user.id)
+        for client in request.user.client.all():
+            user_ids.append(client.id)
+            filters['owner__in'] = user_ids
+
+    return filters

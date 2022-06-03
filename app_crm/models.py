@@ -19,8 +19,9 @@ from app_crm.utils import (
     _create_statuses,
     _create_intake_form,
     _add_notification,
-    send_backup_zap_to_email,
     send_mailjet_email,
+    _update_filters_in_session,
+    _get_filters_from_session
 )
 
 from django.utils.encoding import force_bytes, force_text
@@ -60,6 +61,8 @@ class Order(models.Model):
     status = models.ForeignKey(
         "Status", on_delete=models.SET_DEFAULT, null=True, blank=True, default=None
     )
+
+    is_archived = models.BooleanField(default=False)
     owner = models.ForeignKey(
         CustomUser,
         on_delete=models.SET_DEFAULT,
@@ -304,15 +307,12 @@ class Order(models.Model):
 
     def cancelOrder(id):
         order = Order.objects.get(id=id)
-        order.status = Status.objects.filter(val=0).first()
+        order.is_archived = True
         order.save()
 
     def getAllOrders(request):
-        user_ids = []
-        user_ids.append(request.user.id)
-        for client in request.user.client.all():
-            user_ids.append(client.id)
-        orders = Order.objects.filter(owner__in=user_ids).exclude(
+        filters = _get_filters_from_session(request)
+        orders = Order.objects.filter(**filters).exclude(
             owner__is_deleted=True
         )
         return orders
@@ -539,22 +539,9 @@ class Order(models.Model):
             )
 
     def getOrdersByFilter(request):
-        filters = {}
-        if request.GET.get("select-package", False):
-            filters["package__template_id__in"] = list(
-                map(int, request.GET.getlist("select-package"))
-            )
-        if request.GET.get("select-addon", False):
-            filters["addon__template_id__in"] = list(
-                map(int, request.GET.getlist("select-addon"))
-            )
-        if request.GET.get("select-status", False):
-            filters["status__in"] = list(map(int, request.GET.getlist("select-status")))
-        if request.GET.get("select-user", False):
-            filters["owner__in"] = list(map(int, request.GET.getlist("select-user")))
-        if request.GET.get("month", False):
-            filters["month"] = int(request.GET.get("month"))
-        orders = Order.objects.filter(**filters)
+        _update_filters_in_session(request)
+        filters = _get_filters_from_session(request)
+        orders = Order.objects.filter(**filters).exclude(owner__is_deleted=True)
         return orders
 
 

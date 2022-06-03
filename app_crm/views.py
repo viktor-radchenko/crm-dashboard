@@ -23,7 +23,7 @@ from app_crm.models import (
     Notification
 )
 from app_users.models import CustomUser
-from app_crm.utils import _add_notification
+from app_crm.utils import _clear_filters_in_session
 
 class sign:
     def signin(request):
@@ -163,6 +163,10 @@ class dash:
                 return render(request, "dashboard/admin/allorders.html", context)
             else:
                 return redirect("/dashboard/user/myorders/")
+
+        def cleanFilters(request):
+            _clear_filters_in_session(request)
+            return redirect("/dashboard/admin/allorders/")
 
         def createCustomOrder(request):
             if request.user.is_staff:

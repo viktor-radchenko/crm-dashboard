@@ -22,23 +22,23 @@
             <div class="col-4">
                 <div class="input-group input-group-sm mb-1">
                     <div class="input-group-prepend w-25">
-                        <label class="input-group-text w-100" for="select-package">Package</label>
+                        <label class="input-group-text w-100" for="select_package">Package</label>
                     </div>
-                    <select class="custom-select" id="select-package" name="select-package">
+                    <select class="custom-select" id="select_package" name="select_package">
                         <option value="">All</option>
                         {% for package in packages %}
-                        <option value="{{ package.id }}" {% if package.id in request.GET|get_getlist:'select-package' %}selected="selected"{% endif %}>{{ package.title }}</option>
+                        <option value="{{ package.id }}" {% if package.id in request.session.select_package %}selected="selected"{% endif %}>{{ package.title }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="input-group input-group-sm mb-1">
                     <div class="input-group-prepend w-25">
-                        <label class="input-group-text w-100" for="select-addon">Addon</label>
+                        <label class="input-group-text w-100" for="select_addon">Addon</label>
                     </div>
-                    <select class="custom-select" id="select-addon" name="select-addon">
+                    <select class="custom-select" id="select_addon" name="select_addon">
                         <option value="">All</option>
                         {% for addon in addons %}
-                        <option value="{{ addon.id }}" {% if addon.id in request.GET|get_getlist:'select-addon' %}selected="selected"{% endif %}>{{ addon.title }}</option>
+                        <option value="{{ addon.id }}" {% if addon.id in request.session.select_addon %}selected="selected"{% endif %}>{{ addon.title }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -47,23 +47,23 @@
             <div class="col-4">
                 <div class="input-group input-group-sm mb-1">
                     <div class="input-group-prepend w-25">
-                        <label class="input-group-text w-100" for="select-status">Status</label>
+                        <label class="input-group-text w-100" for="select_status">Status</label>
                     </div>
-                    <select class="custom-select" id="select-status" name="select-status">
+                    <select class="custom-select" id="select_status" name="select_status">
                         <option value="">All</option>
                         {% for status in statuses %}
-                        <option value="{{ status.id }}" {% if status.id in request.GET|get_getlist:'select-status' %}selected="selected"{% endif %}>{{ status.name }}</option>
+                        <option value="{{ status.id }}" {% if status.id in request.session.select_status %}selected="selected"{% endif %}>{{ status.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="input-group input-group-sm mb-1">
                     <div class="input-group-prepend w-25">
-                        <label class="input-group-text w-100" for="select-user">Client</label>
+                        <label class="input-group-text w-100" for="select_user">Client</label>
                     </div>
-                    <select class="custom-select" id="select-user" name="select-user">
+                    <select class="custom-select" id="select_user" name="select_user">
                         <option value="">All</option>
                         {% for user in users %}
-                        <option value="{{ user.id }}" {% if user.id in request.GET|get_getlist:'select-user' %}selected="selected"{% endif %}>{{ user.first_name }} {{ user.last_name }}</option>
+                        <option value="{{ user.id }}" {% if user.id in request.session.select_user %}selected="selected"{% endif %}>{{ user.first_name }} {{ user.last_name }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -74,14 +74,18 @@
                     <div class="input-group-prepend w-25">
                         <span class="input-group-text w-100" id="month">Month</span>
                     </div>
-                    <input type="number" min="0" class="form-control" name="month" value="{{ request.GET.month }}">
+                    <input type="number" min="0" class="form-control" name="month" value="{{ request.session.month }}">
                 </div>
                 <div class="input-group-prepend">
-                    <a class="btn btn-outline-secondary btn-sm col-6" href="/dashboard/admin/allorders/" role="button">Reset filter</a>
+                    <a class="btn btn-outline-secondary btn-sm col-6" href="/dashboard/admin/cleanfilters/" role="button">Reset filter</a>
                     <button class="btn btn-outline-primary btn-sm col-6" type="submit" form="search_order">Search</button>
                 </div>
             </div>
         </div>
+        <label for="">
+            Show archived
+            <input type="checkbox" name="show_archived" id="show_archived" {% if request.session.show_archived %}checked{% endif %}>
+        </label>
         </form>
 
         <div class="table-responsive">
@@ -126,7 +130,7 @@
                             {% if order.link2 %}<a href="{{ order.link2 }}" target="_blank" title="trello card" class="mr-1" ><i class="fab fa-trello"></i></a>{% endif %}
                             {% if order.link3 %}<a href="{{ order.link3 }}" target="_blank" title="workbook" class="mr-1" ><i class="fas fa-table"></i></a>{% endif %}
                             {% if order.link4 %}<a href="{{ order.link4 }}" target="_blank" title="rank tracker" class="mr-1" ><i class="fas fa-chart-area"></i></a>{% endif %}
-                            <a href="/dashboard/admin/cancel/{{ order.id }}/" title="Set status 'canceled'" class="mr-1"><i class="fa fa-times"></i></a>
+                            <a href="/dashboard/admin/cancel/{{ order.id }}/" title="Archive order" class="mr-1"><i class="fa fa-times"></i></a>
                         </td>
                     </tr>
                     {% endfor %}
