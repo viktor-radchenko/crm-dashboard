@@ -11,6 +11,7 @@
             <div class="row">
                 <div class="col-12 mb-3 mt-3">
                     <div class="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                        {% if forms|length > 0 %}
                         <div class="form-group col-12 mb-4">
                             <select name="theforms" class="fformselect form-control">
                                 <option value="" disabled selected>Select service</option>
@@ -19,60 +20,124 @@
                                 {% endfor %}
                             </select>
                         </div>
+                        {% endif %}
 
                         <div class="form-forms">
-                        {% for form in forms %}
-                        <form method="POST" id="customform-{{ form.id }}" style="display: none;">
+                        {% if forms|length > 0 %}
+                            {% for form in forms %}
+                            <form method="POST" id="customform-{{ form.id }}" style="display: none;">
+                                {% csrf_token %}
+
+                                <input type="text" hidden name="service_form_id" value="{{form.id}}">
+
+                                <div class="form-group col-12 mb-4">
+                                {% for itemorder in form.orderinfos|get_item:'orderinfos' %}
+                                    {% if itemorder == 'order' %}
+                                        <label class="text ml-1" for="order">Order #:</label>
+                                        <input type="text" class="form-control mb-2" name="order" maxlength="500" id="order" required>
+                                    {% else %}
+                                        <label class="text ml-1" for="">{{ itemorder|remove_underscore|title }}</label>
+                                        <input type="text" class="form-control mb-2" name="{{ itemorder }}">
+                                    {% endif %}
+                                {% endfor %}
+                                </div>
+
+                                {% for formitem in form.data %}
+                                    {% with ft=form.data|get_item:formitem %}
+                                    {% if ft.type == 0 %}
+                                        <div class="form-group col-12 mb-4">
+                                            <label for="">{{ ft.title }}</label>
+                                            <input type="text" class="form-control" name="{{ form.id}}:{{ formitem }}">
+                                        </div>
+                                    {% elif ft.type == 1 %}
+                                        <div class="form-group col-12 mb-4">
+                                            <label for="">{{ ft.title }}</label>
+                                            {% for x in ft.items %}
+                                            <div class="form-check col-12">
+                                                <input type="checkbox" class="form-check-input" name="{{ form.id}}:{{ formitem }}" value="{{ x }}">
+                                                <label for="">{{ x }}</label>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% elif ft.type == 3 %}
+                                    <div class="form-group col-12 mb-4">
+                                        <label for="">{{ ft.title }}</label>
+                                        <textarea class="form-control textarea-expandable" name="{{ form.id}}:{{ formitem }}"></textarea>
+                                    </div>
+                                    {% endif %}
+                                    {% endwith %}
+                                {% endfor %}
+
+                                <div class="form-group col-12 mb-4">
+                                    <label>Notes:</label>
+                                    <textarea name="notes" class="form-control" rows="3"></textarea>
+                                </div>
+
+                                <button type="submit" class="btn text btn-outline-primary ml-3 mt-2">Create</button>
+                            </form>
+                            {% endfor %}
+                        {% else %}
+                        <form method="POST">
                             {% csrf_token %}
-
-                            <input type="text" hidden name="service_form_id" value="{{form.id}}">
-
-                            <div class="form-group col-12 mb-4">
-                            {% for itemorder in form.orderinfos|get_item:'orderinfos' %}
-                                {% if itemorder == 'order' %}
+                                <div class="form-group col-12 mb-4">
                                     <label class="text ml-1" for="order">Order #:</label>
                                     <input type="text" class="form-control mb-2" name="order" maxlength="500" id="order" required>
-                                {% else %}
-                                    <label class="text ml-1" for="">{{ itemorder|remove_underscore|title }}</label>
-                                    <input type="text" class="form-control mb-2" name="{{ itemorder }}">
-                                {% endif %}
-                            {% endfor %}
-                            </div>
-
-                            {% for formitem in form.data %}
-                                {% with ft=form.data|get_item:formitem %}
-                                {% if ft.type == 0 %}
-                                    <div class="form-group col-12 mb-4">
-                                        <label for="">{{ ft.title }}</label>
-                                        <input type="text" class="form-control" name="{{ form.id}}:{{ formitem }}">
-                                    </div>
-                                {% elif ft.type == 1 %}
-                                    <div class="form-group col-12 mb-4">
-                                        <label for="">{{ ft.title }}</label>
-                                        {% for x in ft.items %}
-                                        <div class="form-check col-12">
-                                            <input type="checkbox" class="form-check-input" name="{{ form.id}}:{{ formitem }}" value="{{ x }}">
-                                            <label for="">{{ x }}</label>
-                                        </div>
-                                        {% endfor %}
-                                    </div>
-                                {% elif ft.type == 3 %}
-                                <div class="form-group col-12 mb-4">
-                                    <label for="">{{ ft.title }}</label>
-                                    <textarea class="form-control textarea-expandable" name="{{ form.id}}:{{ formitem }}"></textarea>
                                 </div>
-                                {% endif %}
-                                {% endwith %}
-                            {% endfor %}
 
-                            <div class="form-group col-12 mb-4">
-                                <label>Notes:</label>
-                                <textarea name="notes" class="form-control" rows="3"></textarea>
-                            </div>
 
-                            <button type="submit" class="btn text btn-outline-primary ml-3 mt-2">Create</button>
-                        </form>
-                        {% endfor %}
+                                <div class="form-group col-12 mb-4">
+                                    <label class="text ml-1" for="company">Company name:</label>
+                                    <input type="text" class="form-control mb-2" name="company_name" maxlength="5000" id="company">
+                                    
+                                    <label class="text ml-1" for="company_address">Company address:</label>
+                                    <input type="text" class="form-control mb-2" name="company_address" maxlength="5000" id="company_address">
+
+                                    <label class="text ml-1" for="company_city">Company city:</label>
+                                    <input type="text" class="form-control mb-2" name="company_city" maxlength="5000" id="company_city">
+
+                                    <label class="text ml-1" for="company_state">Company state:</label>
+                                    <input type="text" class="form-control mb-2" name="company_state" maxlength="5000" id="company_state">
+
+                                    <label class="text ml-1" for="company_zip">Company zip:</label>
+                                    <input type="text" class="form-control mb-2" name="company_zip" maxlength="5000" id="company_zip">
+
+                                    <label class="text ml-1" for="company_country">Company country:</label>
+                                    <input type="text" class="form-control mb-2" name="company_country" maxlength="5000" id="company_country">
+
+                                    <label class="text ml-1" for="company_phone">Company phone:</label>
+                                    <input type="text" class="form-control mb-2" name="company_phone" maxlength="5000" id="company_phone">
+
+                                    <label class="text ml-1" for="website_url">Website url:</label>
+                                    <input type="text" class="form-control mb-2" name="website_url" maxlength="5000" id="website_url">
+
+                                    <label class="text ml-1" for="company_email">Company email:</label>
+                                    <input type="text" class="form-control mb-2" name="company_email" maxlength="5000" id="company_email">
+
+                                    <label class="text ml-1" for="company_description">Company description:</label>
+                                    <input type="text" class="form-control mb-2" name="company_description" maxlength="5000" id="company_description">
+
+                                    <label class="text ml-1" for="logo_image">Logo image:</label>
+                                    <input type="text" class="form-control mb-2" name="logo_image" maxlength="5000" id="logo_image">
+
+                                    <label class="text ml-1" for="map_url">Map url:</label>
+                                    <input type="text" class="form-control mb-2" name="map_url" maxlength="5000" id="map_url">
+
+                                    <label class="text ml-1" for="website_login_url">Wesite login url:</label>
+                                    <input type="text" class="form-control mb-2" name="website_login_url" maxlength="5000" id="website_login_url">
+
+                                    <label class="text ml-1" for="web_username">Website username:</label>
+                                    <input type="text" class="form-control mb-2" name="web_username" maxlength="5000" id="web_username">
+
+                                    <label class="text ml-1" for="web_password">Website password:</label>
+                                    <input type="text" class="form-control mb-2" name="web_password" maxlength="5000" id="web_password">
+
+                                    <label class="text ml-1" for="analytics_account">Analytics account:</label>
+                                    <input type="text" class="form-control mb-2" name="analytics_account" maxlength="5000" id="analytics_account">
+                                </div>
+
+                                <button type="submit" class="btn text btn-outline-primary ml-3 mt-2" id="submit">Create</button>
+                            </form>
+                        {% endif %}
                         </div>
                     </div>
                 </div>

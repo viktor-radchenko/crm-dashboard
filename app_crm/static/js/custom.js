@@ -24,3 +24,9 @@ function processNotifications() {
 };
 
 processNotifications();
+
+// $("#accordionSidebar").hover(function() {
+//   setTimeout(function() {
+//     $("#accordionSidebar").toggleClass("toggled")
+//   }, 2000);
+// })

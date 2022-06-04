@@ -62,10 +62,11 @@ class CustomUser(AbstractUser):
             agency = self.created_by.agency.first()
         else:
             agency = self.agency.first()
-        if agency.logo:
-            return f'<img class="agency-logo" src="{agency.logo.url}" alt="agency_logo">'
-        if agency.name:
-            return f'<div class="sidebar-brand-text mx-3 agency-name">{agency.name.upper()}</div>'
+        if agency:
+            if agency.logo:
+                return f'<img class="agency-logo" src="{agency.logo.url}" alt="agency_logo">'
+            if agency.name:
+                return f'<div class="sidebar-brand-text mx-3 agency-name">{agency.name.upper()}</div>'
         return '<div class="sidebar-brand-text mx-3">DASHBOARD</div>'
 
     def get_unread_notifications(self):
@@ -81,6 +82,7 @@ class CustomUser(AbstractUser):
         agency.save()
 
     def __str__(self):
+
         return self.email
 
 

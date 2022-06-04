@@ -74,7 +74,7 @@
                             {% if ft.type == 0 %}
                                 <div class="form-group col-12 mb-4">
                                     <label for="">{{ ft.title }}</label>
-                                    <input type="text" class="form-control" name="{{ form.id}}:{{ formitem }}" value="{{order.extra_fields|get_item:ft.title}}">
+                                    <input type="text" class="form-control" name="{{ form.id}}:{{ formitem }}" value="{{order.extra_fields|get_item:ft.title|default_if_none:''}}">
                                 </div>
                             {% elif ft.type == 1 %}
                                 <div class="form-group col-12 mb-4">
@@ -89,7 +89,7 @@
                             {% elif ft.type == 3 %}
                                 <div class="form-group col-12 mb-4">
                                     <label for="">{{ ft.title }}</label>
-                                    <textarea class="form-control textarea-expandable" name="{{ form.id}}:{{ formitem }}">{{order.extra_fields|get_item:ft.title}}</textarea>
+                                    <textarea class="form-control textarea-expandable" name="{{ form.id}}:{{ formitem }}">{{order.extra_fields|get_item:ft.title|default_if_none:''}}</textarea>
                                 </div>
                             {% endif %}
                             {% endwith %}

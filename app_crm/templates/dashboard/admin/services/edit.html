@@ -1,0 +1,143 @@
+{% extends 'dashboard.html' %}
+{% block content %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Edit service</h1>
+</div>
+
+<div class="row align-items-center justify-content-center">
+    <div class="col-xl-6 col-lg-8 col-md-10 col-sm-12">
+        <div class="card shadow mb-4 p-2">
+            <div class="row">
+                <div class="col-12 mb-3 mt-3">
+                    <form method="POST" name="thisform" id="thisform" onsubmit="setVals()">
+                        {% csrf_token %}
+                        
+                            <div class="form-group col-12 mb-4">
+                              <label class="text ml-1" for="formname">Service name:</label>
+                              <input type="text" class="form-control mb-2" name="formname" autofocus="" id="formname" required value="{{form.title}}">
+                            </div>
+
+                            <hr>
+                            <div class="form-group col-12 mb-4">
+                              <h5>Edit intake form for the service:</h5>
+                            </div>
+
+                            <div class="form-group form-check col-12 ml-4">
+                                <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="order" id="order" {% if 'order' in form.orderinfos.orderinfos %}checked{% endif %}>
+                                <label class="form-check-label" for="order">Order #</label>
+                            </div>
+
+                            <div class="form-group form-check col-12 ml-4">
+                                <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="company_name"  id="company_name" {% if 'company_name' in form.orderinfos.orderinfos %}checked{% endif %}>
+                                <label class="form-check-label" for="company_name">Company name</label>
+                            </div>
+
+                            <div class="form-group form-check col-12 ml-4">
+                                <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="company_address"  id="company_address" {% if 'company_address' in form.orderinfos.orderinfos %}checked{% endif %}>
+                                <label class="form-check-label" for="company_address">Company address</label>
+                            </div>
+
+                            <div class="form-group form-check col-12 ml-4">
+                                <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="company_city"  id="company_city" {% if 'company_city' in form.orderinfos.orderinfos %}checked{% endif %}>
+                                <label class="form-check-label" for="company_city">Company city</label>
+                            </div>
+
+                            <div class="form-group form-check col-12 ml-4">
+                                <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="company_state"  id="company_state" {% if 'company_state' in form.orderinfos.orderinfos %}checked{% endif %}>
+                                <label class="form-check-label" for="company_state">Company state</label>
+                            </div>
+
+                            <div class="form-group form-check col-12 ml-4">
+                                <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="company_zip"  id="company_zip" {% if 'company_zip' in form.orderinfos.orderinfos %}checked{% endif %}>
+                                <label class="form-check-label" for="company_zip">Company zip</label>
+                            </div>
+
+                            <div class="form-group form-check col-12 ml-4">
+                                <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="company_country"  id="company_country" {% if 'company_country' in form.orderinfos.orderinfos %}checked{% endif %}>
+                                <label class="form-check-label" for="company_country">Company country</label>
+                            </div>
+
+                            <div class="form-group form-check col-12 ml-4">
+                                <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="company_phone"  id="company_phone" {% if 'company_phone' in form.orderinfos.orderinfos %}checked{% endif %}>
+                                <label class="form-check-label" for="company_phone">Company phone</label>
+                            </div>
+
+                            <div class="form-group form-check col-12 ml-4">
+                                <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="website_url"  id="website_url" {% if 'website_url' in form.orderinfos.orderinfos %}checked{% endif %}>
+                                <label class="form-check-label" for="website_url">Website url</label>
+                            </div>
+
+                            <div class="form-group form-check col-12 ml-4">
+                                <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="company_email"  id="company_email" {% if 'company_email' in form.orderinfos.orderinfos %}checked{% endif %}>
+                                <label class="form-check-label" for="company_email">Company email</label>
+                            </div>
+
+                            <div class="form-group form-check col-12 ml-4">
+                                <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="company_description"  id="company_description" {% if 'company_description' in form.orderinfos.orderinfos %}checked{% endif %}>
+                                <label class="form-check-label" for="company_description">Company description</label>
+                            </div>
+
+                            <div class="form-group form-check col-12 ml-4">
+                                <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="logo_image"  id="logo_image" {% if 'logo_image' in form.orderinfos.orderinfos %}checked{% endif %}>
+                                <label class="form-check-label" for="logo_image">Logo image</label>
+                            </div>
+
+                            <div class="form-group form-check col-12 ml-4">
+                                <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="map_url"  id="map_url" {% if 'map_url' in form.orderinfos.orderinfos %}checked{% endif %}>
+                                <label class="form-check-label" for="map_url">Map url</label>
+                            </div>
+
+                            <div class="form-group form-check col-12 ml-4">
+                                <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="website_login_url"  id="website_login_url" {% if 'website_login_url' in form.orderinfos.orderinfos %}checked{% endif %}>
+                                <label class="form-check-label" for="website_login_url">Website login url</label>
+                            </div>
+
+                            <div class="form-group form-check col-12 ml-4">
+                                <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="web_username"  id="web_username" {% if 'web_username' in form.orderinfos.orderinfos %}checked{% endif %}>
+                                <label class="form-check-label" for="web_username">Web username</label>
+                            </div>
+
+                            <div class="form-group form-check col-12 ml-4">
+                                <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="web_password"  id="web_password" {% if 'web_password' in form.orderinfos.orderinfos %}checked{% endif %}>
+                                <label class="form-check-label" for="web_password">Web password</label>
+                            </div>
+
+                            <div class="form-group form-check col-12 ml-4">
+                                <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="analytics_account"  id="analytics_account" {% if 'analytics_account' in form.orderinfos.orderinfos %}checked{% endif %}>
+                                <label class="form-check-label" for="analytics_account">Analytics account</label>
+                            </div>
+
+                            <hr>
+
+                            <div class="form-group col-12 mb-4">
+                            <button class="btn btn-primary add_text_field" type="button">Add text field</button>
+                            <button class="btn btn-primary add_checkbox_field" type="button">Add checkbox field</button>
+                            <button class="btn btn-primary add_textarea" type="button">Add large text field</button>
+                            </div>
+
+                            <div class="col-12 mb-4 spe-container">
+                                {% for thing in things %}
+                                {% if thing.type == 0 %}
+                                <div class="form-group col-12 m-2 p-2 card mb-4 shadow tosendgroup"><label class="text ml-1">Title:</label><input type="text" class="form-control mb-2" name="textfield" value="{{ thing.title }}" required><a href="#" class="delete">Delete</a></div>
+                                {% elif thing.type == 1 %}
+                                <div class="form-group col-12 m-2 p-2 mb-4 card shadow tosendgroup"><label class="text ml-1">Checkbox field. Title:</label><input type="text" class="form-control mb-2" name="checkboxname" value="{{ thing.title }}" required><div class="checkboxes"><label class="text ml-1">Checkbox:</label><br><a href="#" class="addcheckbox">Add checkbox</a>{% for x in thing.items %}<div class="checkbox m-2 p-2 card"><input type="text" class="form-control mb-2 col-10" name="checkboxitem" value="{{ x }}" required><a href="#" class="delete">Delete checkbox</a></div>{% endfor %}</div><a href="#" class="delete">Delete group</a></div>
+                                {% elif thing.type == 3 %}
+                                <div class="form-group col-12 m-2 p-2 card mb-4 shadow tosendgroup"><label class="text ml-1">Text area title:</label><input type="text" class="form-control mb-2" name="textarea" value="{{ thing.title }}" required><a href="#" class="delete">Delete</a></div>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+
+                            <input type="hidden" name="totalcount" id="totalcount">
+                        
+                            <button type="submit" class="btn text btn-outline-primary mt-4 ml-2" form="thisform" id="submit">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_script %}
+{% load static %}
+<script src="{% static "/js/createform.js"%}"></script>
+{% endblock %}

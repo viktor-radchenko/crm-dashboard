@@ -18,10 +18,10 @@
                 <thead>
                     <tr>
                         <th scope="col" class="sortable">Order #</th>
-                        <th scope="col" class="sortable">Month</th>
-                        <th scope="col" class="sortable">Start date</th>
-                        <th scope="col" class="sortable">Renewal date</th>
+                        <th scope="col" class="sortable">Company name</th>
                         <th scope="col" class="sortable">Status</th>
+                        <th scope="col" class="sortable">Package</th>
+                        <th scope="col" class="sortable">Addon</th>
                         <th scope="col" class="sortable">Actions</th>
                     </tr>
                 </thead>
@@ -30,10 +30,10 @@
                     {% for order in orders %}
                     <tr>
                         <td scope="col" class="sortable">{{ order.order }}</td>
-                        <td scope="col" class="sortable">{{ order.month }}</td>
-                        <td scope="col" class="sortable">{{ order.start_date }}</td>
-                        <td scope="col" class="sortable">{{ order.renewal_date }}</td>
-                        <td scope="col" class="sortable">{{ order.status.name }}</td>
+                        <td scope="col" class="sortable">{{ order.company_name }}</td>
+                        <td scope="col" class="sortable">{% if order.status.name == None %}{%else%}<span style="display: block; background-color: {{ order.status.color }};">{{ order.status.name }}</span>{% endif %}</td>
+                        <td scope="col" class="sortable">{% if order.package == None %}{%else%}<span style="display: block; background-color: {{ order.package.template.color }};">{{ order.package }}</span>{% endif %}</td>
+                        <td scope="col" class="sortable">{% if order.addon == None %}{%else%}{% for add in order.addon.all %}<span style="display: block; margin: 1px; background-color: {{ add.template.color }};">{{ add.template.title }}</span>{% endfor %}{% endif %}</td>
                         <td scope="col" class="sortable">
                             <a href="/dashboard/user/edit/{{ order.id }}/" title="Edit this order">
                                 <i class="fa fa-pencil-alt"></i>

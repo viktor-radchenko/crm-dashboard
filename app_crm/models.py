@@ -1071,9 +1071,8 @@ class Form(models.Model):
     def __str__(self):
         return self.title
 
-    def createForm(request):
+    def createForm(request, is_service=False):
         formname = request.POST["formname"]
-        is_service = True if request.POST.get("is_service") else False
         orderinfosset = {"orderinfos": request.POST.getlist("orderinfos")}
         if is_service and 'order' not in orderinfosset['orderinfos']:
             orderinfosset['orderinfos'].insert(0, 'order')
@@ -1105,12 +1104,14 @@ class Form(models.Model):
             is_service=is_service,
         )
 
-    def editForm(request, id):
+    def editForm(request, id, is_service=False):
         form = Form.objects.filter(id=id, created_by=request.user).first()
         if not form:
             return
         formname = request.POST["formname"]
         orderinfosset = {"orderinfos": request.POST.getlist("orderinfos")}
+        if is_service and 'order' not in orderinfosset['orderinfos']:
+            orderinfosset['orderinfos'].insert(0, 'order')
         dataset = {}
 
         for x in range(0, int(request.POST["totalcount"]) + 1):
@@ -1143,6 +1144,10 @@ class Form(models.Model):
         forms = Form.objects.filter(created_by=request.user).all()
         return forms
 
+    def getAllServiceForms(request):
+        forms = Form.objects.filter(created_by=request.user, is_service=True).all()
+        return forms
+
     def removeForm(request, id):
         form = Form.objects.filter(id=id, created_by=request.user).first()
         if form:
@@ -1158,14 +1163,16 @@ class ZapierApi(models.Model):
     def editKey(request):
         # check if zapier key is empty -> delete it
         zapier_key = request.POST.get("apikey")
+        key = request.user.key.first()
+        if not zapier_key and not key:
+            return
         if not zapier_key and request.user.key.first():
             request.user.key.first().delete()
             return
         # validate zapier:
-        if "zapier" not in zapier_key:
+        if zapier_key and "zapier" not in zapier_key:
             messages.error(request, "Your zapier hook url is invalid")
             return
-        key = request.user.key.first()
         if not key:
             ZapierApi.objects.create(
                 apikey=request.POST.get("apikey"), created_by=request.user
@@ -1267,7 +1274,10 @@ class manageUser:
         agency = request.user.agency.first()
         if request.FILES.get("agency_logo"):
             agency.logo = request.FILES.get("agency_logo")
-        agency.name = request.POST.get("agency_name")
+        if agency and not request.POST.get("agency_name"):
+            agency.name = ''
+        else:
+            agency.name = request.POST.get("agency_name")
         agency.save()
 
     def getNotificationById(request, id):

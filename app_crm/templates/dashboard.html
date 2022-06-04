@@ -23,7 +23,7 @@
 
     <div id="wrapper">
 
-        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion toggled" id="accordionSidebar">
 
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/">
                 {{ request.user|get_agency_info|safe }}
@@ -64,6 +64,12 @@
                         <a class="collapse-item" href="/dashboard/admin/statuses/">Statuses</a>
                     </div>
                 </div>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="/dashboard/admin/services/">
+                    <i class="fas fa-concierge-bell"></i>
+                    <span>Services</span></a>
             </li>
 
             <li class="nav-item">
@@ -180,8 +186,8 @@
             <div class="sidebar-brand-text mx-3">Notifications</div>
         </div>
         <hr class="sidebar-divider">
-        {% if request.user.notification.all %}
-            <ul class="notibox">
+        <ul class="notibox">
+            {% if request.user.notification.all %}
                 {% for n in request.user.notification.all %}
                 <li class="notification {% if not n.is_read %} notification-bold{% endif%}" data-id="{{n.id}}">
                     <a href="/notifications/{{n.id}}/">{{n.text}}</a>
@@ -189,10 +195,10 @@
                     <hr class="sidebar-divider">
                 </li>
                 {% endfor %}
-            </ul>
-        {% else %}
-            <div class="">No new notifications</div>
-        {% endif %}
+            {% else %}
+                <li class="notification">No new notifications</li>
+            {% endif %}
+        </ul>
     </div>
 
     <a class="scroll-to-top rounded" href="#page-top">

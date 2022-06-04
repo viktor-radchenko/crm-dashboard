@@ -183,6 +183,7 @@ def _get_filters_from_session(request):
         user_ids.append(request.user.id)
         for client in request.user.client.all():
             user_ids.append(client.id)
+        if user_ids:
             filters['owner__in'] = user_ids
 
     return filters

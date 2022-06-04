@@ -138,6 +138,12 @@ urlpatterns = [
                             path(
                                 "forms/remove/<int:id>/", views.dash.admin.formsRemove
                             ),
+                            path("services/", views.dash.admin.serviceForms),
+                            path("services/create/", views.dash.admin.serviceFormsCreate),
+                            path("services/edit/<int:id>/", views.dash.admin.serviceFormsEdit),
+                            path(
+                                "services/remove/<int:id>/", views.dash.admin.formsRemove
+                            ),
                             path("clients/", views.dash.admin.allClients),
                             path("clients/create/", views.dash.admin.clientsCreate),
                             path(

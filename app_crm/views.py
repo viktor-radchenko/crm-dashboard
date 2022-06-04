@@ -398,12 +398,29 @@ class dash:
             else:
                 return redirect("/")
 
+        def serviceForms(request):
+            if request.user.is_staff:
+                context = {}
+                context["forms"] = Form.getAllServiceForms(request)
+                return render(request, "dashboard/admin/services/services.html", context)
+            else:
+                return redirect("/")
+
         def formsCreate(request):
             if request.user.is_staff:
                 if request.method == "POST":
                     Form.createForm(request)
                     return redirect("/dashboard/admin/forms/")
                 return render(request, "dashboard/admin/forms/create.html")
+            else:
+                return redirect("/")
+
+        def serviceFormsCreate(request):
+            if request.user.is_staff:
+                if request.method == "POST":
+                    Form.createForm(request, is_service=True)
+                    return redirect("/dashboard/admin/services/")
+                return render(request, "dashboard/admin/services/create.html")
             else:
                 return redirect("/")
 
@@ -420,7 +437,27 @@ class dash:
             else:
                 return redirect("/")
 
+        def serviceFormsEdit(request, id):
+            if request.user.is_staff:
+                if request.method == "POST":
+                    Form.editForm(request, id, is_service=True)
+                    return redirect("/dashboard/admin/services/")
+                context = {}
+                thisform = Form.getFormById(request, id)
+                context["form"] = thisform
+                context["things"] = thisform.data.values()
+                return render(request, "dashboard/admin/services/edit.html", context)
+            else:
+                return redirect("/")
+
         def formsRemove(request, id):
+            if request.user.is_staff:
+                Form.removeForm(request, id)
+                return redirect("/dashboard/admin/forms/")
+            else:
+                return redirect("/")
+        
+        def serviceFormsRemove(request, id):
             if request.user.is_staff:
                 Form.removeForm(request, id)
                 return redirect("/dashboard/admin/forms/")
