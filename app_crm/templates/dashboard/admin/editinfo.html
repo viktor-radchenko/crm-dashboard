@@ -4,173 +4,177 @@
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">Intake Form</h1>
 </div>
+<div class="card shadow mb-4">
+<div class="card-body">
+    <div class="oder-details w-100">
+        <div class="form-group col-12 mb-4">
 
-<div class="oder-details w-100">
-    <div class="form-group col-12 mb-4">
+            <div class="order-navigation d-flex justify-content-between">
 
-        <div class="order-navigation d-flex justify-content-between">
-    
-            <div class="order-title" style="max-width: 100px; width: 100%;">
-              <h5>Order info:</h5>
+                <div class="order-title" style="max-width: 100px; width: 100%;">
+                    <h5>Order info:</h5>
+                </div>
+                
+                <div class="order-links" style="font-size: 20px; text-align: right;">
+                    {% if not request.user.is_client %}
+                    <a href="/dashboard/admin/edit/{{ order.id }}/"" class="btn btn-primary border-0 p-0">
+                        <i class="fa fa-edit align-middle" aria-hidden="true"></i>
+                        <span class="align-middle">Edit order</span>
+                    </a>
+                    {% endif %}
+
+                    <a href="/dashboard/admin/{{ order.id }}/deliverables/" class="btn btn-primary border-0 p-0">
+                    <i class="fa fa-file align-middle" aria-hidden="true"></i>
+                    <span class="align-middle">Deliverables</span>
+                    </a>
+
+                    <a href="/dashboard/chatroom/{{ order.id }}/" class="btn btn-primary border-0 p-0">
+                    <i class="fa fa-file align-middle" aria-hidden="true"></i>
+                    <span class="align-middle">Messages</span>
+                    </a>
+                </div>
             </div>
-            
-            <div class="order-links" style="font-size: 20px; text-align: right;">
-              {% if not request.user.is_client %}
-                <a href="/dashboard/admin/edit/{{ order.id }}/"" class="btn btn-primary border-0 rounded-0 p-0">
-                  <i class="fa fa-edit align-middle" aria-hidden="true"></i>
-                  <span class="align-middle">Edit order</span>
-                </a>
-              {% endif %}
 
-              <a href="/dashboard/admin/{{ order.id }}/deliverables/" class="btn btn-primary border-0 rounded-0 p-0">
-                <i class="fa fa-file align-middle" aria-hidden="true"></i>
-                <span class="align-middle">Deliverables</span>
-              </a>
-    
-              <a href="/dashboard/chatroom/{{ order.id }}/" class="btn btn-primary border-0 rounded-0 p-0">
-                <i class="fa fa-file align-middle" aria-hidden="true"></i>
-                <span class="align-middle">Messages</span>
-              </a>
-            </div>
+            <hr class="sidebar-divider">
+
+            {% block order-header %}
+                {% include "../order-header.html" %}
+            {% endblock %}
         </div>
 
-        <hr class="sidebar-divider">
-
-        {% block order-header %}
-            {% include "../order-header.html" %}
-        {% endblock %}
-    </div>
-
-<div class="row align-items-center justify-content-center">
-    <div class="col-xl-6 col-lg-8 col-md-10 col-sm-12">
-        <div class="card shadow mb-4 p-2">
-            <div class="row">
-                <div class="col-12 mb-3 mt-3">
-                    <div class="form-group col-12 mb-4">
-                        <p>Email: <strong>{{ email }}</strong></p>
-                        <p>First name: <strong>{% if order.owner.first_name %}{{ order.owner.first_name }}{% else %}-{% endif %}</strong></p>
-                        <p>Last name: <strong>{% if order.owner.last_name %}{{ order.owner.last_name }}{% else %}-{% endif %}</strong></p>
-                    </div>
-                    <hr>
-                    {% if form %}
-                    <form method="POST">
-                        {% csrf_token %}
-
-                        <div class="form-group col-12 mb-4">
-                            {% for itemorder in form.orderinfos|get_item:'orderinfos' %}
-    
-                                {% if itemorder == 'order' %}
-                                    <label class="text ml-1" for="order">Order #:</label>
-                                    <input type="text" class="form-control mb-2" name="order" maxlength="500" id="order" value="{{ order|get_attr:itemorder }}" required>
-                                {% else %}
-                                    <label class="text ml-1" for="">{{ itemorder|remove_underscore|title }}</label>
-                                    <input type="text" class="form-control mb-2" name="{{ itemorder }}" value="{{ order|get_attr:itemorder }}">
-                                {% endif %}
-                            {% endfor %}
+        <div class="row align-items-center justify-content-center">
+            <div class="col-xl-6 col-lg-8 col-md-10 col-sm-12">
+                <div class="card shadow mb-4 p-2">
+                    <div class="row">
+                        <div class="col-12 mb-3 mt-3">
+                            <div class="form-group col-12 mb-4">
+                                <p>Email: <strong>{{ email }}</strong></p>
+                                <p>First name: <strong>{% if order.owner.first_name %}{{ order.owner.first_name }}{% else %}-{% endif %}</strong></p>
+                                <p>Last name: <strong>{% if order.owner.last_name %}{{ order.owner.last_name }}{% else %}-{% endif %}</strong></p>
                             </div>
-    
-                            {% for formitem in form.data %}
-                            {% with ft=form.data|get_item:formitem %}
-                            {% if ft.type == 0 %}
+                            <hr>
+                            {% if form %}
+                            <form method="POST">
+                                {% csrf_token %}
+
                                 <div class="form-group col-12 mb-4">
-                                    <label for="">{{ ft.title }}</label>
-                                    <input type="text" class="form-control" name="{{ form.id}}:{{ formitem }}" value="{{order.extra_fields|get_item:ft.title|default_if_none:''}}">
-                                </div>
-                            {% elif ft.type == 1 %}
-                                <div class="form-group col-12 mb-4">
-                                    <label for="">{{ ft.title }}</label>
-                                    {% for x in ft.items %}
-                                    <div class="form-check col-12">
-                                        <input type="checkbox" class="form-check-input" name="{{ form.id}}:{{ formitem }}" value="{{ x }}" {% if x in order.extra_fields|get_item:ft.title %}checked{% endif %}>
-                                        <label for="">{{ x }}</label>
-                                    </div>
+                                    {% for itemorder in form.orderinfos|get_item:'orderinfos' %}
+
+                                        {% if itemorder == 'order' %}
+                                            <label class="text ml-1" for="order">Order #:</label>
+                                            <input type="text" class="form-control mb-2" name="order" maxlength="500" id="order" value="{{ order|get_attr:itemorder }}" required>
+                                        {% else %}
+                                            <label class="text ml-1" for="">{{ itemorder|remove_underscore|title }}</label>
+                                            <input type="text" class="form-control mb-2" name="{{ itemorder }}" value="{{ order|get_attr:itemorder }}">
+                                        {% endif %}
                                     {% endfor %}
-                                </div>
-                            {% elif ft.type == 3 %}
-                                <div class="form-group col-12 mb-4">
-                                    <label for="">{{ ft.title }}</label>
-                                    <textarea class="form-control textarea-expandable" name="{{ form.id}}:{{ formitem }}">{{order.extra_fields|get_item:ft.title|default_if_none:''}}</textarea>
-                                </div>
+                                    </div>
+
+                                    {% for formitem in form.data %}
+                                    {% with ft=form.data|get_item:formitem %}
+                                    {% if ft.type == 0 %}
+                                        <div class="form-group col-12 mb-4">
+                                            <label for="">{{ ft.title }}</label>
+                                            <input type="text" class="form-control" name="{{ form.id}}:{{ formitem }}" value="{{order.extra_fields|get_item:ft.title|default_if_none:''}}">
+                                        </div>
+                                    {% elif ft.type == 1 %}
+                                        <div class="form-group col-12 mb-4">
+                                            <label for="">{{ ft.title }}</label>
+                                            {% for x in ft.items %}
+                                            <div class="form-check col-12">
+                                                <input type="checkbox" class="form-check-input" name="{{ form.id}}:{{ formitem }}" value="{{ x }}" {% if x in order.extra_fields|get_item:ft.title %}checked{% endif %}>
+                                                <label for="">{{ x }}</label>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% elif ft.type == 3 %}
+                                        <div class="form-group col-12 mb-4">
+                                            <label for="">{{ ft.title }}</label>
+                                            <textarea class="form-control textarea-expandable" name="{{ form.id}}:{{ formitem }}">{{order.extra_fields|get_item:ft.title|default_if_none:''}}</textarea>
+                                        </div>
+                                    {% endif %}
+                                    {% endwith %}
+                                    {% endfor %}
+
+                                    <div class="form-group col-12 mb-4">
+                                        <label>Notes:</label>
+                                        <textarea name="notes" class="form-control" rows="3">{{order.notes}}</textarea>
+                                    </div>
+
+                                    <button type="submit" class="btn text btn-outline-primary ml-3 mt-2">Update</button>
+
+                            </form>
+
+                            {% else %}
+                            <form method="POST">
+                                {% csrf_token %}
+                                
+                                    <div class="form-group col-12 mb-4">
+                                        <label class="text ml-1" for="order">Order #:</label>
+                                        <input type="text" class="form-control mb-2" name="order" autofocus="" maxlength="500" id="order" value="{{ order.order }}" required>
+                                    </div>
+
+                                    <div class="form-group col-12 mb-4">
+                                        <label class="text ml-1" for="company">Company name:</label>
+                                        <input type="text" class="form-control mb-2" name="company_name" maxlength="5000" id="company" value="{{ order.company_name }}">
+                                    
+                                        <label class="text ml-1" for="company_address">Company address:</label>
+                                        <input type="text" class="form-control mb-2" name="company_address" maxlength="5000" id="company_address" value="{{ order.company_address }}">
+
+                                        <label class="text ml-1" for="company_city">Company city:</label>
+                                        <input type="text" class="form-control mb-2" name="company_city" maxlength="5000" id="company_city" value="{{ order.company_city }}">
+
+                                        <label class="text ml-1" for="company_state">Company state:</label>
+                                        <input type="text" class="form-control mb-2" name="company_state" maxlength="5000" id="company_state" value="{{ order.company_state }}">
+
+                                        <label class="text ml-1" for="company_zip">Company zip:</label>
+                                        <input type="text" class="form-control mb-2" name="company_zip" maxlength="5000" id="company_zip" value="{{ order.company_zip }}">
+
+                                        <label class="text ml-1" for="company_country">Company country:</label>
+                                        <input type="text" class="form-control mb-2" name="company_country" maxlength="5000" id="company_country" value="{{ order.company_country }}">
+
+                                        <label class="text ml-1" for="company_phone">Company phone:</label>
+                                        <input type="text" class="form-control mb-2" name="company_phone" maxlength="5000" id="company_phone" value="{{ order.company_phone }}">
+
+                                        <label class="text ml-1" for="website_url">Website url:</label>
+                                        <input type="text" class="form-control mb-2" name="website_url" maxlength="5000" id="website_url" value="{{ order.website_url }}">
+
+                                        <label class="text ml-1" for="company_email">Company email:</label>
+                                        <input type="text" class="form-control mb-2" name="company_email" maxlength="5000" id="company_email" value="{{ order.company_email }}">
+
+                                        <label class="text ml-1" for="company_description">Company description:</label>
+                                        <input type="text" class="form-control mb-2" name="company_description" maxlength="5000" id="company_description" value="{{ order.company_description }}">
+
+                                        <label class="text ml-1" for="logo_image">Logo image:</label>
+                                        <input type="text" class="form-control mb-2" name="logo_image" maxlength="5000" id="logo_image" value="{{ order.logo_image }}">
+
+                                        <label class="text ml-1" for="map_url">Map url:</label>
+                                        <input type="text" class="form-control mb-2" name="map_url" maxlength="5000" id="map_url" value="{{ order.map_url }}">
+
+                                        <label class="text ml-1" for="website_login_url">Wesite login url:</label>
+                                        <input type="text" class="form-control mb-2" name="website_login_url" maxlength="5000" id="website_login_url" value="{{ order.website_login_url }}">
+
+                                        <label class="text ml-1" for="web_username">Website username:</label>
+                                        <input type="text" class="form-control mb-2" name="web_username" maxlength="5000" id="web_username" value="{{ order.web_username }}">
+
+                                        <label class="text ml-1" for="web_password">Website password:</label>
+                                        <input type="text" class="form-control mb-2" name="web_password" maxlength="5000" id="web_password" value="{{ order.web_password }}">
+
+                                        <label class="text ml-1" for="analytics_account">Google properties access:</label>
+                                        <input type="text" class="form-control mb-2" name="analytics_account" maxlength="5000" id="analytics_account" value="{{ order.analytics_account }}">
+
+                                    </div>
+                                
+                                    <button type="submit" class="btn text btn-outline-primary ml-3 mt-2" id="submit">Submit</button>
+                            </form>
                             {% endif %}
-                            {% endwith %}
-                            {% endfor %}
-
-                            <div class="form-group col-12 mb-4">
-                                <label>Notes:</label>
-                                <textarea name="notes" class="form-control" rows="3">{{order.notes}}</textarea>
-                            </div>
-    
-                            <button type="submit" class="btn text btn-outline-primary ml-3 mt-2">Update</button>
-
-                    </form>
-
-                    {% else %}
-                    <form method="POST">
-                        {% csrf_token %}
-                        
-                            <div class="form-group col-12 mb-4">
-                                <label class="text ml-1" for="order">Order #:</label>
-                                <input type="text" class="form-control mb-2" name="order" autofocus="" maxlength="500" id="order" value="{{ order.order }}" required>
-                            </div>
-
-                            <div class="form-group col-12 mb-4">
-                                <label class="text ml-1" for="company">Company name:</label>
-                                <input type="text" class="form-control mb-2" name="company_name" maxlength="5000" id="company" value="{{ order.company_name }}">
-                            
-                                <label class="text ml-1" for="company_address">Company address:</label>
-                                <input type="text" class="form-control mb-2" name="company_address" maxlength="5000" id="company_address" value="{{ order.company_address }}">
-
-                                <label class="text ml-1" for="company_city">Company city:</label>
-                                <input type="text" class="form-control mb-2" name="company_city" maxlength="5000" id="company_city" value="{{ order.company_city }}">
-
-                                <label class="text ml-1" for="company_state">Company state:</label>
-                                <input type="text" class="form-control mb-2" name="company_state" maxlength="5000" id="company_state" value="{{ order.company_state }}">
-
-                                <label class="text ml-1" for="company_zip">Company zip:</label>
-                                <input type="text" class="form-control mb-2" name="company_zip" maxlength="5000" id="company_zip" value="{{ order.company_zip }}">
-
-                                <label class="text ml-1" for="company_country">Company country:</label>
-                                <input type="text" class="form-control mb-2" name="company_country" maxlength="5000" id="company_country" value="{{ order.company_country }}">
-
-                                <label class="text ml-1" for="company_phone">Company phone:</label>
-                                <input type="text" class="form-control mb-2" name="company_phone" maxlength="5000" id="company_phone" value="{{ order.company_phone }}">
-
-                                <label class="text ml-1" for="website_url">Website url:</label>
-                                <input type="text" class="form-control mb-2" name="website_url" maxlength="5000" id="website_url" value="{{ order.website_url }}">
-
-                                <label class="text ml-1" for="company_email">Company email:</label>
-                                <input type="text" class="form-control mb-2" name="company_email" maxlength="5000" id="company_email" value="{{ order.company_email }}">
-
-                                <label class="text ml-1" for="company_description">Company description:</label>
-                                <input type="text" class="form-control mb-2" name="company_description" maxlength="5000" id="company_description" value="{{ order.company_description }}">
-
-                                <label class="text ml-1" for="logo_image">Logo image:</label>
-                                <input type="text" class="form-control mb-2" name="logo_image" maxlength="5000" id="logo_image" value="{{ order.logo_image }}">
-
-                                <label class="text ml-1" for="map_url">Map url:</label>
-                                <input type="text" class="form-control mb-2" name="map_url" maxlength="5000" id="map_url" value="{{ order.map_url }}">
-
-                                <label class="text ml-1" for="website_login_url">Wesite login url:</label>
-                                <input type="text" class="form-control mb-2" name="website_login_url" maxlength="5000" id="website_login_url" value="{{ order.website_login_url }}">
-
-                                <label class="text ml-1" for="web_username">Website username:</label>
-                                <input type="text" class="form-control mb-2" name="web_username" maxlength="5000" id="web_username" value="{{ order.web_username }}">
-
-                                <label class="text ml-1" for="web_password">Website password:</label>
-                                <input type="text" class="form-control mb-2" name="web_password" maxlength="5000" id="web_password" value="{{ order.web_password }}">
-
-                                <label class="text ml-1" for="analytics_account">Google properties access:</label>
-                                <input type="text" class="form-control mb-2" name="analytics_account" maxlength="5000" id="analytics_account" value="{{ order.analytics_account }}">
-
-                            </div>
-                        
-                            <button type="submit" class="btn text btn-outline-primary ml-3 mt-2" id="submit">Submit</button>
-                    </form>
-                    {% endif %}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 </div>
 {% endblock %}
 {% block extra_script %}

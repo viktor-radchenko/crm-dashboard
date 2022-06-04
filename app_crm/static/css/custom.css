@@ -4,9 +4,13 @@ img.profile-image {
 }
 
 img.agency-logo {
-  max-width: 200px;
-  max-height: 68px;
+  max-width: 150px;
+  max-height: 60px;
   object-fit: contain;
+}
+
+ul.toggled img.agency-logo {
+  max-width: 80px;
 }
 
 div.agency-name {
@@ -124,7 +128,7 @@ div.agency-name {
 }
 
 .btn-primary > span {
-  padding-left: 15px;
+  padding-left: 8px;
   padding-right: 15px;
   min-width: 50px;
 }
@@ -135,9 +139,6 @@ div.agency-name {
   padding: 10px 10px;
 }
 
-#accordionSidebar {
-  transition: all 0.3s ease;
-}
 
 .sidebar.toggled .sidebar-brand .sidebar-brand-text {
   display: block;
@@ -146,4 +147,13 @@ div.agency-name {
 
 .d-md-none {
   display: block!important;
+}
+
+div.dataTables_wrapper div.dataTables_paginate ul.pagination {
+  font-size: 13px;
+}
+
+.order-links a {
+  font-size: 13px;
+  overflow: hidden;
 }

@@ -24,24 +24,24 @@
                 
                 <div class="order-links" style="font-size: 20px; text-align: right;">        
                   {% if not request.user.is_client %}
-                    <a href="/dashboard/admin/editinfo/{{ order.id }}/" class="btn btn-primary border-0 rounded-0 p-0">
+                    <a href="/dashboard/admin/editinfo/{{ order.id }}/" class="btn btn-primary border-0 p-0">
                         <i class="fa fa-pencil-alt align-middle" aria-hidden="true"></i>
                         <span class="align-middle">Intake Form</span>
                     </a>
 
 
-                    <a href="/dashboard/admin/edit/{{ order.id }}/" class="btn btn-primary border-0 rounded-0 p-0">
+                    <a href="/dashboard/admin/edit/{{ order.id }}/" class="btn btn-primary border-0 p-0">
                       <i class="fa fa-edit align-middle" aria-hidden="true"></i>
                       <span class="align-middle">Edit order</span>
                     </a>
                   {% else %}
-                    <a href="/dashboard/user/edit/{{ order.id }}/" class="btn btn-primary border-0 rounded-0 p-0">
+                    <a href="/dashboard/user/edit/{{ order.id }}/" class="btn btn-primary border-0 p-0">
                         <i class="fa fa-edit align-middle" aria-hidden="true"></i>
                         <span class="align-middle">Intake Form</span>
                     </a>
                   {% endif %}
         
-                  <a href="/dashboard/chatroom/{{ order.id }}/" class="btn btn-primary border-0 rounded-0 p-0">
+                  <a href="/dashboard/chatroom/{{ order.id }}/" class="btn btn-primary border-0 p-0">
                     <i class="fa fa-file align-middle" aria-hidden="true"></i>
                     <span class="align-middle">Messages</span>
                   </a>
@@ -83,7 +83,7 @@
                         <td scope="col" class="sortable" style="background-color: {{ t.status.color }}; word-break: break-all;">{% if t.notes %}<div><p class="half-note m-0">{{ t.notes|slice:":20" }} <a href="#" class="show-hide-btn">more</a></p><p class="full-note m-0 d-none">{{ t.notes }} <a href="#" class="show-hide-btn">less</a></p></div>{% endif %}</td>
                         <td scope="col" class="sortable">{% if t.report_link %}<a href="{{ t.report_link }}" target="_blank">View report</a>{% endif %}</td>
                         {% if request.user.is_staff %}
-                            <td scope="col" class="sortable"><a class="btn btn-primary btn-sm mr-1" href="#" role="button"  data-toggle="modal" data-target="#taskModalP{{ t.id }}">Manage task</a></td>
+                            <td scope="col" class="sortable" ><a class="btn btn-primary btn-sm" style="min-width: 95px; width: 100%;" href="#" role="button"  data-toggle="modal" data-target="#taskModalP{{ t.id }}">Manage task</a></td>
                         {% endif %}
                     </tr>
                     {% endif %}

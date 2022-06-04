@@ -2,6 +2,10 @@
 {% block content %}
 {% load i18n %}
 {% language 'en' %}
+{% block extra_head %}
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static "/css/profile.css"%}">
+{% endblock %}
 <div class="col-7 d-sm-flex align-items-center justify-content-betwen mb-4">
   <h1 class="h3 mb-0 text-gray-800">Profile</h1>
 </div>
@@ -30,17 +34,20 @@
                             <p class="text font-weight-light mt-1 ml-1"><small>You can change <a class="" href="" data-toggle="modal" data-target="#editPassword">password</a></small></p>
                         </div>
 
-                        <div class="form-group col-12">
+                        <div class="form-group col-12 profile-image-container">
                             <label for="formFile" class="form-label">Profile image:</label>
                             <div class="row">
-                                {% if request.user.profile_image %}
-                                    <div class="col-3">
-                                        <img src="{{ request.user.profile_image.url }}" alt="profile_image" width="150px" height="150px">
-                                    </div>
-                                {% endif %}
-                                <a href="/dashboard/profile/deleteImg">Remove profile image</a>
-                                <div class="col-9">
-                                    <input class="form-control" type="file" id="formFile" name="profile_image">
+                                <div class="form-group col-12">
+                                    <img class="profile-image-preview" src="{{ request.user.profile_image.url }}" alt="profile_image" width="250px" height="250px" id='img-upload1'>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-12 profile-image-btns">
+                                    <span class="input-group-btn">
+                                        <span class="btn btn-primary btn-file"><i class="fa fa-upload"></i><input type="file" id="imgInp1" name="profile_image">
+                                        </span>
+                                    </span>
+                                    <a class="btn btn-danger delete-link" href="/dashboard/profile/deleteImg"><i class="fa fa-times"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -52,17 +59,20 @@
                             <input type="text" class="form-control" name="agency_name" value="{{ request.user.agency.first.name }}" id="agency_name" >
                         </div>
 
-                        <div class="form-group col-12">
-                            <label for="agencyFormFile" class="form-label">Agency logo:</label>
+                        <div class="form-group col-12 profile-image-container">
+                            <label for="formFile" class="form-label">Agency logo:</label>
                             <div class="row">
-                                {% if request.user.agency.first.logo %}
-                                    <div class="col-3">
-                                        <img src="{{ request.user.agency.first.logo.url }}" alt="agency_logo" style="object-fit:contain; max-width: 300px;">
-                                    </div>
-                                {% endif %}
-                                <a href="/dashboard/profile/deleteAgencyLogo">Remove agency logo</a>
-                                <div class="col-9">
-                                    <input class="form-control" type="file" id="agencyFormFile" name="agency_logo">
+                                <div class="form-group col-12">
+                                    <img class="profile-image-preview" {% if request.user.agency.first.logo %}src="{{ request.user.agency.first.logo.url }}"{% endif %}alt="agency_logo" width="250px" height="250px" id='img-upload2' {% if not request.user.agency.first.logo %}style="opacity:0; height:0;"{%endif%}>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-12 profile-image-btns">
+                                    <span class="input-group-btn">
+                                        <span class="btn btn-primary btn-file"><i class="fa fa-upload"></i><input type="file" id="imgInp2" name="agency_logo">
+                                        </span>
+                                    </span>
+                                    <a class="btn btn-danger delete-link" href="deleteAgencyLogo"><i class="fa fa-times"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -75,7 +85,7 @@
 
                         <div class="form-group col-12">
                             <label class="text">Notes</label>
-                            <textarea type="text" class="form-control" name="notes" style="height: 120px;">{{ request.user.notes }}</textarea>
+                            <textarea type="text" class="form-control" name="notes" style="height: 120px;">{{ request.user.notes|default_if_none:"" }}</textarea>
                         </div>
 
                         <button type="submit" class="btn text btn-outline-primary ml-3 mt-2 mb-5" name="editProfile" value="True">Update</button>
@@ -123,4 +133,5 @@
 {% block extra_script %}
 {% load static %}
 <script src="{% static "/js/matchpassword.js"%}"></script>
+<script src="{% static "/js/profile.js"%}"></script>
 {% endblock %}

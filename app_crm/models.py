@@ -101,22 +101,25 @@ class Order(models.Model):
         userid = CustomUser.objects.get(id=request.POST["userid"])
 
         formid = request.POST.get("service_form_id")
-        form = Form.objects.get(id=formid)
+        form = None
+        if formid:
+            form = Form.objects.get(id=formid)
 
         # create statuses:
         stat = request.user.status.filter(val=1).first()
 
         # create dict from additional fields
         extra_fields = {}
-        for formfieldnum in form.data:
-            formfield = form.data.get(formfieldnum)
-            title = formfield.get("title")
-            if formfield.get("type") == 1:
-                extra_fields[title] = request.POST.getlist(str(form.id) + ":" + str(formfieldnum))
-            else:
-                extra_fields[title] = request.POST.get(str(form.id) + ":" + str(formfieldnum))
+        if form:
+            for formfieldnum in form.data:
+                formfield = form.data.get(formfieldnum)
+                title = formfield.get("title")
+                if formfield.get("type") == 1:
+                    extra_fields[title] = request.POST.getlist(str(form.id) + ":" + str(formfieldnum))
+                else:
+                    extra_fields[title] = request.POST.get(str(form.id) + ":" + str(formfieldnum))
 
-        order_notes = request.POST.get("notes")
+        order_notes = request.POST.get("notes", "")
 
         new_order = Order(
             order=order_num,
@@ -145,8 +148,9 @@ class Order(models.Model):
             notes=order_notes,
         )
         new_order.save()
-        form.order = new_order
-        form.save()
+        if form:
+            form.order = new_order
+            form.save()
         return True, "Order successfully created"
 
     def deleteOrder(id):
@@ -167,14 +171,15 @@ class Order(models.Model):
         # process form fields
         form = order.intake_form.first()
         extra_fields = {}
-        for formfieldnum in form.data:
-            formfield = form.data.get(formfieldnum)
-            title = formfield.get("title")
-            if formfield.get("type") == 1:
-                extra_fields[title] = request.POST.getlist(str(form.id) + ":" + str(formfieldnum))
-            else:
-                extra_fields[title] = request.POST.get(str(form.id) + ":" + str(formfieldnum))
-        order_notes = request.POST.get("notes")
+        if form:
+            for formfieldnum in form.data:
+                formfield = form.data.get(formfieldnum)
+                title = formfield.get("title")
+                if formfield.get("type") == 1:
+                    extra_fields[title] = request.POST.getlist(str(form.id) + ":" + str(formfieldnum))
+                else:
+                    extra_fields[title] = request.POST.get(str(form.id) + ":" + str(formfieldnum))
+        order_notes = request.POST.get("notes", "")
 
         order.order = re.sub("\D", "", request.POST["order"])
         order.company_name = request.POST.get("company_name", "")
@@ -360,20 +365,24 @@ class Order(models.Model):
         order_num = re.sub("\D", "", request.POST["order"])
 
         formid = request.POST.get("service_form_id")
-        form = Form.objects.get(id=formid)
+        if formid:
+            form = Form.objects.get(id=formid)
+        else:
+            form = None
 
         stat = Status.objects.filter(val=1).first()
 
         extra_fields = {}
-        for formfieldnum in form.data:
-            formfield = form.data.get(formfieldnum)
-            title = formfield.get("title")
-            if formfield.get("type") == 1:
-                extra_fields[title] = request.POST.getlist(str(form.id) + ":" + str(formfieldnum))
-            else:
-                extra_fields[title] = request.POST.get(str(form.id) + ":" + str(formfieldnum))
+        if form:
+            for formfieldnum in form.data:
+                formfield = form.data.get(formfieldnum)
+                title = formfield.get("title")
+                if formfield.get("type") == 1:
+                    extra_fields[title] = request.POST.getlist(str(form.id) + ":" + str(formfieldnum))
+                else:
+                    extra_fields[title] = request.POST.get(str(form.id) + ":" + str(formfieldnum))
 
-        order_notes = request.POST.get("notes")
+        order_notes = request.POST.get("notes", "")
 
         order = Order(
             order=order_num,
@@ -402,8 +411,9 @@ class Order(models.Model):
             notes=order_notes,
         )
         order.save()
-        form.order = order
-        form.save()
+        if form:
+            form.order = order
+            form.save()
 
         text = f"Your client {request.user.first_name} has created a new order"
         link = f"/dashboard/admin/editinfo/{order.id}/"
@@ -433,15 +443,17 @@ class Order(models.Model):
 
          # process form fields
         form = order.intake_form.first()
+
         extra_fields = {}
-        for formfieldnum in form.data:
-            formfield = form.data.get(formfieldnum)
-            title = formfield.get("title")
-            if formfield.get("type") == 1:
-                extra_fields[title] = request.POST.getlist(str(form.id) + ":" + str(formfieldnum))
-            else:
-                extra_fields[title] = request.POST.get(str(form.id) + ":" + str(formfieldnum))
-        order_notes = request.POST.get("notes")
+        if form:
+            for formfieldnum in form.data:
+                formfield = form.data.get(formfieldnum)
+                title = formfield.get("title")
+                if formfield.get("type") == 1:
+                    extra_fields[title] = request.POST.getlist(str(form.id) + ":" + str(formfieldnum))
+                else:
+                    extra_fields[title] = request.POST.get(str(form.id) + ":" + str(formfieldnum))
+        order_notes = request.POST.get("notes", "")
 
         order.order = re.sub("\D", "", request.POST["order"])
         order.company_name = request.POST.get("company_name", "")
@@ -1393,7 +1405,7 @@ class manageUser:
     def editProfile(request):
         request.user.first_name = request.POST.get("first_name")
         request.user.last_name = request.POST.get("last_name")
-        request.user.notes = request.POST.get("notes")
+        request.user.notes = request.POST.get("notes", "")
         if request.user.is_staff:
             ZapierApi.editKey(request)
         if request.FILES.get("profile_image"):

@@ -9,11 +9,12 @@
   <h1 class="h3 mb-0 text-gray-800">Messages</h1>
 </div>
 
-<div class="card shadow mb-4" style="line-height: 1.2;">
+<div class="card shadow mb-4">
+  <div class="card-body">
 
   <!-- *** Order detail section *** -->
-  <div class="order-info d-flex pl-5 pr-5">
-    <div class="oder-details w-100 pt-4">
+  <div class="oder-details w-100">
+    <div class="form-group col-12 mb-4">
       <div class="order-navigation d-flex justify-content-between">
         
         <div class="order-title" style="max-width: 100px; width: 100%;">
@@ -25,26 +26,26 @@
 
           {% if not request.user.is_client %}
 
-            <a href="/dashboard/admin/editinfo/{{ order.id }}/" class="btn btn-primary border-0 rounded-0 p-0">
+            <a href="/dashboard/admin/editinfo/{{ order.id }}/" class="btn btn-primary border-0 p-0">
               <i class="fa fa-pencil-alt align-middle" aria-hidden="true"></i>
               <span class="align-middle">Intake Form</span>
             </a>
 
-            <a href="/dashboard/admin/edit/{{ order.id }}/" class="btn btn-primary border-0 rounded-0 p-0">
+            <a href="/dashboard/admin/edit/{{ order.id }}/" class="btn btn-primary border-0 p-0">
               <i class="fa fa-edit align-middle" aria-hidden="true"></i>
               <span class="align-middle">Edit order</span>
             </a>
 
           {% else %}
 
-            <a href="/dashboard/user/edit/{{ order.id }}/" class="btn btn-primary border-0 rounded-0 p-0">
+            <a href="/dashboard/user/edit/{{ order.id }}/" class="btn btn-primary border-0 p-0">
               <i class="fa fa-pencil-alt align-middle" aria-hidden="true"></i>
               <span class="align-middle">Intake Form</span>
             </a>
 
           {% endif %}
 
-          <a href="/dashboard/admin/{{ order.id }}/deliverables/" class="btn btn-primary border-0 rounded-0 p-0">
+          <a href="/dashboard/admin/{{ order.id }}/deliverables/" class="btn btn-primary border-0 p-0">
             <i class="fa fa-file align-middle" aria-hidden="true"></i>
             <span class="align-middle">Deliverables</span>
           </a>
@@ -184,7 +185,7 @@
     </div>
 
   </div>
-
+  </div>
 </div>
 
 {% endblock content %}
