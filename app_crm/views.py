@@ -201,7 +201,7 @@ class dash:
                 context = {}
                 context["order"] = Order.getOrderById(request, id)
                 context['email'] = context["order"].owner.email if settings.CLIENT_TAG not in context["order"].owner.email else ''
-                context['form'] = request.user.form.filter(title="Intake form").first()
+                context['form'] = Form.objects.filter(order=context["order"]).first()
                 return render(request, "dashboard/admin/editinfo.html", context)
             else:
                 return redirect("/")
@@ -645,7 +645,9 @@ class dash:
                 if request.method == "POST":
                     if Order.createUserOrder(request):
                         return redirect("/dashboard/user/myorders")
-                return render(request, "dashboard/user/create.html")
+                context = {}
+                context['forms'] = request.user.created_by.form.filter(is_service=True)
+                return render(request, "dashboard/user/create.html", context)
             else:
                 return redirect("/")
 
@@ -662,6 +664,7 @@ class dash:
                         return redirect("/dashboard/user/myorders")
                     context = {}
                     context["order"] = order
+                    context["form"] = order.intake_form.first()
                     return render(request, "dashboard/user/edit.html", context)
                 raise Http404
             else:

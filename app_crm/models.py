@@ -164,6 +164,18 @@ class Order(models.Model):
             order.owner != request.user or order.owner.created_by != request.user
         ):
             return
+        # process form fields
+        form = order.intake_form.first()
+        extra_fields = {}
+        for formfieldnum in form.data:
+            formfield = form.data.get(formfieldnum)
+            title = formfield.get("title")
+            if formfield.get("type") == 1:
+                extra_fields[title] = request.POST.getlist(str(form.id) + ":" + str(formfieldnum))
+            else:
+                extra_fields[title] = request.POST.get(str(form.id) + ":" + str(formfieldnum))
+        order_notes = request.POST.get("notes")
+
         order.order = re.sub("\D", "", request.POST["order"])
         order.company_name = request.POST.get("company_name", "")
         order.company_address = request.POST.get("company_address", "")
@@ -181,6 +193,8 @@ class Order(models.Model):
         order.web_username = request.POST.get("web_username", "")
         order.web_password = request.POST.get("web_password", "")
         order.analytics_account = request.POST.get("analytics_account", "")
+        order.extra_fields = extra_fields
+        order.notes = order_notes
         order.save()
 
     def editOrder(request, id):
@@ -344,32 +358,52 @@ class Order(models.Model):
 
     def createUserOrder(request):
         order_num = re.sub("\D", "", request.POST["order"])
+
+        formid = request.POST.get("service_form_id")
+        form = Form.objects.get(id=formid)
+
         stat = Status.objects.filter(val=1).first()
+
+        extra_fields = {}
+        for formfieldnum in form.data:
+            formfield = form.data.get(formfieldnum)
+            title = formfield.get("title")
+            if formfield.get("type") == 1:
+                extra_fields[title] = request.POST.getlist(str(form.id) + ":" + str(formfieldnum))
+            else:
+                extra_fields[title] = request.POST.get(str(form.id) + ":" + str(formfieldnum))
+
+        order_notes = request.POST.get("notes")
+
         order = Order(
             order=order_num,
-            company_name=request.POST["company_name"],
-            company_address=request.POST["company_address"],
-            company_city=request.POST["company_city"],
-            company_state=request.POST["company_state"],
-            company_zip=request.POST["company_zip"],
-            company_country=request.POST["company_country"],
-            company_phone=request.POST["company_phone"],
-            website_url=request.POST["website_url"],
-            company_email=request.POST["company_email"],
-            company_description=request.POST["company_description"],
-            logo_image=request.POST["logo_image"],
-            map_url=request.POST["map_url"],
-            website_login_url=request.POST["website_login_url"],
-            web_username=request.POST["web_username"],
-            web_password=request.POST["web_password"],
-            analytics_account=request.POST["analytics_account"],
+            company_name=request.POST.get("company_name", ""),
+            company_address=request.POST.get("company_address", ""),
+            company_city=request.POST.get("company_city", ""),
+            company_state=request.POST.get("company_state", ""),
+            company_zip=request.POST.get("company_zip", ""),
+            company_country=request.POST.get("company_country", ""),
+            company_phone=request.POST.get("company_phone", ""),
+            website_url=request.POST.get("website_url", ""),
+            company_email=request.POST.get("company_email", ""),
+            company_description=request.POST.get("company_description", ""),
+            logo_image=request.POST.get("logo_image", ""),
+            map_url=request.POST.get("map_url", ""),
+            website_login_url=request.POST.get("website_login_url", ""),
+            web_username=request.POST.get("web_username", ""),
+            web_password=request.POST.get("web_password", ""),
+            analytics_account=request.POST.get("analytics_account", ""),
             start_date=None,
             renewal_date=None,
             status=stat,
             owner=request.user,
             month=1,
+            extra_fields=extra_fields,
+            notes=order_notes,
         )
         order.save()
+        form.order = order
+        form.save()
 
         text = f"Your client {request.user.first_name} has created a new order"
         link = f"/dashboard/admin/editinfo/{order.id}/"
@@ -396,23 +430,38 @@ class Order(models.Model):
 
     def editUserOrder(request, id):
         order = Order.objects.get(id=id)
+
+         # process form fields
+        form = order.intake_form.first()
+        extra_fields = {}
+        for formfieldnum in form.data:
+            formfield = form.data.get(formfieldnum)
+            title = formfield.get("title")
+            if formfield.get("type") == 1:
+                extra_fields[title] = request.POST.getlist(str(form.id) + ":" + str(formfieldnum))
+            else:
+                extra_fields[title] = request.POST.get(str(form.id) + ":" + str(formfieldnum))
+        order_notes = request.POST.get("notes")
+
         order.order = re.sub("\D", "", request.POST["order"])
-        order.company_name = request.POST["company_name"]
-        order.company_address = request.POST["company_address"]
-        order.company_city = request.POST["company_city"]
-        order.company_state = request.POST["company_state"]
-        order.company_zip = request.POST["company_zip"]
-        order.company_country = request.POST["company_country"]
-        order.company_phone = request.POST["company_phone"]
-        order.website_url = request.POST["website_url"]
-        order.company_email = request.POST["company_email"]
-        order.company_description = request.POST["company_description"]
-        order.logo_image = request.POST["logo_image"]
-        order.map_url = request.POST["map_url"]
-        order.website_login_url = request.POST["website_login_url"]
-        order.web_username = request.POST["web_username"]
-        order.web_password = request.POST["web_password"]
-        order.analytics_account = request.POST["analytics_account"]
+        order.company_name = request.POST.get("company_name", "")
+        order.company_address = request.POST.get("company_address", "")
+        order.company_city = request.POST.get("company_city", "")
+        order.company_state = request.POST.get("company_state", "")
+        order.company_zip = request.POST.get("company_zip", "")
+        order.company_country = request.POST.get("company_country", "")
+        order.company_phone = request.POST.get("company_phone", "")
+        order.website_url = request.POST.get("website_url", "")
+        order.company_email = request.POST.get("company_email", "")
+        order.company_description = request.POST.get("company_description", "")
+        order.logo_image = request.POST.get("logo_image", "")
+        order.map_url = request.POST.get("map_url", "")
+        order.website_login_url = request.POST.get("website_login_url", "")
+        order.web_username = request.POST.get("web_username", "")
+        order.web_password = request.POST.get("web_password", "")
+        order.analytics_account = request.POST.get("analytics_account", "")
+        order.extra_fields = extra_fields
+        order.notes = order_notes
         order.save()
 
     def getUserOrders(request):

@@ -74,33 +74,33 @@
                             {% if ft.type == 0 %}
                                 <div class="form-group col-12 mb-4">
                                     <label for="">{{ ft.title }}</label>
-                                    <input type="text" class="form-control" name="{{ form.id}}:{{ formitem }}">
+                                    <input type="text" class="form-control" name="{{ form.id}}:{{ formitem }}" value="{{order.extra_fields|get_item:ft.title}}">
                                 </div>
                             {% elif ft.type == 1 %}
                                 <div class="form-group col-12 mb-4">
                                     <label for="">{{ ft.title }}</label>
                                     {% for x in ft.items %}
                                     <div class="form-check col-12">
-                                        <input type="checkbox" class="form-check-input" name="{{ form.id}}:{{ formitem }}" value="{{ x }}">
+                                        <input type="checkbox" class="form-check-input" name="{{ form.id}}:{{ formitem }}" value="{{ x }}" {% if x in order.extra_fields|get_item:ft.title %}checked{% endif %}>
                                         <label for="">{{ x }}</label>
                                     </div>
                                     {% endfor %}
                                 </div>
-                            {% elif ft.type == 2 %}
-                            <div class="form-group col-12 mb-4">
-                            <label for="">{{ ft.title }}</label>
-                            {% for x in ft.items %}
-                            <div class="form-check col-12">
-                                <input type="radio" class="form-radio-input" name="{{ form.id}}:{{ formitem }}" value="{{ x }}">
-                                <label for="">{{ x }}</label>
-                            </div>
-                            {% endfor %}
-                            </div>
+                            {% elif ft.type == 3 %}
+                                <div class="form-group col-12 mb-4">
+                                    <label for="">{{ ft.title }}</label>
+                                    <textarea class="form-control textarea-expandable" name="{{ form.id}}:{{ formitem }}">{{order.extra_fields|get_item:ft.title}}</textarea>
+                                </div>
                             {% endif %}
                             {% endwith %}
                             {% endfor %}
+
+                            <div class="form-group col-12 mb-4">
+                                <label>Notes:</label>
+                                <textarea name="notes" class="form-control" rows="3">{{order.notes}}</textarea>
+                            </div>
     
-                            <button type="submit" class="btn text btn-outline-primary ml-3 mt-2">Create</button>
+                            <button type="submit" class="btn text btn-outline-primary ml-3 mt-2">Update</button>
 
                     </form>
 
@@ -176,4 +176,5 @@
 {% block extra_script %}
 {% load static %}
 <script src="{% static "/js/digitsfilter.js"%}"></script>
+<script src="{% static "/js/deliverablesforms.js"%}"></script>
 {% endblock %}
