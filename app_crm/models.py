@@ -1,7 +1,6 @@
 import logging
 import re
 import secrets
-from turtle import back
 from xml.dom.expatbuilder import Rejecter
 
 import requests
