@@ -15,9 +15,14 @@ function setInputFilter(textbox, inputFilter) {
     });
   }
 
-setInputFilter(document.getElementById("order"), function(value) {
-return /^\d*$/.test(value); });
+order_inputs = document.querySelectorAll('[name="order"]');
+order_inputs.forEach(o => setInputFilter(o, function(value) {
+  return /^\d*$/.test(value); }))
 
-setInputFilter(document.getElementById("month"), function(value) {
-  return /^\d*$/.test(value); });
+// setInputFilter(document.getElementById("order"), function(value) {
+// return /^\d*$/.test(value); });
+
+month_inputs = document.querySelectorAll('[name="month"]');
+month_inputs.forEach(o => setInputFilter(o, function(value) {
+  return /^\d*$/.test(value); }))
   

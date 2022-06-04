@@ -17,8 +17,6 @@
                                 <input type="text" class="form-control mb-2" name="formname" autofocus="" id="formname" value="{{ form.title }}" required>
                             </div>
 
-
-
                             <div class="form-group form-check col-12 ml-4">
                                 <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="order" id="order" {% if 'order' in form.orderinfos.orderinfos %}checked{% endif %}>
                                 <label class="form-check-label" for="order">Order #</label>
@@ -109,7 +107,7 @@
                             <div class="form-group col-12 mb-4">
                             <button class="btn btn-primary add_text_field" type="button">Add text field</button>
                             <button class="btn btn-primary add_checkbox_field" type="button">Add checkbox field</button>
-                            <button class="btn btn-primary add_radio_field" type="button">Add radio field</button>
+                            <button class="btn btn-primary add_textarea" type="button">Add large text field</button>
                             </div>
 
                             <div class="col-12 mb-4 spe-container">
@@ -118,8 +116,8 @@
                                 <div class="form-group col-12 m-2 p-2 card mb-4 shadow tosendgroup"><label class="text ml-1">Title:</label><input type="text" class="form-control mb-2" name="textfield" value="{{ thing.title }}" required><a href="#" class="delete">Delete</a></div>
                                 {% elif thing.type == 1 %}
                                 <div class="form-group col-12 m-2 p-2 mb-4 card shadow tosendgroup"><label class="text ml-1">Checkbox field. Title:</label><input type="text" class="form-control mb-2" name="checkboxname" value="{{ thing.title }}" required><div class="checkboxes"><label class="text ml-1">Checkbox:</label><br><a href="#" class="addcheckbox">Add checkbox</a>{% for x in thing.items %}<div class="checkbox m-2 p-2 card"><input type="text" class="form-control mb-2 col-10" name="checkboxitem" value="{{ x }}" required><a href="#" class="delete">Delete checkbox</a></div>{% endfor %}</div><a href="#" class="delete">Delete group</a></div>
-                                {% elif thing.type == 2 %}
-                                <div class="form-group col-12 m-2 p-2 mb-4 card shadow tosendgroup"><label class="text ml-1">Radio field. Title:</label><input type="text" class="form-control mb-2" name="radioname" value="{{ thing.title }}" required><div class="radios"><label class="text ml-1">Radio:</label><br><a href="#" class="addradio">Add radio</a>{% for x in thing.items %}<div class="radio m-2 p-2 card"><input type="text" class="form-control mb-2 col-10" name="radioitem" value="{{ x }}" required><a href="#" class="delete">Delete radio</a></div>{% endfor %}</div><a href="#" class="delete">Delete group</a></div>
+                                {% elif thing.type == 3 %}
+                                <div class="form-group col-12 m-2 p-2 card mb-4 shadow tosendgroup"><label class="text ml-1">Text area title:</label><input type="text" class="form-control mb-2" name="textarea" value="{{ thing.title }}" required><a href="#" class="delete">Delete</a></div>
                                 {% endif %}
                                 {% endfor %}
                             </div>

@@ -181,7 +181,7 @@ class dash:
                 context = {}
                 context["users"] = manageUser.getAllClients(request)
                 context['client_tag'] = settings.CLIENT_TAG
-                context['form'] = request.user.form.filter(title="Intake form").first()
+                context['forms'] = request.user.form.filter(is_service=True)
                 return render(request, "dashboard/admin/createcustom.html", context)
             else:
                 return redirect("/")

@@ -1,6 +1,7 @@
 import logging
 import re
 import secrets
+from turtle import back
 from xml.dom.expatbuilder import Rejecter
 
 import requests
@@ -62,6 +63,9 @@ class Order(models.Model):
         "Status", on_delete=models.SET_DEFAULT, null=True, blank=True, default=None
     )
 
+    extra_fields = models.JSONField(null=True, blank=True)
+    notes = models.TextField(blank=True, null=True)
+
     is_archived = models.BooleanField(default=False)
     owner = models.ForeignKey(
         CustomUser,
@@ -96,9 +100,25 @@ class Order(models.Model):
             return False, "You need to add a client first"
         userid = CustomUser.objects.get(id=request.POST["userid"])
 
+        formid = request.POST.get("service_form_id")
+        form = Form.objects.get(id=formid)
+
         # create statuses:
         stat = request.user.status.filter(val=1).first()
-        Order(
+
+        # create dict from additional fields
+        extra_fields = {}
+        for formfieldnum in form.data:
+            formfield = form.data.get(formfieldnum)
+            title = formfield.get("title")
+            if formfield.get("type") == 1:
+                extra_fields[title] = request.POST.getlist(str(form.id) + ":" + str(formfieldnum))
+            else:
+                extra_fields[title] = request.POST.get(str(form.id) + ":" + str(formfieldnum))
+
+        order_notes = request.POST.get("notes")
+
+        new_order = Order(
             order=order_num,
             company_name=request.POST.get("company_name", ""),
             company_address=request.POST.get("company_address", ""),
@@ -121,7 +141,12 @@ class Order(models.Model):
             status=stat,
             owner=userid,
             month=1,
-        ).save()
+            extra_fields=extra_fields,
+            notes=order_notes,
+        )
+        new_order.save()
+        form.order = new_order
+        form.save()
         return True, "Order successfully created"
 
     def deleteOrder(id):
@@ -989,13 +1014,20 @@ class Form(models.Model):
     created_by = models.ForeignKey(
         CustomUser, on_delete=models.CASCADE, related_name="form"
     )
+    is_service = models.BooleanField(default=False)
+    order =  models.ForeignKey(
+        Order, on_delete=models.CASCADE, related_name="intake_form", default=None, blank=True, null=True
+    )
 
     def __str__(self):
         return self.title
 
     def createForm(request):
         formname = request.POST["formname"]
+        is_service = True if request.POST.get("is_service") else False
         orderinfosset = {"orderinfos": request.POST.getlist("orderinfos")}
+        if is_service and 'order' not in orderinfosset['orderinfos']:
+            orderinfosset['orderinfos'].insert(0, 'order')
         dataset = {}
 
         for x in range(0, int(request.POST["totalcount"]) + 1):
@@ -1010,11 +1042,10 @@ class Form(models.Model):
                     "type": 1,
                     "items": request.POST.getlist("checkboxitem" + str(x)),
                 }
-            elif request.POST.get("radioname" + str(x), False):
+            elif request.POST.get("textarea" + str(x), False):
                 dataset[x] = {
-                    "title": request.POST.get("radioname" + str(x), False),
-                    "type": 2,
-                    "items": request.POST.getlist("radioitem" + str(x)),
+                    "title": request.POST.get("textarea" + str(x), False),
+                    "type": 3,
                 }
 
         Form.objects.create(
@@ -1022,6 +1053,7 @@ class Form(models.Model):
             orderinfos=orderinfosset,
             data=dataset,
             created_by=request.user,
+            is_service=is_service,
         )
 
     def editForm(request, id):
@@ -1044,11 +1076,10 @@ class Form(models.Model):
                     "type": 1,
                     "items": request.POST.getlist("checkboxitem" + str(x)),
                 }
-            elif request.POST.get("radioname" + str(x), False):
+            elif request.POST.get("textarea" + str(x), False):
                 dataset[x] = {
-                    "title": request.POST.get("radioname" + str(x), False),
-                    "type": 2,
-                    "items": request.POST.getlist("radioitem" + str(x)),
+                    "title": request.POST.get("textarea" + str(x), False),
+                    "type": 3,
                 }
 
         form.title = formname

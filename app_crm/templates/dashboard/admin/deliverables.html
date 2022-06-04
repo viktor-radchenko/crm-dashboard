@@ -242,6 +242,11 @@
                             </div>
                             {% endfor %}
                             </div>
+                            {% elif ft.type == 3 %}
+                            <div class="form-group card col-12 p-1">
+                                <label for="">{{ ft.title }}</label>
+                                <textarea name="{{form.id}}:{{formitem}}" class="form-control" rows="3"></textarea>
+                            </div>
                             {% endif %}
                             {% endwith %}
                             {% endfor %}

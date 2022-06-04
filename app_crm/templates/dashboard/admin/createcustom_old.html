@@ -1,0 +1,165 @@
+{% extends 'dashboard.html' %}
+{% load custom_tags %}
+{% block content %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Create custom order</h1>
+</div>
+
+<div class="row align-items-center justify-content-center">
+    <div class="col-xl-6 col-lg-8 col-md-10 col-sm-12">
+        <div class="card shadow mb-4 p-2">
+            <div class="row">
+                <div class="col-12 mb-3 mt-3">
+                    {% if form %}
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        {% if users|length > 0 %}
+                        <div class="form-group col-12 mb-4">
+                            <label class="text ml-1" for="select-user">Client:</label>
+                            <select name="userid" id="select-user" class="form-control" required>
+                                {% for user in users %}
+                                <option value="{{ user.id }}" selected="selected">
+                                    {{user.first_name}} {{user.last_name}}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% endif %}
+                        <div class="form-group col-12 mb-4">
+                            <a href="/dashboard/admin/clients/create/" class="btn btn-outline-primary w-100">Add client</a>
+                        </div>
+                        
+                        <hr>
+
+                        <div class="form-group col-12 mb-4">
+                        {% for itemorder in form.orderinfos|get_item:'orderinfos' %}
+
+                            {% if itemorder == 'order' %}
+                                <label class="text ml-1" for="order">Order #:</label>
+                                <input type="text" class="form-control mb-2" name="order" maxlength="500" id="order" required>
+                            {% else %}
+                                <label class="text ml-1" for="">{{ itemorder|remove_underscore|title }}</label>
+                                <input type="text" class="form-control mb-2" name="{{ itemorder }}">
+                            {% endif %}
+                        {% endfor %}
+                        </div>
+
+                        {% for formitem in form.data %}
+                        {% with ft=form.data|get_item:formitem %}
+                        {% if ft.type == 0 %}
+                            <div class="form-group col-12 mb-4">
+                                <label for="">{{ ft.title }}</label>
+                                <input type="text" class="form-control" name="{{ form.id}}:{{ formitem }}">
+                            </div>
+                        {% elif ft.type == 1 %}
+                            <div class="form-group col-12 mb-4">
+                                <label for="">{{ ft.title }}</label>
+                                {% for x in ft.items %}
+                                <div class="form-check col-12">
+                                    <input type="checkbox" class="form-check-input" name="{{ form.id}}:{{ formitem }}" value="{{ x }}">
+                                    <label for="">{{ x }}</label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% elif ft.type == 3 %}
+                        <div class="form-group col-12 mb-4">
+                            <label for="">{{ ft.title }}</label>
+                            <textarea class="form-control" name="{{ form.id}}:{{ formitem }}"></textarea>
+                        </div>
+                        {% endif %}
+                        {% endwith %}
+                        {% endfor %}
+
+                        <button type="submit" class="btn text btn-outline-primary ml-3 mt-2">Create</button>
+                    </form>
+                    {% else %}
+                    <form method="POST">
+                        {% csrf_token %}
+
+                            <div class="form-group col-12 mb-4">
+                                <label class="text ml-1" for="select-user">Client:</label>
+                                <select name="userid" id="select-user" class="form-control" required>
+                                    {% for user in users %}
+                                    <option value="{{ user.id }}" selected="selected">
+                                        {{user.first_name}} {{user.last_name}}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="form-group col-12 mb-4">
+                                <a href="/dashboard/admin/clients/create/" class="btn btn-outline-primary w-100">Add client</a>
+                            </div>
+                        
+                            <hr>
+
+                            <div class="form-group col-12 mb-4">
+                                <label class="text ml-1" for="order">Order #:</label>
+                                <input type="text" class="form-control mb-2" name="order" maxlength="500" id="order" required>
+                            </div>
+
+
+                            <div class="form-group col-12 mb-4">
+                                <label class="text ml-1" for="company">Company name:</label>
+                                <input type="text" class="form-control mb-2" name="company_name" maxlength="5000" id="company">
+                                
+                                <label class="text ml-1" for="company_address">Company address:</label>
+                                <input type="text" class="form-control mb-2" name="company_address" maxlength="5000" id="company_address">
+
+                                <label class="text ml-1" for="company_city">Company city:</label>
+                                <input type="text" class="form-control mb-2" name="company_city" maxlength="5000" id="company_city">
+
+                                <label class="text ml-1" for="company_state">Company state:</label>
+                                <input type="text" class="form-control mb-2" name="company_state" maxlength="5000" id="company_state">
+
+                                <label class="text ml-1" for="company_zip">Company zip:</label>
+                                <input type="text" class="form-control mb-2" name="company_zip" maxlength="5000" id="company_zip">
+
+                                <label class="text ml-1" for="company_country">Company country:</label>
+                                <input type="text" class="form-control mb-2" name="company_country" maxlength="5000" id="company_country">
+
+                                <label class="text ml-1" for="company_phone">Company phone:</label>
+                                <input type="text" class="form-control mb-2" name="company_phone" maxlength="5000" id="company_phone">
+
+                                <label class="text ml-1" for="website_url">Website url:</label>
+                                <input type="text" class="form-control mb-2" name="website_url" maxlength="5000" id="website_url">
+
+                                <label class="text ml-1" for="company_email">Company email:</label>
+                                <input type="text" class="form-control mb-2" name="company_email" maxlength="5000" id="company_email">
+
+                                <label class="text ml-1" for="company_description">Company description:</label>
+                                <input type="text" class="form-control mb-2" name="company_description" maxlength="5000" id="company_description">
+
+                                <label class="text ml-1" for="logo_image">Logo image:</label>
+                                <input type="text" class="form-control mb-2" name="logo_image" maxlength="5000" id="logo_image">
+
+                                <label class="text ml-1" for="map_url">Map url:</label>
+                                <input type="text" class="form-control mb-2" name="map_url" maxlength="5000" id="map_url">
+
+                                <label class="text ml-1" for="website_login_url">Wesite login url:</label>
+                                <input type="text" class="form-control mb-2" name="website_login_url" maxlength="5000" id="website_login_url">
+
+                                <label class="text ml-1" for="web_username">Website username:</label>
+                                <input type="text" class="form-control mb-2" name="web_username" maxlength="5000" id="web_username">
+
+                                <label class="text ml-1" for="web_password">Website password:</label>
+                                <input type="text" class="form-control mb-2" name="web_password" maxlength="5000" id="web_password">
+
+                                <label class="text ml-1" for="analytics_account">Analytics account:</label>
+                                <input type="text" class="form-control mb-2" name="analytics_account" maxlength="5000" id="analytics_account">
+                            </div>
+
+                            <button type="submit" class="btn text btn-outline-primary ml-3 mt-2" id="submit">Create</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_script %}
+{% load static %}
+<script src="{% static "/js/digitsfilter.js"%}"></script>
+{% endblock %}

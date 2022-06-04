@@ -3,6 +3,7 @@ $(document).ready(function() {
     var add_button = $(".add_text_field");
     var add_checkbox_button = $(".add_checkbox_field");
     var add_radio_button = $(".add_radio_field");
+    var add_textarea_button = $(".add_textarea");
 
     $(add_button).click(function(e) {
         e.preventDefault();
@@ -17,6 +18,11 @@ $(document).ready(function() {
     $(add_radio_button).click(function(e) {
         e.preventDefault();
         $(wrapper).append('<div class="form-group col-12 m-2 p-2 mb-4 card shadow tosendgroup"><label class="text ml-1">Radio field. Title:</label><input type="text" class="form-control mb-2" name="radioname" required><div class="radios"><label class="text ml-1">Radio:</label><br><a href="#" class="addradio">Add radio</a></div><a href="#" class="delete">Delete group</a></div>');
+    });
+
+    $(add_textarea_button).click(function(e) {
+        e.preventDefault();
+        $(wrapper).append('<div class="form-group col-12 m-2 p-2 card mb-4 shadow tosendgroup"><label class="text ml-1">Text area title:</label><input type="text" class="form-control mb-2" name="textarea" required><a href="#" class="delete">Delete</a></div>');
     });
 
     $(wrapper).on("click", ".delete", function(e) {
