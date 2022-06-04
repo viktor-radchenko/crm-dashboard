@@ -85,9 +85,9 @@
       {% for msg in chat_messages %}
         <div class="message-container d-flex w-100 pt-2">
           
-          <div class="message-avatar" style="max-width: 100px; width: 100%;">
+          <div class="message-avatar" style="max-width: 100px; width: 100%;margin-right: 10px">
             {% if msg.author.profile_image %}
-            <img src="{{ msg.author.profile_image.url }}" alt="avatar_image" width="100px" height="100px" style="object-fit: contain; border-radius: 50%;">
+            <img src="{{ msg.author.profile_image.url }}" alt="avatar_image" width="80px" height="80px" style="object-fit: contain; border-radius: 50%;">
             {% else %}
               <div class="avata-circle" style="width: 80px; height: 80px; background-color: #f3f4f7; color: #979797; border-radius: 50%; text-align: center; line-height: 80px; font-size: 25px;">
                 {% if msg.author.first_name and msg.author.last_name %}
@@ -136,9 +136,9 @@
               <hr class="sidebar-divider">
               <div class="message-container d-flex w-100 pt-2">
           
-                <div class="message-avatar" style="max-width: 100px; width: 100%;">
+                <div class="message-avatar" style="max-width: 100px; width: 100%; margin-right: 10px;">
                   {% if msg.author.profile_image %}
-                    <img src="{{ msg.author.profile_image.url }}" alt="avatar_image" width="100px" height="100px" style="object-fit: contain; border-radius: 50%;">
+                    <img src="{{ msg.author.profile_image.url }}" alt="avatar_image" width="80px" height="80px" style="object-fit: contain; border-radius: 50%;">
                     {% else %}
                       <div class="avata-circle" style="width: 80px; height: 80px; background-color: #f3f4f7; color: #979797; border-radius: 50%; text-align: center; line-height: 80px; font-size: 25px;">
                         {% if msg.author.first_name and msg.author.last_name %}
