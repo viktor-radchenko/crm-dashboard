@@ -2,7 +2,7 @@
   <div class="d-flex flex-wrap" style="width: 100%;gap: 15px;">
     <div><strong>Order #</strong>: {{order.order}}</div>
     <div><strong>Company name</strong>: {{order.company_name}}</div>
-    <div><strong>Client name</strong>: {{order.owner.first_name}}{{order.owner.last_name|default_if_none:""}}</div>
+    <div><strong>Client name</strong>: {{order.owner.first_name}} {{order.owner.last_name|default_if_none:""}}</div>
     <div><strong>Agency name</strong>: {{order.owner.created_by.agency.first.name|default_if_none:""}}</div>
   </div>
 
