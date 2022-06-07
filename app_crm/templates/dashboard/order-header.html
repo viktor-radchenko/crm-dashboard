@@ -22,7 +22,7 @@
     {% if order.link3 %}<div><a href="{{order.link3}}" target="_blank"><strong>Workbook</strong></a></div>{% endif %}
     {% if order.link4 %}<div><a href="{{order.link4}}" target="_blank"><strong>Rank tracker</strong></a></div>{% endif %}
     {% if request.user.is_staff and order.analytics_account%}
-      <div><a href="{{order.analytics_account}}" target="_blank"><strong>Google properties account</strong></a></div>
+      <div><strong>Google properties account</strong>: <a href="{{order.analytics_account}}" target="_blank"><strong>{{order.analytics_account}}</strong></a></div>
     {% endif %}
   </div>
 
