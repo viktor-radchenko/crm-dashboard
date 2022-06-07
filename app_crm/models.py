@@ -548,7 +548,7 @@ class Order(models.Model):
         }
 
         apikey = request.user.key.first()
-        if not apikey:
+        if not apikey and order.owner.is_registered:
             try:
                 recipient = order.owner
                 subj = "SearchManager.pro - update on order deliverables"
@@ -1288,7 +1288,7 @@ class manageUser:
                         },
                     )
 
-                    # send_mailjet_email(user, mail_subject, body)
+                    send_mailjet_email(user, mail_subject, body)
 
                     # create statuses for the user
                     _create_statuses(user, Status)

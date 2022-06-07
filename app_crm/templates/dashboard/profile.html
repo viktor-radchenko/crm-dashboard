@@ -38,7 +38,7 @@
                             <label for="formFile" class="form-label">Profile image:</label>
                             <div class="row">
                                 <div class="form-group col-12">
-                                    <img class="profile-image-preview" src="{{ request.user.profile_image.url }}" alt="profile_image" width="250px" height="250px" id='img-upload1'>
+                                    <img class="profile-image-preview" src="{{ request.user.profile_image.url }}" alt="profile_image" width="200px" height="200px" id='img-upload1'>
                                 </div>
                             </div>
                             <div class="row">
@@ -63,7 +63,7 @@
                             <label for="formFile" class="form-label">Agency logo:</label>
                             <div class="row">
                                 <div class="form-group col-12">
-                                    <img class="profile-image-preview" {% if request.user.agency.first.logo %}src="{{ request.user.agency.first.logo.url }}"{% endif %}alt="agency_logo" width="250px" height="250px" id='img-upload2' {% if not request.user.agency.first.logo %}style="opacity:0; height:0;"{%endif%}>
+                                    <img class="profile-image-preview" {% if request.user.agency.first.logo %}src="{{ request.user.agency.first.logo.url }}"{% endif %}alt="agency_logo" width="200px" height="200px" id='img-upload2' {% if not request.user.agency.first.logo %}style="opacity:0; height:0;"{%endif%}>
                                 </div>
                             </div>
                             <div class="row">

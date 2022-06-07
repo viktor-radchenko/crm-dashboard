@@ -139,6 +139,9 @@ div.agency-name {
   padding: 10px 10px;
 }
 
+.navbar-nav.bg-gradient-primary.sidebar.sidebar-dark.accordion {
+  transition: width 0.3s ease;
+}
 
 .sidebar.toggled .sidebar-brand .sidebar-brand-text {
   display: block;
