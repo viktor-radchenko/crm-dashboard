@@ -493,6 +493,8 @@ class Order(models.Model):
                 name=msg.author.first_name,
                 email=msg.author.email,
                 company=msg.order.company_name,
+                first_name=msg.order.owner.first_name,
+                last_name=msg.order.owner.last_name,
                 body=msg.body,
                 date_added=msg.date_added.strftime("%d-%m-%Y %H:%M"),
                 url=f"{request._current_scheme_host}/dashboard/chatroom/{msg.order.id}/",
