@@ -191,7 +191,7 @@
                 {% for n in request.user.notification.all %}
                 <li class="notification {% if not n.is_read %} notification-bold{% endif%}" data-id="{{n.id}}">
                     <a href="/notifications/{{n.id}}/">{{n.text}}</a>
-                    <div class="cancel"><i class="fa fa-times"></i></div>
+                    <div class="cancel"><i class="fa fa-trash"></i></div>
                     <hr class="sidebar-divider">
                 </li>
                 {% endfor %}
