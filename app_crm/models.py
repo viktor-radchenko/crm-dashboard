@@ -1007,7 +1007,6 @@ class templateAddon(models.Model):
                                 end_date=None,
                                 completed_by=None,
                                 notes="",
-                                report_link="",
                                 template_task=addTempTask.templateTask,
                                 ordering=addTempTask.ordering,
                             )

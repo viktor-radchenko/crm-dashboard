@@ -151,8 +151,8 @@
                                 {% if t.report_link.all|length > 0 %}
                                     {% for link in t.report_link.all %}
                                         {% if link.link %}
-                                        <label class="text ml-1" for="report_link">Report link:</label>
-                                        <input type="url" class="form-control mb-2" name="report_link_modal" id="report_link" value="{{ link.link }}">
+                                            <label class="text ml-1" for="report_link">Report link:</label>
+                                            <input type="url" class="form-control mb-2" name="report_link_modal" id="report_link" value="{{ link.link }}">
                                         {% endif %}
                                     {%endfor%}
                                 {% else %}
@@ -178,6 +178,7 @@
                                         {% endfor %}
                                         {% endfor %}
                                     </select>
+                                    <small style="color: #365ccd;">Press CTRL to select multiple addons or to cancel selection</small>
                                 </div>
 
                                 <div class="form-group col-12 mb-4">

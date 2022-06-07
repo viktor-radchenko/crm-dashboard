@@ -56,7 +56,7 @@
 
                         <div class="form-group col-12 mt-5">
                             <label class="text" for="agency_name">Agency name:</label>
-                            <input type="text" class="form-control" name="agency_name" value="{{ request.user.agency.first.name }}" id="agency_name" >
+                            <input type="text" class="form-control" name="agency_name" value="{{ request.user.agency.first.name|default_if_none:'' }}" id="agency_name" >
                         </div>
 
                         <div class="form-group col-12 profile-image-container">
