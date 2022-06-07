@@ -644,6 +644,14 @@ class Package(models.Model):
         return pack
 
 
+class TaskReportLink(models.Model):
+    link = models.CharField(max_length=2048)
+    task = models.ForeignKey("Task", on_delete=models.CASCADE, related_name="report_link")
+
+    def __str__(self):
+        return f"Report link for task #{self.task.id}"
+
+
 class Task(models.Model):
     start_date = models.DateField(default=None, blank=True, null=True)
     end_date = models.DateField(default=None, blank=True, null=True)
@@ -659,7 +667,6 @@ class Task(models.Model):
         "Status", on_delete=models.SET_DEFAULT, null=True, blank=True, default=None
     )
     notes = models.TextField(default=None, blank=True)
-    report_link = models.CharField(max_length=10000, blank=True)
     month = models.IntegerField(default=None, blank=True)
     template_task = models.ForeignKey("templateTask", on_delete=models.CASCADE)
     ordering = models.IntegerField()
@@ -686,7 +693,15 @@ class Task(models.Model):
 
         local_status = Status.objects.get(id=int(request.POST["status"]))
         task.status = local_status
-        task.report_link = request.POST["report_link"]
+
+        # report links
+        links = request.POST.getlist("report_link_modal")
+        for link in links:
+            TaskReportLink.objects.create(
+                link=link,
+                task=task
+            )
+
         task.notes = request.POST["note"]
         task.save()
 
@@ -1075,6 +1090,7 @@ class Form(models.Model):
         CustomUser, on_delete=models.CASCADE, related_name="form"
     )
     is_service = models.BooleanField(default=False)
+    is_default = models.BooleanField(default=False)
     order =  models.ForeignKey(
         Order, on_delete=models.CASCADE, related_name="intake_form", default=None, blank=True, null=True
     )
@@ -1152,7 +1168,7 @@ class Form(models.Model):
         return Form.objects.get(id=id, created_by=request.user)
 
     def getAllForms(request):
-        forms = Form.objects.filter(created_by=request.user).all()
+        forms = Form.objects.filter(created_by=request.user).exclude(is_service=True).all()
         return forms
 
     def getAllServiceForms(request):
@@ -1160,7 +1176,7 @@ class Form(models.Model):
         return forms
 
     def removeForm(request, id):
-        form = Form.objects.filter(id=id, created_by=request.user).first()
+        form = Form.objects.filter(id=id, created_by=request.user).exclude(is_default=True).first()
         if form:
             form.delete()
 
@@ -1272,7 +1288,7 @@ class manageUser:
                         },
                     )
 
-                    send_mailjet_email(user, mail_subject, body)
+                    # send_mailjet_email(user, mail_subject, body)
 
                     # create statuses for the user
                     _create_statuses(user, Status)

@@ -61,7 +61,7 @@ def _create_statuses(user, model):
             pass
 
 def _create_intake_form(user, model):
-    orderinfosset = {'orderinfos': ['order', 'company_name', 'company_address', 'company_city', 'company_state', 'company_zip', 'company_country', 'company_phone', 'website_url', 'company_email', 'company_description', 'logo_image', 'map_url', 'website_login_url', 'web_username', 'web_password', 'analytics_account']}
+    orderinfosset = {'orderinfos': ['order', 'company_name', 'website_url']}
     try:
         model.objects.create(
             title='General',
@@ -69,6 +69,7 @@ def _create_intake_form(user, model):
             data={},
             created_by=user,
             is_service=True,
+            is_default=True,
         )
     except:
         pass

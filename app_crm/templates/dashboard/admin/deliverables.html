@@ -59,12 +59,12 @@
             <table id="dataTable" width="100%" cellspacing="0" class="table table-bordered table-sm" style="text-align:center;">
                 <thead>
                     <tr style="background-color:#F5F5F5;">
-                        <th scope="col" class="sortable" style="width: 24%">Title</th>
-                        <th scope="col" class="sortable" style="width: 10%">Start date</th>
-                        <th scope="col" class="sortable" style="width: 10%">Due date</th>
-                        <th scope="col" class="sortable" style="width: 10%">Status</th>
-                        <th scope="col" class="sortable" style="width: 32%">Notes</th>
-                        <th scope="col" class="sortable" style="width: 6%">Report link</th>
+                        <th scope="col" class="sortable" style="width: 30%">Title</th>
+                        <th scope="col" class="sortable" style="width: 14%">Start date</th>
+                        <th scope="col" class="sortable" style="width: 14%">Due date</th>
+                        <th scope="col" class="sortable" style="width: 14%">Status</th>
+                        <th scope="col" class="sortable" style="width: 14%">Notes</th>
+                        <th scope="col" class="sortable" style="width: 14%">Report link</th>
                         {% if request.user.is_staff %}
                             <th scope="col" class="sortable" style="width: 8%">Actions</th>
                         {% endif %}
@@ -81,7 +81,13 @@
                         <td scope="col" class="sortable" style="background-color: {{ t.status.color }};">{% if t.end_date == None %}{%else%}{{ t.end_date|date:"M d, Y" }}{% endif %}</td>
                         <td scope="col" class="sortable" style="background-color: {{ t.status.color }};">{{ t.status.name }}</td>
                         <td scope="col" class="sortable" style="background-color: {{ t.status.color }}; word-break: break-all;">{% if t.notes %}<div><p class="half-note m-0">{{ t.notes|slice:":20" }} <a href="#" class="show-hide-btn">more</a></p><p class="full-note m-0 d-none">{{ t.notes }} <a href="#" class="show-hide-btn">less</a></p></div>{% endif %}</td>
-                        <td scope="col" class="sortable">{% if t.report_link %}<a href="{{ t.report_link }}" target="_blank">View report</a>{% endif %}</td>
+                        <td scope="col" class="sortable">
+                            {% if t.report_link.all %}
+                                {% for link in t.report_link.all %}
+                                    <a href="{{ link.link }}" target="_blank">View report</a>
+                                {% endfor %}
+                            {% endif %}
+                        </td>
                         {% if request.user.is_staff %}
                             <td scope="col" class="sortable" ><a class="btn btn-primary btn-sm" style="min-width: 95px; width: 100%;" href="#" role="button"  data-toggle="modal" data-target="#taskModalP{{ t.id }}">Manage task</a></td>
                         {% endif %}
@@ -140,10 +146,16 @@
                             {% csrf_token %}
 
                                 <div class="form-group col-12 mb-4">
-                                    
-                                    <label class="text ml-1" for="report_link">Report link:</label>
-                                    <input type="text" class="form-control mb-2" name="report_link" id="report_link" value="{{ t.report_link }}">
-
+                                {% if t.report_link.all|length > 0 %}
+                                    {% for link in t.report_link.all %}
+                                        <label class="text ml-1" for="report_link">Report link:</label>
+                                        <input type="url" class="form-control mb-2" name="report_link_modal" id="report_link" value="{{ link.link }}">
+                                    {%endfor%}
+                                {% else %}
+                                    <label class="text ml-1" for="report_link">Report link AA:</label>
+                                    <input type="url" class="form-control mb-2" name="report_link_modal" id="report_link">
+                                {% endif %}
+                                <button class="fformaddlink btn btn-primary ml-auto" data-task="{{t.id}}">Add link</button>
                                 </div>
 
                                 <div class="form-group col-12 mb-4">
@@ -169,7 +181,7 @@
                                     <label class="text ml-1" for="select-status">Status:</label>
                                     <select name="status" id="select-status" class="form-control" required>
                                         {% for status in statuses %}
-                                        <option value="{{ status.id }}" {% if status.id == t.status.id %}selected="selected"{% endif %}>{{ status.name }}</option>
+                                        <option value="{{ status.id }}" {% if status.id == t.status.id %}selected="selected"{%elif status.name == 'In progress'%}selected{% endif %}>{{ status.name }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
@@ -333,7 +345,7 @@
 
                                 <div class="form-group col-12 mb-4">
                                     <label class="text ml-1" for="report_link">Report link:</label>
-                                    <input type="text" class="form-control mb-2" name="report_link" id="report_link" value="{{ addontask.report_link }}">
+                                    <input type="url" class="form-control mb-2" name="report_link" id="report_link" value="{{ addontask.report_link }}">
 
                                     <label class="text ml-1" for="note">Note:</label>
                                     <textarea class="form-control mb-2" name="note" id="note">{{ addontask.notes }}</textarea>

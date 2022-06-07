@@ -16,9 +16,8 @@
                         <div class="form-group col-12 mb-4">
                             <h5 class="mb-4">Select service:</h5>
                             <select name="theforms" class="fformselect form-control">
-                                <option value="" disabled selected>Select service</option>
                                 {% for form in forms %}
-                                <option value="customform-{{ form.id }}">{{ form.title }}</option>
+                                <option value="customform-{{ form.id }}" {% if form.is_default %} selected {% endif %}>{{ form.title }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -27,7 +26,7 @@
                         <div class="form-forms">
                         {% if forms|length > 0 %}
                         {% for form in forms %}
-                        <form method="POST" id="customform-{{ form.id }}" style="display: none;">
+                        <form method="POST" id="customform-{{ form.id }}" {% if not form.is_default %} style="display: none;" {% endif %}>
                             {% csrf_token %}
 
                             <input type="text" hidden name="service_form_id" value="{{form.id}}">

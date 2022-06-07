@@ -10,6 +10,16 @@ $(".fformselect").on("change", function() {
     }
 })
 
+$(".fformaddlink").on("click", function(e){
+    e.preventDefault();
+    // let task_id = $(this).data('task')
+    let num_of_inputs = $("input[name='report_link_modal']").length;
+
+    input = `<label class="text ml-1" for="report_link">Report link:</label>
+    <input type="url" class="form-control mb-2" name="report_link_modal" id="report_link">`
+    $(this).before($.parseHTML(input))
+});
+
 $(document).ready(function() {
     let areas = document.querySelectorAll(".textarea-expandable");
     let minHeight = 60; /* Maximum height: 200px */
