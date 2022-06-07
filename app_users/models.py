@@ -66,8 +66,8 @@ class CustomUser(AbstractUser):
             if agency.logo:
                 return f'<img class="agency-logo" src="{agency.logo.url}" alt="agency_logo">'
             if agency.name:
-                return f'<div class="sidebar-brand-text mx-3 agency-name">{agency.name.upper()}</div>'
-        return '<div class="sidebar-brand-text mx-3">DASHBOARD</div>'
+                return f'<div class="sidebar-brand-text agency-name">{agency.name.upper()}</div>'
+        return '<div class="sidebar-brand-text">DASHBOARD</div>'
 
     def get_unread_notifications(self):
         return self.notification.filter(is_read=False)

@@ -476,7 +476,7 @@ class Order(models.Model):
         order.save()
 
     def getUserOrders(request):
-        orders = Order.objects.filter(owner=request.user.id)
+        orders = Order.objects.filter(owner=request.user.id).exclude(is_archived=True)
         return orders
 
     def sendMessageNotification(request, msg):
