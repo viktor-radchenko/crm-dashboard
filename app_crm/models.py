@@ -697,10 +697,11 @@ class Task(models.Model):
         # report links
         links = request.POST.getlist("report_link_modal")
         for link in links:
-            TaskReportLink.objects.create(
-                link=link,
-                task=task
-            )
+            if not task.report_link.filter(link=link).first():
+                TaskReportLink.objects.create(
+                    link=link,
+                    task=task
+                )
 
         task.notes = request.POST["note"]
         task.save()
