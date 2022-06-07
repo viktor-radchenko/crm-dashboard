@@ -197,7 +197,7 @@ class dash:
             if request.user.is_staff:
                 if request.method == "POST":
                     Order.editInfo(request, id)
-                    return redirect("/dashboard/admin/allorders")
+                    return redirect(f"/dashboard/admin/editinfo/{id}/")
                 context = {}
                 context["order"] = Order.getOrderById(request, id)
                 context['email'] = context["order"].owner.email if settings.CLIENT_TAG not in context["order"].owner.email else ''
@@ -210,7 +210,7 @@ class dash:
             if request.user.is_staff:
                 if request.method == "POST":
                     Order.editOrder(request, id)
-                    return redirect("/dashboard/admin/allorders")
+                    return redirect(f"/dashboard/admin/edit/{id}/")
                 context = {}
                 order = Order.getOrderById(request, id)
                 context["order"] = order
