@@ -349,9 +349,17 @@
                                 </div>
 
                                 <div class="form-group col-12 mb-4">
-                                    <label class="text ml-1" for="report_link">Report link:</label>
-                                    <input type="url" class="form-control mb-2" name="report_link" id="report_link" value="{{ addontask.report_link }}">
-
+                                    {% if addontask.report_link.all|length > 0 %}
+                                        {% for link in addontask.report_link.all %}
+                                            {% if link.link %}
+                                            <label class="text ml-1" for="report_link">Report link:</label>
+                                            <input type="url" class="form-control mb-2" name="report_link" id="report_link" value="{{ link.link }}">
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        <label class="text ml-1" for="report_link">Report link:</label>
+                                        <input type="url" class="form-control mb-2" name="report_link" id="report_link">
+                                    {% endif %}
                                     <label class="text ml-1" for="note">Note:</label>
                                     <textarea class="form-control mb-2" name="note" id="note">{{ addontask.notes }}</textarea>
                                 </div>

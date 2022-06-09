@@ -246,7 +246,6 @@ class Order(models.Model):
                             completed_by=None,
                             status=None,
                             notes="",
-                            report_link="",
                             month=mon.num,
                             template_task=ta.templateTask,
                             ordering=ta.ordering,
@@ -298,7 +297,6 @@ class Order(models.Model):
                                 end_date=None,
                                 completed_by=None,
                                 notes="",
-                                report_link="",
                                 template_task=t.templateTask,
                                 ordering=t.ordering,
                             )
@@ -330,7 +328,6 @@ class Order(models.Model):
                                     end_date=None,
                                     completed_by=None,
                                     notes="",
-                                    report_link="",
                                     template_task=templateAddonTask.templateTask,
                                     ordering=templateAddonTask.ordering,
                                 )
@@ -871,7 +868,6 @@ class Month(models.Model):
                             end_date=None,
                             status=None,
                             notes="",
-                            report_link="",
                             month=month.num,
                             template_task=templateTask(id=item),
                             ordering=getOrderding(item),
