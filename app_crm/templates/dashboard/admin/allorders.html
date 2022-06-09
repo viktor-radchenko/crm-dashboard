@@ -130,7 +130,12 @@
                             {% if order.link2 %}<a href="{{ order.link2 }}" target="_blank" title="trello card" class="mr-1" ><i class="fab fa-trello"></i></a>{% endif %}
                             {% if order.link3 %}<a href="{{ order.link3 }}" target="_blank" title="workbook" class="mr-1" ><i class="fas fa-table"></i></a>{% endif %}
                             {% if order.link4 %}<a href="{{ order.link4 }}" target="_blank" title="rank tracker" class="mr-1" ><i class="fas fa-chart-area"></i></a>{% endif %}
-                            <a href="/dashboard/admin/cancel/{{ order.id }}/" title="Archive order" class="mr-1"><i class="fa fa-trash"></i></a>
+                            
+                            {% if order.is_archived %}
+                            <a href="/dashboard/admin/delete/{{ order.id }}/" title="Delete order" class="mr-1"><i class="fa fa-trash"></i></a>
+                            {% else %}
+                            <a href="/dashboard/admin/cancel/{{ order.id }}/" title="Archive order" class="mr-1"><i class="fa fa-archive"></i></a>
+                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}

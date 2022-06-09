@@ -187,8 +187,12 @@ class dash:
                 return redirect("/")
 
         def deleteOrder(request, id):
-            if request.user.is_superuser:
-                Order.deleteOrder(id)
+            if request.user.is_staff:
+                success, msg = Order.deleteOrder(request, id)
+                if success:
+                    messages.success(request, msg)
+                else:
+                    messages.error(request, msg)
                 return redirect("/dashboard/admin/allorders/")
             else:
                 return redirect("/")

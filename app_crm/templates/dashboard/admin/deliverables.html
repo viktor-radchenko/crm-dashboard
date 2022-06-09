@@ -107,7 +107,7 @@
                         <td scope="col" class="sortable" style="background-color: {{ addontask.status.color }}; word-break: break-all;">{% if addontask.notes %}<div><p class="half-note m-0">{{ addontask.notes|slice:":20" }} <a href="#" class="show-hide-btn">more</a></p><p class="full-note m-0 d-none">{{ addontask.notes }} <a href="#" class="show-hide-btn">less</a></p></div>{% endif %}</td>
                         <td scope="col" class="sortable">{% if addontask.report_link %}<a href="{{ addontask.report_link }}" target="_blank">View report</a>{% endif %}</td>
                         {% if request.user.is_staff %}
-                            <td scope="col" class="sortable"><a class="btn btn-primary btn-sm mr-1" href="#" role="button" data-toggle="modal" data-target="#taskModalA{{ addontask.id }}">Manage task</a></td>
+                            <td scope="col" class="sortable"><a class="btn btn-primary btn-sm" href="#" role="button" data-toggle="modal" data-target="#taskModalA{{ addontask.id }}">Manage task</a></td>
                         {% endif %}
                     </tr>
                     <tr scope="col"><td><p></p></td><td></td><td></td><td></td><td></td><td></td>{% if request.user.is_staff %}<td></td>{% endif %}</tr>

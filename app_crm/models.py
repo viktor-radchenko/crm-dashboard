@@ -79,6 +79,7 @@ class Order(models.Model):
         "Package", on_delete=models.SET_DEFAULT, null=True, blank=True, default=None
     )
     addon = models.ManyToManyField("Addon", blank=True, default=None)
+    is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
         return self.order
@@ -152,14 +153,18 @@ class Order(models.Model):
             form.save()
         return True, "Order successfully created"
 
-    def deleteOrder(id):
+    def deleteOrder(request, id):
         order = Order.objects.get(id=id)
+        if not request.user != order.owner or request.user != order.owner.created_by:
+            return False, "You don't have permission to delete this order"
         if order.package != None:
             package = order.package
             tasks = package.tasks.all()
             tasks.delete()
             package.delete()
-        order.delete()
+        order.is_deleted = True
+        order.save()
+        return True, "Order successfully deleted"
 
     def editInfo(request, id):
         order = Order.objects.get(id=id)
@@ -354,7 +359,7 @@ class Order(models.Model):
         filters = _get_filters_from_session(request)
         orders = Order.objects.filter(**filters).exclude(
             owner__is_deleted=True
-        )
+        ).exclude(is_deleted=True)
         return orders
 
     def createUserOrder(request):
