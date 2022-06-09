@@ -722,7 +722,8 @@ class dash:
                         # don't include service emails
                         if not settings.CLIENT_TAG in order.owner.email:
                             recipient = order.owner
-                    msg = Message(order=order, author=request.user, body=body, recipient=recipient.email)
+                    if recipient:
+                        msg = Message(order=order, author=request.user, body=body, recipient=recipient.email)
 
                     # check if message is reply
                     is_reply = int(request.POST.get("replyto", 0))
