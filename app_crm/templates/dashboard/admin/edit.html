@@ -92,11 +92,8 @@
                             <div class="form-group col-12 mb-4">
                                 <label class="text ml-1" for="select-pack">Package:</label>
                                 <select name="package" id="select-pack" class="form-control" required>
-                                    {% if order.package %}
-                                    <option value="default" selected="selected">{{ order.package.template.title }}</option>
-                                    {% endif %}
                                     {% for p in package %}
-                                    <option value="{{ p.id }}">{{ p.title }}</option>
+                                    <option {% if p == order.package %}  value="default" selected="selected" {% else %}value="{{ p.id }}"{%endif%}>{{ p.title }}</option>
                                     {% endfor %}
                                     <option value="None" {% if not order.package_id %}selected="selected"{% endif %}>None</option>
                                 </select>
