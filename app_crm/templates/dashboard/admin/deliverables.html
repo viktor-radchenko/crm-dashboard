@@ -85,7 +85,7 @@
                             {% if t.report_link.all %}
                                 {% for link in t.report_link.all %}
                                     {% if link.link %}
-                                        <a href="{{ link.link }}" target="_blank">view </a>
+                                        <a href="{{ link.link }}" target="_blank">{{forloop.counter}} </a>
                                     {% endif %}
                                 {% endfor %}
                             {% endif %}
