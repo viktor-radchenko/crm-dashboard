@@ -50,7 +50,7 @@
             <div class="row">
                 <div class="col-12 mb-3 mt-3">
                     <div class="form-group col-12 mb-4">
-                        <p>Email: <strong>{{ order.owner.email }}</strong></p>
+                        <p>Email: {% if order.owner.is_active and not client_tag in order.owner.email%} <strong>{{ order.owner.email }}</strong> {% endif %}</p> 
                         <p>First name: <strong>{% if order.owner.first_name %}{{ order.owner.first_name }}{% else %}-{% endif %}</strong></p>
                         <p>Last name: <strong>{% if order.owner.last_name %}{{ order.owner.last_name }}{% else %}-{% endif %}</strong></p>
                         {% if request.user.is_superuser %}<a href="#" data-toggle="modal" data-target="#confirmModal">delete this order</a>{% endif %}

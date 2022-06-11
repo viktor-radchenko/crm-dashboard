@@ -225,6 +225,7 @@ class dash:
                 context["package"] = templatePackage.getAllPackage(request)
                 context["template_addons"] = templateAddon.getAllAddon(request)
                 context["users"] = manageUser.getAllClients(request)
+                context["client_tag"] = settings.CLIENT_TAG
                 return render(request, "dashboard/admin/edit.html", context)
             else:
                 return redirect("/")

@@ -158,10 +158,14 @@ class Order(models.Model):
         if not request.user != order.owner or request.user != order.owner.created_by:
             return False, "You don't have permission to delete this order"
         if order.package != None:
-            package = order.package
-            tasks = package.tasks.all()
-            tasks.delete()
-            package.delete()
+            try:
+                package = order.package
+                tasks = package.tasks.all()
+                tasks.delete()
+                # package.delete()
+                # package.save()
+            except Exception as e:
+                logging.error("Exception: " + str(e))
         order.is_deleted = True
         order.save()
         return True, "Order successfully deleted"
