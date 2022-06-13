@@ -176,7 +176,7 @@ def _get_filters_from_session(request):
         filters["owner__in"] = request.session.get('select_user')
     if request.session.get('month'):
         filters["month"] = request.session.get('month')
-    filters["is_archived"] = request.session.get('show_archived')
+    filters["is_archived"] = request.session.get('show_archived', False)
 
     if not filters.get('owner__in') and not request.user.is_client:
         user_ids = []
