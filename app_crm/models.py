@@ -634,7 +634,7 @@ class Order(models.Model):
     def getOrdersByFilter(request):
         _update_filters_in_session(request)
         filters = _get_filters_from_session(request)
-        orders = Order.objects.filter(**filters).exclude(owner__is_deleted=True)
+        orders = Order.objects.filter(**filters).exclude(owner__is_deleted=True).exclude(is_deleted=True)
         return orders
 
 
