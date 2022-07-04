@@ -108,6 +108,15 @@
            
             {% endif %}
 
+            
+            <li class="nav-item feedback__btn" id="feedback__btn">
+                <div class="sidebar-heading">Feedback</div>
+                <button class="nav-link" href="/dashboard/admin/allusers">
+                    <i class="fas fa-question-circle"></i>
+                    <span></span>
+                </button>
+            </li>
+
         </ul>
 
         <div id="content-wrapper" class="d-flex flex-column">
@@ -177,6 +186,22 @@
 
         </div>
 
+        <div id="myModal" class="modal">
+
+            <!-- Modal content -->
+            <div class="modal-content">
+              <span class="close">&times;</span>
+              <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSe1cc6c-41AK0JYLFYgjM4qHucye4o7MlOSwIlONFJGb-TH2Q/viewform?embedded=true" width="640" height="450" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+            </div>
+          
+          </div>
+
+        <div class="feedback">
+            <div class="feedback__container feedback__hidden">
+                
+            </div>
+        </div>
+
     </div>
 
     <div class="notification-sidebar bg-gradient-primary sidebar-dark">
@@ -202,12 +227,6 @@
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
     </a>
-
-    <div class="feedback position-fixed">
-        <div class="feedback__container position-fixed">
-            <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSe1cc6c-41AK0JYLFYgjM4qHucye4o7MlOSwIlONFJGb-TH2Q/viewform?embedded=true" width="640" height="407" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
-        </div>
-    </div>
 
     <script src="{% static "/vendor/jquery/jquery.min.js"%}"></script>
     <script src="{% static "/vendor/bootstrap/js/bootstrap.bundle.min.js"%}"></script>
