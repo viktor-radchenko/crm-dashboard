@@ -189,7 +189,7 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
 }
 
 /* The Modal (background) */
-.modal {
+.feedback__modal {
   display: none; /* Hidden by default */
   position: fixed; /* Stay in place */
   z-index: 100; /* Sit on top */
@@ -203,7 +203,7 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
 }
 
 /* Modal Content/Box */
-.modal-content {
+.feedback__modal-content {
   background-color: #fefefe;
   margin: 15% auto; /* 15% from the top and centered */
   padding: 20px;
@@ -212,15 +212,15 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
 }
 
 /* The Close Button */
-.close {
+.feedback__close {
   color: #aaa;
   float: right;
   font-size: 28px;
   font-weight: bold;
 }
 
-.close:hover,
-.close:focus {
+.feedback__close:hover,
+.feedback__close:focus {
   color: black;
   text-decoration: none;
   cursor: pointer;
