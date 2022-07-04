@@ -1,14 +1,12 @@
 import logging
 import re
 import secrets
-from xml.dom.expatbuilder import Rejecter
+from datetime import datetime
 
 import requests
 import json
 
 from django.db import models
-from django.core.exceptions import ValidationError
-from django.core import serializers
 from app_users.models import CustomUser, UserReplication
 from django.contrib import auth, messages
 from django.conf import settings
@@ -707,8 +705,13 @@ class Task(models.Model):
     def editTask(request, id):
         task = Task.objects.get(id=id)
 
+        local_status = Status.objects.get(id=int(request.POST["status"]))
+        task.status = local_status
+
         if request.POST["start_date"] == "":
             local_start_date = None
+            if local_status.name == 'In progress':
+                local_start_date = datetime.now()
             task.start_date = local_start_date
         else:
             local_start_date = request.POST["start_date"]
@@ -716,13 +719,12 @@ class Task(models.Model):
 
         if request.POST["end_date"] == "":
             local_end_date = None
+            if local_status.name == 'Completed':
+                local_end_date = datetime.now()
             task.end_date = local_end_date
         else:
             local_end_date = request.POST["end_date"]
             task.end_date = local_end_date
-
-        local_status = Status.objects.get(id=int(request.POST["status"]))
-        task.status = local_status
 
         # report links
         links = request.POST.getlist("report_link_modal")
