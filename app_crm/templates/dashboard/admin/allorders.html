@@ -110,7 +110,7 @@
                         <td scope="col" class="sortable">{{ order.owner.first_name }}</td>
                         <td scope="col" class="sortable">{{ order.company_name }}</td>
                         <td scope="col" class="sortable">{% if order.status.name == None %}{%else%}<span style="display: block; background-color: {{ order.status.color }};">{{ order.status.name }}</span>{% endif %}</td>
-                        <td scope="col" class="sortable">Month {{ order.month }}</td>
+                        <td scope="col" class="sortable">{{ order.month }}</td>
                         <td scope="col" class="sortable">{% if order.package == None %}{%else%}<span style="display: block; background-color: {{ order.package.template.color }};">{{ order.package }}</span>{% endif %}</td>
                         <td scope="col" class="sortable">{% if order.addon == None %}{%else%}{% for add in order.addon.all %}<span style="display: block; margin: 1px; background-color: {{ add.template.color }};">{{ add.template.title }}</span>{% endfor %}{% endif %}</td>
                         <td scope="col" class="sortable">
