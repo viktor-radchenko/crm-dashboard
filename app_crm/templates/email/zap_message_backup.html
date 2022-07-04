@@ -1,0 +1,11 @@
+{% autoescape off %}
+Hi {{ recipient.first_name }},
+You have got a new message for the Order #{{dataset.order}}:
+
+{% for key, value in dataset.items %}
+  {{key|title}}: {{value|default_if_none:""}}
+{% endfor %}
+
+Best regards,
+SearchManager.pro Team
+{% endautoescape %}
