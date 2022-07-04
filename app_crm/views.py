@@ -25,6 +25,21 @@ from app_crm.models import (
 from app_users.models import CustomUser
 from app_crm.utils import _clear_filters_in_session
 
+
+class main:
+    def home(request):
+        return render(request, "coming_soon.html")
+
+    def features(request):
+        return render(request, "coming_soon.html")
+
+    def pricing(request):
+        return render(request, "coming_soon.html")
+    
+    def blog(request):
+        return render(request, "coming_soon.html")
+
+
 class sign:
     def signin(request):
         if request.user.is_authenticated:
@@ -35,7 +50,7 @@ class sign:
                     messages.warning(request, mark_safe(
                         f'You need to confirm your account first. Please check your email. You can re-send activation link by clicking <a href="/signup/confirmation/resend/">here</a>')
                     )
-                    return redirect("/")
+                    return redirect("/login/")
                 success, message = manageUser.loginUser(request)
                 if success:
                     return redirect("/dashboard/admin/allorders/")
@@ -66,7 +81,7 @@ class sign:
                 messages.success(request, message)
             else:
                 messages.warning(request, message)
-            return redirect("/")
+            return redirect("/login/")
         return render(request, 'resend_confirm_email.html')
 
     def invitationSignUp(request, uuid):
@@ -75,10 +90,10 @@ class sign:
         user = get_user_model().objects.filter(uuid=uuid).first()
         if not user:
             messages.error(request, "No client found with this id. Contact administrator and request new confirmation link")
-            return redirect("/")
+            return redirect("/login/")
         if request.method == "POST":
             if manageUser.createClientUser(request):
-               return redirect("/")
+               return redirect("/login/")
             else:
                 context = {}
                 context["error_message"] = "This account already exists"
@@ -100,7 +115,7 @@ class sign:
 
     def logout(request):
         manageUser.logoutUser(request)
-        return redirect("/")
+        return redirect("/login/")
 
 
 class dash:
@@ -120,7 +135,7 @@ class dash:
                 messages.error(request, "Something went wrong. Please check your input and try again")
             return render(request, "dashboard/profile.html")
         else:
-            return redirect("/")
+            return redirect("/login/")
     
     def deleteImage(request):
         request.user.set_default_image()
@@ -138,7 +153,7 @@ class dash:
         notification = manageUser.getNotificationById(request, id)
         if notification:
             return redirect(notification.link)
-        return redirect("/")
+        return redirect("/login/")
 
     def deleteNotification(request, id):
         if manageUser.deleteNotification(request, id):
@@ -184,7 +199,7 @@ class dash:
                 context['forms'] = request.user.form.filter(is_service=True)
                 return render(request, "dashboard/admin/createcustom.html", context)
             else:
-                return redirect("/")
+                return redirect("/login/")
 
         def deleteOrder(request, id):
             if request.user.is_staff:
@@ -195,7 +210,7 @@ class dash:
                     messages.error(request, msg)
                 return redirect("/dashboard/admin/allorders/")
             else:
-                return redirect("/")
+                return redirect("/login/")
 
         def editInfo(request, id):
             if request.user.is_staff:
@@ -208,7 +223,7 @@ class dash:
                 context['form'] = Form.objects.filter(order=context["order"]).first()
                 return render(request, "dashboard/admin/editinfo.html", context)
             else:
-                return redirect("/")
+                return redirect("/login/")
 
         def editOrder(request, id):
             if request.user.is_staff:
@@ -228,20 +243,20 @@ class dash:
                 context["client_tag"] = settings.CLIENT_TAG
                 return render(request, "dashboard/admin/edit.html", context)
             else:
-                return redirect("/")
+                return redirect("/login/")
 
         def cancelOrder(request, id):
             if request.user.is_staff:
                 Order.cancelOrder(id)
                 return redirect("/dashboard/admin/allorders")
             else:
-                return redirect("/")
+                return redirect("/login/")
 
         def deliverables(request, id):
             order = Order.getOrderById(request, id)
             if not order:
                 messages.warning(request, "This order does not exist or you do not have permission to access it")
-                return redirect("/")
+                return redirect("/login/")
             context = {}
             if order.package != None:
                 context["package"] = order.package
@@ -262,7 +277,7 @@ class dash:
                     return redirect("/dashboard/admin/" + str(oid) + "/deliverables/")
                 return redirect("/dashboard/admin/" + str(oid) + "/deliverables/")
             else:
-                return redirect("/")
+                return redirect("/login/")
 
         def allClients(request):
             if request.user.is_staff:
@@ -272,7 +287,7 @@ class dash:
                 context["client_tag"] = settings.CLIENT_TAG
                 return render(request, "dashboard/admin/clients/clients.html", context)
             else:
-                return redirect("/")
+                return redirect("/login/")
 
         def clientsCreate(request):
             if request.user.is_staff:
@@ -288,7 +303,7 @@ class dash:
                         messages.error(request, "Form cannot be empty. Please fill in one of the fileds below")
                 return render(request, "dashboard/admin/clients/create.html")
             else:
-                return redirect("/")
+                return redirect("/login/")
 
         def clientsEdit(request, id):
             if request.user.is_staff:
@@ -303,7 +318,7 @@ class dash:
                 context = {}
                 client = manageUser.getClientById(request, id)
                 if not client:
-                    return redirect("/")
+                    return redirect("/login/")
                 context["email"] = client.email if settings.CLIENT_TAG not in client.email else '' 
                 context["first_name"] = client.first_name
                 context["last_name"] = client.last_name
@@ -312,7 +327,7 @@ class dash:
                 context["disabled"] = 'disabled' if client.is_active and client.is_registered else ''
                 return render(request, "dashboard/admin/clients/edit.html", context)
             else:
-                return redirect("/")
+                return redirect("/login/")
 
         def clientsSendInvitation(request, id):
             error = manageUser.sendInvitationUrl(request, id)
@@ -327,7 +342,7 @@ class dash:
                 if manageUser.removeClient(request, id):
                     return redirect("/dashboard/admin/clients/")
             else:
-                return redirect("/")
+                return redirect("/login/")
 
         def allUsers(request):
             if request.user.is_superuser:
@@ -335,7 +350,7 @@ class dash:
                 context["users"] = manageUser.getAllUsers()
                 return render(request, "dashboard/admin/users/allusers.html", context)
             else:
-                return redirect("/")
+                return redirect("/login/")
 
         def allUsersEdit(request, id):
             if request.user.is_superuser:
@@ -349,14 +364,14 @@ class dash:
                 context["user"] = manageUser.getUser(id)
                 return render(request, "dashboard/admin/users/edit.html", context)
             else:
-                return redirect("/")
+                return redirect("/login/")
 
         def allUsersDelete(request, id):
             if request.user.is_superuser:
                 manageUser.deleteUser(request, id)
                 return redirect("/dashboard/admin/allusers/")
             else:
-                return redirect("/")
+                return redirect("/login/")
 
         def statuses(request):
             if request.user.is_staff:
@@ -366,7 +381,7 @@ class dash:
                     request, "dashboard/admin/statuses/statuses.html", context
                 )
             else:
-                return redirect("/")
+                return redirect("/login/")
 
         def statusesCreate(request):
             if request.user.is_staff:
@@ -375,7 +390,7 @@ class dash:
                     return redirect("/dashboard/admin/statuses/")
                 return render(request, "dashboard/admin/statuses/create.html")
             else:
-                return redirect("/")
+                return redirect("/login/")
 
         def statusesEdit(request, id):
             if request.user.is_staff:
@@ -386,14 +401,14 @@ class dash:
                 context["status"] = Status.getStatusById(request, id)
                 return render(request, "dashboard/admin/statuses/edit.html", context)
             else:
-                return redirect("/")
+                return redirect("/login/")
 
         def statusesRemove(request, id):
             if request.user.is_staff:
                 Status.removeStatus(request, id)
                 return redirect("/dashboard/admin/statuses/")
             else:
-                return redirect("/")
+                return redirect("/login/")
 
         def forms(request):
             if request.user.is_staff:
@@ -401,7 +416,7 @@ class dash:
                 context["forms"] = Form.getAllForms(request)
                 return render(request, "dashboard/admin/forms/forms.html", context)
             else:
-                return redirect("/")
+                return redirect("/login/")
 
         def serviceForms(request):
             if request.user.is_staff:
@@ -409,7 +424,7 @@ class dash:
                 context["forms"] = Form.getAllServiceForms(request)
                 return render(request, "dashboard/admin/services/services.html", context)
             else:
-                return redirect("/")
+                return redirect("/login/")
 
         def formsCreate(request):
             if request.user.is_staff:
@@ -418,7 +433,7 @@ class dash:
                     return redirect("/dashboard/admin/forms/")
                 return render(request, "dashboard/admin/forms/create.html")
             else:
-                return redirect("/")
+                return redirect("/login/")
 
         def serviceFormsCreate(request):
             if request.user.is_staff:
@@ -427,7 +442,7 @@ class dash:
                     return redirect("/dashboard/admin/services/")
                 return render(request, "dashboard/admin/services/create.html")
             else:
-                return redirect("/")
+                return redirect("/login/")
 
         def formsEdit(request, id):
             if request.user.is_staff:
@@ -440,7 +455,7 @@ class dash:
                 context["things"] = thisform.data.values()
                 return render(request, "dashboard/admin/forms/edit.html", context)
             else:
-                return redirect("/")
+                return redirect("/login/")
 
         def serviceFormsEdit(request, id):
             if request.user.is_staff:
@@ -453,21 +468,21 @@ class dash:
                 context["things"] = thisform.data.values()
                 return render(request, "dashboard/admin/services/edit.html", context)
             else:
-                return redirect("/")
+                return redirect("/login/")
 
         def formsRemove(request, id):
             if request.user.is_staff:
                 Form.removeForm(request, id)
                 return redirect("/dashboard/admin/forms/")
             else:
-                return redirect("/")
+                return redirect("/login/")
         
         def serviceFormsRemove(request, id):
             if request.user.is_staff:
                 Form.removeForm(request, id)
                 return redirect("/dashboard/admin/forms/")
             else:
-                return redirect("/")
+                return redirect("/login/")
 
         def keyEdit(request):
             if request.user.is_staff:
@@ -478,7 +493,7 @@ class dash:
                 context["key"] = ZapierApi.getKey(request)
                 return render(request, "dashboard/admin/editkey.html", context)
             else:
-                return redirect("/")
+                return redirect("/login/")
 
         class template:
             def allPackage(request):
@@ -489,7 +504,7 @@ class dash:
                         request, "dashboard/admin/template/package.html", context
                     )
                 else:
-                    return redirect("/")
+                    return redirect("/login/")
 
             def createPackage(request):
                 if request.user.is_staff:
@@ -502,7 +517,7 @@ class dash:
                         request, "dashboard/admin/template/create_package.html"
                     )
                 else:
-                    return redirect("/")
+                    return redirect("/login/")
 
             def editPackage(request, id):
                 if request.user.is_staff:
@@ -524,14 +539,14 @@ class dash:
                             context,
                         )
                 else:
-                    return redirect("/")
+                    return redirect("/login/")
 
             def removePackage(request, id):
                 if request.user.is_staff:
                     templatePackage.removePackage(request, id)
                     return redirect("/dashboard/admin/template/package")
                 else:
-                    return redirect("/")
+                    return redirect("/login/")
 
             def editMonth(request, pid, id):
                 if request.user.is_staff:
@@ -550,7 +565,7 @@ class dash:
                         request, "dashboard/admin/template/edit_month.html", context
                     )
                 else:
-                    return redirect("/")
+                    return redirect("/login/")
 
             def allTask(request):
                 if request.user.is_staff:
@@ -560,7 +575,7 @@ class dash:
                         request, "dashboard/admin/template/task.html", context
                     )
                 else:
-                    return redirect("/")
+                    return redirect("/login/")
 
             def createTask(request):
                 if request.user.is_staff:
@@ -569,7 +584,7 @@ class dash:
                         return redirect("/dashboard/admin/template/task")
                     return render(request, "dashboard/admin/template/create_task.html")
                 else:
-                    return redirect("/")
+                    return redirect("/login/")
 
             def editTask(request, id):
                 if request.user.is_staff:
@@ -586,14 +601,14 @@ class dash:
                             request, "dashboard/admin/template/edit_task.html", context
                         )
                 else:
-                    return redirect("/")
+                    return redirect("/login/")
 
             def removeTask(request, id):
                 if request.user.is_staff:
                     if templateTask.removeTask(request, id):
                         return redirect("/dashboard/admin/template/task")
                 else:
-                    return redirect("/")
+                    return redirect("/login/")
 
             def allAddon(request):
                 if request.user.is_staff:
@@ -603,7 +618,7 @@ class dash:
                         request, "dashboard/admin/template/addon.html", context
                     )
                 else:
-                    return redirect("/")
+                    return redirect("/login/")
 
             def createAddon(request):
                 if request.user.is_staff:
@@ -612,7 +627,7 @@ class dash:
                         return redirect("/dashboard/admin/template/addon")
                     return render(request, "dashboard/admin/template/create_addon.html")
                 else:
-                    return redirect("/")
+                    return redirect("/login/")
 
             def editAddon(request, id):
                 if request.user.is_staff:
@@ -629,14 +644,14 @@ class dash:
                         request, "dashboard/admin/template/edit_addon.html", context
                     )
                 else:
-                    return redirect("/")
+                    return redirect("/login/")
 
             def removeAddon(request, id):
                 if request.user.is_staff:
                     if templateAddon.removeAddon(request, id):
                         return redirect("/dashboard/admin/template/addon")
                 else:
-                    return redirect("/")
+                    return redirect("/login/")
 
         class send:
             def sendAllInfo(request, id):
@@ -648,7 +663,7 @@ class dash:
                         messages.error(request, mark_safe(msg))
                     return redirect("/dashboard/admin/allorders/")
                 else:
-                    return redirect("/")
+                    return redirect("/login/")
 
             def sendForm(request, id, formid):
                 if request.user.is_staff:
@@ -662,7 +677,7 @@ class dash:
                     else:
                         return handler404(request)
                 else:
-                    return redirect("/")
+                    return redirect("/login/")
 
     class user:
         def myOrders(request):
@@ -676,7 +691,7 @@ class dash:
                 context['unread_messages'] = Order.getUnreadMessages(request, context['orders'])
                 return render(request, "dashboard/user/myorders.html", context)
             else:
-                return redirect("/")
+                return redirect("/login/")
 
         def createOrder(request):
             if (
@@ -691,7 +706,7 @@ class dash:
                 context['forms'] = request.user.created_by.form.filter(is_service=True)
                 return render(request, "dashboard/user/create.html", context)
             else:
-                return redirect("/")
+                return redirect("/login/")
 
         def editOrder(request, id):
             if (
@@ -710,7 +725,7 @@ class dash:
                     return render(request, "dashboard/user/edit.html", context)
                 raise Http404
             else:
-                return redirect("/")
+                return redirect("/login/")
 
     class OrderChat:
         def getAllMessages(request, id):
@@ -744,12 +759,12 @@ class dash:
                 context["order"] = order
                 context["chat_messages"] = order.message.filter(parent__isnull=True)
                 return render(request, "dashboard/admin/chat/messages.html", context)
-            return redirect("/")
+            return redirect("/login/")
 
         def editMessage(request, id):
             message = Message.objects.get(id=id)
             if not message or message.author != request.user:
-                return redirect("/")
+                return redirect("/login/")
             if request.method == "POST":
                 body = request.POST.get("message-body", "")
                 message.body = body

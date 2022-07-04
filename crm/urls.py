@@ -21,7 +21,7 @@ from django.conf.urls.static import static
 
 
 urlpatterns = [
-    path("", include("app_crm.urls")),
+    path("", include("app_crm.urls"), name='index'),
     path("util/native/admin/", admin.site.urls),
 ]
 
