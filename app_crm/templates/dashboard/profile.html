@@ -88,7 +88,7 @@
                             <textarea type="text" class="form-control" name="notes" style="height: 120px;">{{ request.user.notes|default_if_none:"" }}</textarea>
                         </div>
 
-                        <button type="submit" class="btn text btn-outline-primary ml-3 mt-2 mb-5" name="editProfile" value="True">Update</button>
+                        <button type="submit" class="btn text btn-primary ml-3 mt-2 mb-5" name="editProfile" value="True">Update</button>
 
                     </form>
                 </div>
@@ -121,7 +121,7 @@
                         <input type="password" minlength="6" class="form-control inputs" name="password" autocomplete="new-password" required id="id_password2" aria-autocomplete="list">
                     </div>
                     <p class="text font-weight-light mt-1 ml-1"><small>Min lenght: 6</small></p>
-                    <button type="submit" class="btn text btn-outline-primary" name="editPassword" value="True">Change password</button>
+                    <button type="submit" class="btn text btn-primary" name="editPassword" value="True">Change password</button>
                 </form>
             </div>
 

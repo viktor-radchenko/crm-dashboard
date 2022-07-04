@@ -114,11 +114,24 @@
 
             <div id="content">
 
-                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow justify-content-center">
 
                     <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
                         <i class="fa fa-bars"></i>
                     </button>
+
+                    <div class="position-fixed" style="top: 89px;">
+                        {% if messages %}
+                            {% for msg in messages %}
+                            <div class="alert {{ msg.tags }} alert-dismissible fade show shadow" role="alert">
+                                {{ msg }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
 
                     <ul class="navbar-nav ml-auto">
 
@@ -156,21 +169,6 @@
                 </nav>
 
                 <div class="container-fluid">
-
-                    <div class="row col-12">
-                        {% if messages %}
-                            {% for msg in messages %}
-                            <div class="alert {{ msg.tags }} alert-dismissible fade show w-100" role="alert">
-                                {{ msg }}
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                  <span aria-hidden="true">&times;</span>
-                                </button>
-                              </div>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-        
-
                     {% block content %}
                     {% endblock %}
                 </div>
@@ -204,6 +202,12 @@
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
     </a>
+
+    <div class="feedback position-fixed">
+        <div class="feedback__container position-fixed">
+            <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSe1cc6c-41AK0JYLFYgjM4qHucye4o7MlOSwIlONFJGb-TH2Q/viewform?embedded=true" width="640" height="407" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+        </div>
+    </div>
 
     <script src="{% static "/vendor/jquery/jquery.min.js"%}"></script>
     <script src="{% static "/vendor/bootstrap/js/bootstrap.bundle.min.js"%}"></script>
