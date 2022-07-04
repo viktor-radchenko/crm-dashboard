@@ -486,27 +486,49 @@ class Order(models.Model):
         return orders
 
     def sendMessageNotification(request, msg):
+        # check if no recipient in case client is not registered
+        if not msg.recipient:
+            return False
         if request.user.is_client:
             zap = request.user.created_by.key.first()
         else:
             zap = request.user.key.first()
-        # check if no recipient in case client is not registered
-        if not msg.recipient:
-            return False
-        if zap:
-            dataset = dict(
-                order=msg.order.order,
-                name=msg.author.first_name,
-                email=msg.author.email,
-                company=msg.order.company_name,
-                first_name=msg.order.owner.first_name,
-                last_name=msg.order.owner.last_name,
-                body=msg.body,
-                date_added=msg.date_added.strftime("%d-%m-%Y %H:%M"),
-                url=f"{request._current_scheme_host}/dashboard/chatroom/{msg.order.id}/",
-                recipients=msg.recipient,
-                message_type="chat_message",
-            )
+
+        dataset = dict(
+            order=msg.order.order,
+            name=msg.author.first_name,
+            email=msg.author.email,
+            company=msg.order.company_name,
+            first_name=msg.order.owner.first_name,
+            last_name=msg.order.owner.last_name,
+            body=msg.body,
+            date_added=msg.date_added.strftime("%d-%m-%Y %H:%M"),
+            url=f"{request._current_scheme_host}/dashboard/chatroom/{msg.order.id}/",
+            recipients=msg.recipient,
+            message_type="chat_message",
+        )
+
+        if not zap and msg.order.owner.is_registered:
+            try:
+                recipient = msg.order.owner.created_by if request.user == msg.order.owner else msg.order.owner
+                subj = "SearchManager.pro - you have a new message"
+                body = render_to_string(
+                    "email/zap_message_backup.html",
+                    {
+                        "dataset": dataset,
+                    },
+                )
+
+                send_mailjet_email(recipient, subj, body)
+
+                return True, "Data has been sent successfully"
+            except Exception as e:
+                logging.error("Exception: " + str(e))
+                return (
+                    False,
+                    "We were unable to send data to Zapier. Please check you Zapier API key url is correct",
+                )
+        else:
             try:
                 r = requests.post(zap.apikey, data=json.dumps(dataset))
                 return r.ok
@@ -569,7 +591,7 @@ class Order(models.Model):
 
                 send_mailjet_email(recipient, subj, body)
 
-                return r.ok, "Data has been sent successfully"
+                return True, "Data has been sent successfully"
             except Exception as e:
                 logging.error("Exception: " + str(e))
                 return (
