@@ -86,7 +86,7 @@
                                 {% if t.report_link.all|length > 1 %}
                                 {% for link in t.report_link.all %}
                                     {% if link.link %}
-                                        <a href="{{ link.link }}" target="_blank">{{forloop.counter0}}</a>
+                                        <a href="{{ link.link }}" target="_blank">{{forloop.counter}}</a>
                                     {% endif %}
                                 {% endfor %}
                                 {% else %}
