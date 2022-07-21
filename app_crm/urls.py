@@ -38,6 +38,7 @@ urlpatterns = [
                         path("deleteAgencyLogo/", views.dash.deleteAgencyLogo),
                     ]
                 )),
+                path("white-label/<int:id>/", views.dash.admin.deliverables_wl),
                 path(
                     "admin/",
                     include(

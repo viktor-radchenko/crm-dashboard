@@ -267,6 +267,22 @@ class dash:
             context["users"] = manageUser.getStaffUsers()
             context["month"] = list(range(1, order.month + 1))
             context["forms"] = Form.getAllForms(request)
+            context["white_label"] = None
+            return render(request, "dashboard/admin/deliverables.html", context)
+        
+        def deliverables_wl(request, id):
+            order = Order.getOrderById(request, id)
+            if not order:
+                messages.warning(request, "This order does not exist or you do not have permission to access it")
+                return redirect("/login/")
+            context = {}
+            if order.package != None:
+                context["package"] = order.package
+                context["task"] = order.package.tasks.all()
+            context["order"] = order
+            context["white_label"] = True
+            context["addons"] = order.addon.all()
+            context["month"] = list(range(1, order.month + 1))
             return render(request, "dashboard/admin/deliverables.html", context)
                 
 

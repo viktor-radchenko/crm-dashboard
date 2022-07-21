@@ -26,12 +26,14 @@
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion toggled" id="accordionSidebar">
 
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/login/">
-                {{ request.user|get_agency_info|safe }}
+                {% if not request.user.is_anonymous %}
+                    {{ request.user|get_agency_info|safe }}
+                {% endif %}
             </a>
 
             <hr class="sidebar-divider">
 
-
+            {% if not request.user.is_anonymous %}
             <div class="sidebar-heading">Orders</div>
 
             {% if request.user.is_staff == False %}
@@ -116,15 +118,16 @@
                     <span></span>
                 </button>
             </li>
-
+            {% endif %}
         </ul>
 
         <div id="content-wrapper" class="d-flex flex-column">
 
             <div id="content">
 
-                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow justify-content-center">
 
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow justify-content-center">
+                    {% if not request.user.is_anonymous %}
                     <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
                         <i class="fa fa-bars"></i>
                     </button>
@@ -174,7 +177,7 @@
                         </li>
 
                     </ul>
-
+                    {% endif %}
                 </nav>
 
                 <div class="container-fluid">
@@ -204,6 +207,7 @@
 
     </div>
 
+    {% if not request.user.is_anonymous %}
     <div class="notification-sidebar bg-gradient-primary sidebar-dark">
         <div class="sidebar-brand d-flex align-items-center justify-content-center">
             <div class="sidebar-brand-text mx-3">Notifications</div>
@@ -223,6 +227,7 @@
             {% endif %}
         </ul>
     </div>
+    {% endif %}
 
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>

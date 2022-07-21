@@ -86,7 +86,9 @@ class Order(models.Model):
         order = Order.objects.get(id=id)
         if not order:
             return False
-        if order.owner == request.user or order.owner.created_by == request.user:
+        if 'white-label' in request.path:
+            return order
+        elif order.owner == request.user or order.owner.created_by == request.user:
             return order
         else:
             return False

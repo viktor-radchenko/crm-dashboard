@@ -22,6 +22,7 @@
                   <h5>Order info:</h5>
                 </div>
                 
+                {% if not white_label %}
                 <div class="order-links" style="font-size: 20px; text-align: right;">        
                   {% if not request.user.is_client %}
                     <a href="/dashboard/admin/editinfo/{{ order.id }}/" class="btn btn-primary border-0 p-0">
@@ -46,6 +47,7 @@
                     <span class="align-middle">Messages</span>
                   </a>
                 </div>
+                {% endif %}
             </div>
 
             <hr class="sidebar-divider">
@@ -65,14 +67,14 @@
                         <th scope="col" class="sortable" style="width: 14%">Status</th>
                         <th scope="col" class="sortable" style="width: 14%">Notes</th>
                         <th scope="col" class="sortable" style="width: 14%">Report link</th>
-                        {% if request.user.is_staff %}
+                        {% if request.user.is_staff and not white_label %}
                             <th scope="col" class="sortable" style="width: 8%">Actions</th>
                         {% endif %}
                     </tr>
                 </thead>
                 <tbody>
                     {% for m in month %}
-                    <tr scope="col" style="background-color:#F5F5F5;"><td>MONTH {{ m }}</td><td></td><td></td><td></td><td></td><td></td>{% if request.user.is_staff %}<td></td>{% endif %}</tr>
+                    <tr scope="col" style="background-color:#F5F5F5;"><td>MONTH {{ m }}</td><td></td><td></td><td></td><td></td><td></td>{% if request.user.is_staff and not white_label %}<td></td>{% endif %}</tr>
                     {% for t in task|dictsort:"ordering" %}
                     {% if t.month == m %}
                     <tr class="table">
@@ -98,7 +100,7 @@
                                 {% endif %}
                             {% endif %}
                         </td>
-                        {% if request.user.is_staff %}
+                        {% if request.user.is_staff and not white_label %}
                             <td scope="col" class="sortable" ><a class="btn btn-primary btn-sm" style="min-width: 95px; width: 100%;" href="#" role="button"  data-toggle="modal" data-target="#taskModalP{{ t.id }}">Manage task</a></td>
                         {% endif %}
                     </tr>
@@ -126,7 +128,7 @@
                             <td scope="col" class="sortable"><a class="btn btn-primary btn-sm" style="min-width: 95px; width: 100%;" href="#" role="button" data-toggle="modal" data-target="#taskModalA{{ addontask.id }}">Manage task</a></td>
                         {% endif %}
                     </tr>
-                    <tr scope="col"><td><p></p></td><td></td><td></td><td></td><td></td><td></td>{% if request.user.is_staff %}<td></td>{% endif %}</tr>
+                    <tr scope="col"><td><p></p></td><td></td><td></td><td></td><td></td><td></td>{% if request.user.is_staff and not white_label %}<td></td>{% endif %}</tr>
                     {% endif %}
                     {% endfor %}
                     {% endfor %}
@@ -136,6 +138,7 @@
         </div>
     </div>
 </div>
+{% if not white_label %}
 {% for t in task %}
 <div class="modal fade" id="taskModalP{{ t.id }}" tabindex="-1" style="display: none;" aria-hidden="true">
     <div class="modal-dialog" role="document" style="max-width: 700px;">
@@ -455,6 +458,7 @@
 </div>
 {% endfor %}
 {% endfor %}
+{% endif %}
 {% endlanguage %}
 {% endblock %}
 {% block extra_script %}
