@@ -687,9 +687,16 @@ class dash:
                 and not request.user.is_superuser
             ):
                 context = {}
-                context["orders"] = Order.getUserOrders(request)
+                context["packages"] = templatePackage.getAllPackage(request)
+                context["addons"] = templateAddon.getAllAddon(request)
+                context["statuses"] = Status.getAllStatuses(request)
+                context["users"] = None
+                if request.GET:
+                    context["orders"] = Order.getOrdersByFilter(request)
+                else:
+                    context["orders"] = Order.getAllOrders(request)
                 context['unread_messages'] = Order.getUnreadMessages(request, context['orders'])
-                return render(request, "dashboard/user/myorders.html", context)
+                return render(request, "dashboard/admin/allorders.html", context)
             else:
                 return redirect("/login/")
 

@@ -9,8 +9,13 @@
 {% load i18n %}
 {% language 'en' %}
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <h1 class="h3 mb-0 text-gray-800">All orders</h1>
-    <a class="btn btn-primary" href="/dashboard/admin/create" role="button">Add order</a>
+    {% if request.user.is_staff %}
+        <h1 class="h3 mb-0 text-gray-800">All orders</h1>
+        <a class="btn btn-primary" href="/dashboard/admin/create" role="button">Add order</a>
+    {% else %}
+        <h1 class="h3 mb-0 text-gray-800">My orders</h1>
+        <a class="btn btn-primary" href="/dashboard/user/create" role="button">Add order</a>
+    {% endif %}
 </div>
 
 <div class="card shadow mb-4">
@@ -57,6 +62,7 @@
                     </select>
                 </div>
                 <div class="input-group input-group-sm mb-1">
+                    {% if request.user.is_staff %}
                     <div class="input-group-prepend w-25">
                         <label class="input-group-text w-100" for="select_user">Client</label>
                     </div>
@@ -66,6 +72,7 @@
                         <option value="{{ user.id }}" {% if user.id in request.session.select_user %}selected="selected"{% endif %}>{{ user.first_name }} {{ user.last_name }}</option>
                         {% endfor %}
                     </select>
+                    {% endif %}
                 </div>
             </div>
 
@@ -114,10 +121,14 @@
                         <td scope="col" class="sortable">{% if order.package == None %}{%else%}<span style="display: block; background-color: {{ order.package.template.color }};">{{ order.package }}</span>{% endif %}</td>
                         <td scope="col" class="sortable">{% if order.addon == None %}{%else%}{% for add in order.addon.all %}<span style="display: block; margin: 1px; background-color: {{ add.template.color }};">{{ add.template.title }}</span>{% endfor %}{% endif %}</td>
                         <td scope="col" class="sortable">
+                            {% if request.user.is_staff %}
                             <a href="/dashboard/admin/editinfo/{{ order.id }}/" title="Intake form" class="mr-1"><i class="fa fa-pencil-alt"></i></a>
                             <a href="/dashboard/admin/edit/{{ order.id }}/" title="Edit order" class="mr-1"><i class="fa fa-edit"></i></a>
                             <a href="/dashboard/admin/{{ order.id }}/deliverables/" title="Deliverables" class="mr-1"><i class="fa fa-file"></i></a>
                             <a href="/dashboard/admin/{{ order.id }}/deliverables/form/all/" title="Send to Zapier" class="mr-1"><i class="fa fa-paper-plane"></i></a>
+                            {% else %}
+                            <a href="/dashboard/user/edit/{{ order.id }}/" title="Intake form" class="mr-1"><i class="fa fa-pencil-alt"></i></a>
+                            {% endif %}
                             <a 
                                 href="/dashboard/chatroom/{{ order.id }}/"
                                 title="Messages"

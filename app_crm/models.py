@@ -784,6 +784,9 @@ class templatePackage(models.Model):
         return tempPack.id
 
     def getAllPackage(request):
+        if request.user.is_client:
+            pack = request.user.created_by.temlpatePackage.all()
+            return pack
         user = request.user
         pack = user.temlpatePackage.all()
         return pack
@@ -972,6 +975,9 @@ class templateAddon(models.Model):
         return self.title
 
     def getAllAddon(request):
+        if request.user.is_client:
+            addons = request.user.created_by.templateAddon.all()
+            return addons
         user = request.user
         addons = user.templateAddon.all()
         return addons
@@ -1080,6 +1086,9 @@ class Status(models.Model):
         return self.name
 
     def getAllStatuses(request):
+        if request.user.is_client:
+            statuses = request.user.created_by.status.all()
+            return statuses
         user = request.user
         statuses = user.status.all()
         return statuses
