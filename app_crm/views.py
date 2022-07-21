@@ -211,6 +211,24 @@ class dash:
                 return redirect("/dashboard/admin/allorders/")
             else:
                 return redirect("/login/")
+        
+        def deleteAllArchivedOrders(request):
+            orders = Order.getAllOrders(request)
+            for order in orders:
+                if order.is_archived:
+                    Order.deleteOrder(request, order.id)
+            return redirect("/login/")
+
+        def restoreOrder(request, id):
+            if request.user.is_staff:
+                success, msg = Order.restoreOrder(request, id)
+                if success:
+                    messages.success(request, msg)
+                else:
+                    messages.error(request, msg)
+                return redirect("/dashboard/admin/allorders/")
+            else:
+                return redirect("/login/")
 
         def editInfo(request, id):
             if request.user.is_staff:

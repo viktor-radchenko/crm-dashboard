@@ -51,6 +51,8 @@ urlpatterns = [
                             path("cleanfilters/", views.dash.admin.cleanFilters),
                             path("create/", views.dash.admin.createCustomOrder),
                             path("delete/<int:id>/", views.dash.admin.deleteOrder),
+                            path("delete_all/", views.dash.admin.deleteAllArchivedOrders),
+                            path("restore/<int:id>/", views.dash.admin.restoreOrder),
                             path("edit/<int:id>/", views.dash.admin.editOrder),
                             path("editinfo/<int:id>/", views.dash.admin.editInfo),
                             path("cancel/<int:id>/", views.dash.admin.cancelOrder),

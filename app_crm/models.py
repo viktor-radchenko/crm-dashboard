@@ -170,6 +170,14 @@ class Order(models.Model):
         order.save()
         return True, "Order successfully deleted"
 
+    def restoreOrder(request, id):
+        order = Order.objects.get(id=id)
+        if not request.user != order.owner or request.user != order.owner.created_by:
+            return False, "You don't have permission to delete this order"
+        order.is_archived = False
+        order.save()
+        return True, "Order successfully restored"
+
     def editInfo(request, id):
         order = Order.objects.get(id=id)
         if not order and (

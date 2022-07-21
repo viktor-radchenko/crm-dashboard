@@ -119,15 +119,6 @@
             <div class="message-body">
               <p class="comment-text">{{ msg.body|linebreaks|urlize }}</p>
             </div>
-            {% if not msg.replies.all %}
-              <div class="d-flex flex-row justify-content-end">
-                <btn class="btn btn-primary btn-sm shadow-none reply-btn ml-3" data-message-id="{{ msg.id }}">
-                  <i class="fa fa-share"></i>
-                  <span class="ml-1">Reply
-                  </span>
-                </btn>
-              </div>
-            {% endif %}
 
           </div>
         </div>
