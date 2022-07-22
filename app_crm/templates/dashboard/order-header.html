@@ -11,6 +11,7 @@
     <div><strong>Addon</strong>: {{ order.addon.first.template.title|default_if_none:"" }}</div>
     <div><strong>Status</strong>: {{ order.status|default_if_none:"" }}</div>
     <div><strong>Current month</strong>: {{ order.month|default_if_none:"" }}</div>
+    <div><strong>Selected package</strong>: {{ order.order_package|default_if_none:"" }}</div>
   </div>
     
     

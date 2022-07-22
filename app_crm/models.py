@@ -32,6 +32,7 @@ from django.template.loader import render_to_string
 
 class Order(models.Model):
     order = models.CharField(max_length=500)
+    selected_package = models.CharField(max_length=500, blank=True, null=True)
     company_name = models.CharField(max_length=5000)
     company_address = models.CharField(max_length=5000)
     company_city = models.CharField(max_length=5000)
@@ -400,6 +401,7 @@ class Order(models.Model):
         order = Order(
             order=order_num,
             company_name=request.POST.get("company_name", ""),
+            selected_package=request.POST.get("order_package", ""),
             company_address=request.POST.get("company_address", ""),
             company_city=request.POST.get("company_city", ""),
             company_state=request.POST.get("company_state", ""),
@@ -526,8 +528,9 @@ class Order(models.Model):
                         "dataset": dataset,
                     },
                 )
-
-                send_mailjet_email(recipient, subj, body)
+                
+                if not recipient.disable_email_notifications:
+                    send_mailjet_email(recipient, subj, body)
 
                 return True, "Data has been sent successfully"
             except Exception as e:
@@ -1488,6 +1491,7 @@ class manageUser:
         request.user.first_name = request.POST.get("first_name")
         request.user.last_name = request.POST.get("last_name")
         request.user.notes = request.POST.get("notes", "")
+        request.user.disable_email_notifications = True if request.POST.get("disable_email_notifications") else False
         if request.user.is_staff:
             ZapierApi.editKey(request)
         if request.FILES.get("profile_image"):

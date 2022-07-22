@@ -46,6 +46,7 @@ class CustomUser(AbstractUser):
     created_by = models.ForeignKey(
         "self", on_delete=models.SET_NULL, blank=True, null=True, related_name="client"
     )
+    disable_email_notifications = models.BooleanField(default=False)
 
     def generate_uuid():
         return secrets.token_hex(32)

@@ -110,7 +110,7 @@ class sign:
     def activateAccount(request, uri, token):
         if manageUser.activateUser(request, uri, token):
             messages.success(request, "You have successfully activated you account")
-            return redirect('/')
+            return redirect('/login/')
         return HttpResponse('Activation link is invalid!')
 
     def logout(request):
@@ -745,6 +745,7 @@ class dash:
                         return redirect("/dashboard/user/myorders")
                 context = {}
                 context['forms'] = request.user.created_by.form.filter(is_service=True)
+                context['packages'] = request.user.created_by.temlpatePackage.all()
                 return render(request, "dashboard/user/create.html", context)
             else:
                 return redirect("/login/")

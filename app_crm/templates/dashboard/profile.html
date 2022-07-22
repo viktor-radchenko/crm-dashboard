@@ -83,6 +83,13 @@
                         </div>
                         {% endif %}
 
+                        <div class="form-group col-12 mb-4 mt-5 ml-3">
+                            <label class="text ml-1" for="disable_email_notifications">
+                                <input type="checkbox" class="form-check-input mb-2" name="disable_email_notifications" id="disable_email_notifications" {% if request.user.disable_email_notifications %}checked{% endif %}>
+                                Disable chat notifications to email
+                            </label>
+                        </div>
+
                         <div class="form-group col-12">
                             <label class="text">Notes</label>
                             <textarea type="text" class="form-control" name="notes" style="height: 120px;">{{ request.user.notes|default_if_none:"" }}</textarea>

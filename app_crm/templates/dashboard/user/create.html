@@ -30,6 +30,17 @@
 
                                 <input type="text" hidden name="service_form_id" value="{{form.id}}">
 
+                                {% if packages|length > 0 %}
+                                <div class="form-group col-12 mb-4">
+                                    <select name="order_package" class="fformselect form-control">
+                                        <option value="" disabled selected>Select package</option>
+                                        {% for pkg in packages %}
+                                        <option value="{{ pkg.title }}">{{ pkg.title }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                {% endif %}
+
                                 <div class="form-group col-12 mb-4">
                                 {% for itemorder in form.orderinfos|get_item:'orderinfos' %}
                                     {% if itemorder == 'order' %}
@@ -84,12 +95,29 @@
                                     <textarea name="notes" class="form-control" rows="3"></textarea>
                                 </div>
 
-                                <button type="submit" class="btn text btn-primary ml-3 mt-2">Create</button>
+                                <div class="d-flex flex-row">
+                                    <button class="btn btn-primary border-0 ml-3 mt-2 p-0 crm-btn" form="customform-{{ form.id }}">
+                                      <i class="fa fa-plus align-middle"></i>
+                                      <span class="align-middle">Create</span>
+                                    </button>
+                                </div>
                             </form>
                             {% endfor %}
                         {% else %}
                         <form method="POST">
                             {% csrf_token %}
+
+                                {% if packages|length > 0 %}
+                                <div class="form-group col-12 mb-4">
+                                    <select name="order_package" class="fformselect form-control">
+                                        <option value="" disabled selected>Select package</option>
+                                        {% for pkg in packages %}
+                                        <option value="{{ pkg.title }}">{{ pkg.title }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                {% endif %}
+
                                 <div class="form-group col-12 mb-4">
                                     <label class="text ml-1" for="order">Order #:</label>
                                     <input type="text" class="form-control mb-2" name="order" maxlength="500" id="order" required>
@@ -146,7 +174,12 @@
                                     <input type="text" class="form-control mb-2" name="analytics_account" maxlength="5000" id="analytics_account">
                                 </div>
 
-                                <button type="submit" class="btn text btn-primary ml-3 mt-2" id="submit">Create</button>
+                                <div class="d-flex flex-row">
+                                    <button class="btn btn-primary border-0 ml-3 mt-2 p-0 crm-btn">
+                                      <i class="fa fa-plus align-middle"></i>
+                                      <span class="align-middle">Create</span>
+                                    </button>
+                                </div>
                             </form>
                         {% endif %}
                         </div>
