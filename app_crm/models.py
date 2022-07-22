@@ -635,21 +635,15 @@ class Order(models.Model):
                 formfield = form.data.get(formfieldnum)
                 if formfield.get("type") == 1:
                     dataset[formfieldnum] = {
-                        "title": formfield.get("title"),
-                        "answer": request.POST.getlist(
-                            str(form.id) + ":" + str(formfieldnum)
-                        ),
+                        formfield.get("title"): request.POST.getlist(str(form.id) + ":" + str(formfieldnum))
                     }
                 else:
                     dataset[formfieldnum] = {
-                        "title": formfield.get("title"),
-                        "answer": request.POST.get(
-                            str(form.id) + ":" + str(formfieldnum)
-                        ),
+                        formfield.get("title"): request.POST.get(str(form.id) + ":" + str(formfieldnum))
                     }
 
             dataset["form_note"] = request.POST.get("formnote")
-
+            dataset["zapier_tag"] = form.zapier_tag
             dataset["form_name"] = form.title
             dataset["message_type"] = "form_info"
 
@@ -1140,6 +1134,7 @@ class Form(models.Model):
     title = models.CharField(max_length=500)
     orderinfos = models.JSONField(null=True)
     data = models.JSONField(null=True)
+    zapier_tag = models.TextField(blank=True, null=True)
     created_by = models.ForeignKey(
         CustomUser, on_delete=models.CASCADE, related_name="form"
     )
@@ -1154,10 +1149,13 @@ class Form(models.Model):
 
     def createForm(request, is_service=False):
         formname = request.POST["formname"]
+        zapier_tag = request.POST.get("zapier_tag")
         orderinfosset = {"orderinfos": request.POST.getlist("orderinfos")}
         if is_service and 'order' not in orderinfosset['orderinfos']:
             orderinfosset['orderinfos'].insert(0, 'order')
+        
         dataset = {}
+
 
         for x in range(0, int(request.POST["totalcount"]) + 1):
             if request.POST.get("textfield" + str(x), False):
@@ -1189,6 +1187,7 @@ class Form(models.Model):
             data=dataset,
             created_by=request.user,
             is_service=is_service,
+            zapier_tag=zapier_tag,
         )
 
     def editForm(request, id, is_service=False):
@@ -1196,6 +1195,7 @@ class Form(models.Model):
         if not form:
             return
         formname = request.POST["formname"]
+        zapier_tag = request.POST.get("zapier_tag")
         orderinfosset = {"orderinfos": request.POST.getlist("orderinfos")}
         if is_service and 'order' not in orderinfosset['orderinfos']:
             orderinfosset['orderinfos'].insert(0, 'order')
@@ -1228,6 +1228,7 @@ class Form(models.Model):
         form.title = formname
         form.orderinfos = orderinfosset
         form.data = dataset
+        form.zapier_tag = zapier_tag
         form.save()
 
     def getFormById(request, id):
