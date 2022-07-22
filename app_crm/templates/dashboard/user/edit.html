@@ -78,6 +78,17 @@
                                     <label for="">{{ ft.title }}</label>
                                     <textarea class="form-control textarea-expandable" name="{{ form.id}}:{{ formitem }}">{{order.extra_fields|get_item:ft.title}}</textarea>
                                 </div>
+                            {% elif ft.type == 4 %}
+                                <div class="form-group col-12 mb-4">
+                                    <label for="">{{ ft.title }}</label>
+                                    <div class="col-12 p-0">
+                                        <select class="form-control">
+                                            {% for x in ft.items %}
+                                                <option value="{{ x }}">{{ x }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
                             {% endif %}
                             {% endwith %}
                             {% endfor %}

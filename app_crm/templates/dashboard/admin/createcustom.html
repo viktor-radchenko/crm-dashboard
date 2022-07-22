@@ -75,8 +75,7 @@
                                         <label for="">{{ ft.title }}</label>
                                         {% for x in ft.items %}
                                         <div class="form-check col-12">
-                                            <input type="checkbox" class="form-check-input" name="{{ form.id}}:{{ formitem }}" value="{{ x }}">
-                                            <label for="">{{ x }}</label>
+                                            <label><input type="checkbox" class="form-check-input" name="{{ form.id}}:{{ formitem }}" value="{{ x }}">{{ x }}</label>
                                         </div>
                                         {% endfor %}
                                     </div>
@@ -85,6 +84,17 @@
                                     <label for="">{{ ft.title }}</label>
                                     <textarea class="form-control textarea-expandable" name="{{ form.id}}:{{ formitem }}"></textarea>
                                 </div>
+                                {% elif ft.type == 4 %}
+                                    <div class="form-group col-12 mb-4">
+                                        <label for="">{{ ft.title }}</label>
+                                        <div class="col-12 p-0">
+                                            <select class="form-control">
+                                                {% for x in ft.items %}
+                                                    <option value="{{ x }}">{{ x }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
                                 {% endif %}
                                 {% endwith %}
                             {% endfor %}

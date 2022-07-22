@@ -930,13 +930,16 @@ class templateTask(models.Model):
     created_by = models.ForeignKey(
         CustomUser, on_delete=models.CASCADE, related_name="templateTask"
     )
+    notes = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.title
 
     def createTask(request):
         templateTask.objects.create(
-            title=request.POST["title"], created_by=request.user
+            title=request.POST["title"], 
+            created_by=request.user,
+            notes=request.POST["notes"],
         )
 
     def getAllTask(request):
@@ -952,6 +955,7 @@ class templateTask(models.Model):
         if not task or task.created_by != request.user:
             return
         task.title = request.POST["title"]
+        task.notes = request.POST.get("notes", None)
         task.save()
 
     def removeTask(request, id):
@@ -1172,6 +1176,12 @@ class Form(models.Model):
                     "title": request.POST.get("textarea" + str(x), False),
                     "type": 3,
                 }
+            elif request.POST.get("dropdownname" + str(x), False):
+                dataset[x] = {
+                    "title": request.POST.get("dropdownname" + str(x), False),
+                    "type": 4,
+                    "items": request.POST.getlist("dropdownitem" + str(x)),
+                }
 
         Form.objects.create(
             title=formname,
@@ -1207,6 +1217,12 @@ class Form(models.Model):
                 dataset[x] = {
                     "title": request.POST.get("textarea" + str(x), False),
                     "type": 3,
+                }
+            elif request.POST.get("dropdownname" + str(x), False):
+                dataset[x] = {
+                    "title": request.POST.get("dropdownname" + str(x), False),
+                    "type": 4,
+                    "items": request.POST.getlist("dropdownitem" + str(x)),
                 }
 
         form.title = formname
