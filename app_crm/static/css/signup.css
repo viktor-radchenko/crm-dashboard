@@ -76,9 +76,9 @@ body {
     height: 32px;
     border-radius: 5px;
     border: none;
-    background-color: #006400;
+    background-color: #4165d1;
     color: #eaeaea;
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 700;
     font-family: Arial, Helvetica, sans-serif;
     cursor: pointer;
@@ -87,11 +87,11 @@ body {
 }
 
 .submit-button:hover {
-    background-color: #005900;
+    background-color: #2e59d9;
 }
 
 .submit-button:active {
-    background-color: #003d00;
+    background-color: #2e59d9;
 }
 
 .alert {

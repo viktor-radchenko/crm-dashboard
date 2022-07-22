@@ -105,10 +105,10 @@
                             <hr>
 
                             <div class="form-group col-12 mb-4">
-                            <button class="btn btn-primary add_text_field" type="button">Add text field</button>
-                            <button class="btn btn-primary add_checkbox_field" type="button">Add checkbox field</button>
-                            <button class="btn btn-primary add_textarea" type="button">Add large text field</button>
-                            <button class="btn btn-primary add_dropdown" type="button">Add dropdown field</button>
+                                <button class="btn btn-primary p-0 crm-btn add_text_field" type="button"><i class="fa fa-plus align-middle"></i><span>Add text field</span></button>
+                                <button class="btn btn-primary p-0 crm-btn add_checkbox_field" type="button"><i class="fa fa-plus align-middle"></i><span>Add checkbox field</span></button>
+                                <button class="btn btn-primary p-0 crm-btn add_textarea" type="button"><i class="fa fa-plus align-middle"></i><span>Add large text field</span></button>
+                                <button class="btn btn-primary p-0 crm-btn add_dropdown" type="button"><i class="fa fa-plus align-middle"></i><span>Add dropdown field</span></button>
                             </div>
 
                             <div class="col-12 mb-4 spe-container">
@@ -116,7 +116,12 @@
 
                             <input type="hidden" name="totalcount" id="totalcount">
                         
-                            <button type="submit" class="btn text btn-primary mt-4 ml-2" form="thisform" id="submit">Create</button>
+                            <div class="d-flex flex-row">
+                                <button class="btn btn-primary border-0 ml-3 mt-2 p-0 crm-btn" form="thisform">
+                                  <i class="fa fa-plus align-middle"></i>
+                                  <span class="align-middle">Create</span>
+                                </button>
+                            </div>
                     </form>
                 </div>
             </div>

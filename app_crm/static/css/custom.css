@@ -225,3 +225,11 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
   text-decoration: none;
   cursor: pointer;
 }
+
+.crm-btn {
+  overflow: hidden;
+}
+
+.crm-btn > span {
+  font-size: 13px;
+}

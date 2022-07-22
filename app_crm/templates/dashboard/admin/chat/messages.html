@@ -112,13 +112,19 @@
                 <span class="date text-black-50">{{ msg.date_added }}</span>
               </div>
               
-              {% if msg.author == request.user %}
-                <a class="btn btn-sm shadow-none ml-auto" href="/dashboard/chatroom/edit/{{msg.id}}/"><i class="fa fa-edit pr-2"></i>Edit</a>
-              {% endif %}
             </div>
             <div class="message-body">
               <p class="comment-text">{{ msg.body|linebreaks|urlize }}</p>
             </div>
+
+            {% if not msg.replies.all %}
+              <div class="d-flex flex-row justify-content-end">
+                <button class="btn btn-primary border-0 p-0 crm-btn" data-message-id="{{ msg.id }}">
+                  <i class="fa fa-share align-middle"></i>
+                  <span class="align-middle">Reply</span>
+                </button>
+              </div>
+            {% endif %}
 
           </div>
         </div>
@@ -153,10 +159,6 @@
                       </span>
                       <span class="date text-black-50">{{ m.date_added }}</span>
                     </div>
-                    
-                    {% if m.author == request.user %}
-                      <a class="btn btn-sm shadow-none ml-auto" href="/dashboard/chatroom/edit/{{m.id}}/"><i class="fa fa-edit pr-2"></i>Edit</a>
-                    {% endif %}
                   </div>
                   <div class="message-body">
                     <p class="comment-text">{{ m.body|linebreaks|urlize }}</p>
@@ -167,11 +169,11 @@
             {% if m.recipient == request.user.email %} {{m|read_it|default_if_none:""}} {% endif %}
           {% endfor %}
           <div class="d-flex flex-row justify-content-end">
-            <btn class="btn btn-primary btn-sm shadow-none reply-btn ml-3" data-message-id="{{ msg.id }}">
+            <button class="btn btn-primary btn-sm shadow-none reply-btn ml-3" data-message-id="{{ msg.id }}">
               <i class="fa fa-share"></i>
               <span class="ml-1">Reply
               </span>
-            </btn>
+            </button>
           </div>
         {% endif %}
         <hr class="sidebar-divider">

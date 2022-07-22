@@ -11,9 +11,15 @@
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">All orders {% if request.session.show_archived %} (ARCHIVED) {% endif %}</h1>
     {% if request.user.is_staff %}
-        <a class="btn btn-primary" href="/dashboard/admin/create" role="button">Add order</a>
+        <a href="/dashboard/admin/create" class="btn text btn-primary ml-3 p-0 crm-btn">
+            <i class="fa fa-plus align-middle"></i>
+            <span class="align-middle">Add order</span>
+        </a>
     {% else %}
-        <a class="btn btn-primary" href="/dashboard/user/create" role="button">Add order</a>
+        <a href="/dashboard/user/create" class="btn text btn-primary ml-3 p-0 crm-btn">
+            <i class="fa fa-plus align-middle"></i>
+            <span class="align-middle">Add order</span>
+        </a>
     {% endif %}
 </div>
 
