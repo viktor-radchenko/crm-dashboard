@@ -66,9 +66,11 @@
                         <th scope="col" class="sortable" style="width: 10%">Completion date</th>
                         <th scope="col" class="sortable" style="width: 14%">Status</th>
                         <th scope="col" class="sortable" style="width: 14%">Notes</th>
-                        <th scope="col" class="sortable" style="width: 14%">Report link</th>
                         {% if request.user.is_staff and not white_label %}
+                            <th scope="col" class="sortable" style="width: 14%">Report link</th>
                             <th scope="col" class="sortable" style="width: 8%">Actions</th>
+                        {% else %}
+                            <th scope="col" class="sortable" style="width: 22%">Report link</th>
                         {% endif %}
                     </tr>
                 </thead>
