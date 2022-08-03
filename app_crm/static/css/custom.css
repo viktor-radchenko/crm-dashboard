@@ -233,3 +233,19 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
 .crm-btn > span {
   font-size: 13px;
 }
+
+.show-hide-btn {
+  border: none;
+  color: #4165d1;
+  padding: 0;
+  margin: 0;
+  background: none;
+}
+
+.show-hide-btn:hover {
+  text-decoration: underline;
+}
+
+.add_form_fields > button {
+  margin-bottom: 10px;
+}

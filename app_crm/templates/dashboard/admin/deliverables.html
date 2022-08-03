@@ -82,7 +82,7 @@
                         <td scope="col" class="sortable" style="background-color: {{ t.status.color }};">{% if t.start_date == None %}{%else%}{{ t.start_date|date:"M d, Y" }}{% endif %}</td>
                         <td scope="col" class="sortable" style="background-color: {{ t.status.color }};">{% if t.end_date == None %}{%else%}{{ t.end_date|date:"M d, Y" }}{% endif %}</td>
                         <td scope="col" class="sortable" style="background-color: {{ t.status.color }};">{{ t.status.name }}</td>
-                        <td scope="col" class="sortable" style="background-color: {{ t.status.color }}; word-break: break-all;">{% if t.notes %}<div><p class="half-note m-0">{{ t.notes|slice:":20" }} <a href="#" class="show-hide-btn">more</a></p><p class="full-note m-0 d-none">{{ t.notes }} <a href="#" class="show-hide-btn">less</a></p></div>{% endif %}</td>
+                        <td scope="col" class="sortable" style="background-color: {{ t.status.color }}; word-break: break-all;">{% if t.notes %}<div><p class="half-note m-0">{{ t.notes|slice:":20" }} <button href="#" class="show-hide-btn">more</button></p><p class="full-note m-0 d-none">{{ t.notes }} <button href="#" class="show-hide-btn">less</button></p></div>{% endif %}</td>
                         <td scope="col" class="sortable">
                             {% if t.report_link.all %}
                                 {% if t.report_link.all|length > 1 %}
@@ -114,7 +114,7 @@
                         <td scope="col" class="sortable" style="background-color: {{ addontask.status.color }};">{% if addontask.start_date == None %}{%else%}{{ addontask.start_date|date:"M d, Y" }}{% endif %}</td>
                         <td scope="col" class="sortable" style="background-color: {{ addontask.status.color }};">{% if addontask.end_date == None %}{%else%}{{ addontask.end_date|date:"M d, Y" }}{% endif %}</td>
                         <td scope="col" class="sortable" style="background-color: {{ addontask.status.color }};">{{ addontask.status.name }}</td>
-                        <td scope="col" class="sortable" style="background-color: {{ addontask.status.color }}; word-break: break-all;">{% if addontask.notes %}<div><p class="half-note m-0">{{ addontask.notes|slice:":20" }} <a href="#" class="show-hide-btn">more</a></p><p class="full-note m-0 d-none">{{ addontask.notes }} <a href="#" class="show-hide-btn">less</a></p></div>{% endif %}</td>
+                        <td scope="col" class="sortable" style="background-color: {{ addontask.status.color }}; word-break: break-all;">{% if addontask.notes %}<div><p class="half-note m-0">{{ addontask.notes|slice:":20" }} <button href="#" class="show-hide-btn">more</button></p><p class="full-note m-0 d-none">{{ addontask.notes }} <button href="#" class="show-hide-btn">less</button></p></div>{% endif %}</td>
                         <td scope="col" class="sortable">
                             {% if addontask.report_link.all %}
                                 {% for link in addontask.report_link.all %}
