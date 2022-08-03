@@ -7,6 +7,7 @@
     <title>register</title>
 
     {% load static %}
+    <link rel="stylesheet" href="{% static "/css/signin.css" %}">
     <link rel="stylesheet" href="{% static "/css/signup.css" %}">
     <link rel="stylesheet" href="{% static "/css/custom.css" %}">
     <link rel="shortcut icon" href="{% static "/img/ico/favicon.svg" %}">
@@ -60,6 +61,8 @@
                     <div class="form-item">
                         <button type="submit" class="submit-button">Sign up</button>
                     </div>
+
+                    <small><a href="/login/" class="register-link-a">Already have an account? Sign in</a></small>
                 </div>
             </form>
         </div>

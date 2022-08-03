@@ -31,6 +31,7 @@ body {
     background-color: #ffffff!important;
     box-shadow: 0 2px 28px 0 #3a3b4526!important;
     border-radius: 8px;
+    padding: 1rem 0 1rem 0;
 }
 
 .register-form {
