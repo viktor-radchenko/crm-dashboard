@@ -124,7 +124,7 @@
                                 {% endfor %}
                             {% endif %}
                         </td>
-                        {% if request.user.is_staff %}
+                        {% if request.user.is_staff and not white_label %}
                             <td scope="col" class="sortable"><a class="btn btn-primary btn-sm" style="min-width: 95px; width: 100%;" href="#" role="button" data-toggle="modal" data-target="#taskModalA{{ addontask.id }}">Manage task</a></td>
                         {% endif %}
                     </tr>
