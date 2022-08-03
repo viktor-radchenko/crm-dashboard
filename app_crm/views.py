@@ -28,16 +28,16 @@ from app_crm.utils import _clear_filters_in_session
 
 class main:
     def home(request):
-        return render(request, "coming_soon.html")
+        return render(request, "home/home.html")
 
     def features(request):
-        return render(request, "coming_soon.html")
+        return render(request, "home/features.html")
 
     def pricing(request):
-        return render(request, "coming_soon.html")
+        return render(request, "home/pricing.html")
     
     def blog(request):
-        return render(request, "coming_soon.html")
+        return render(request, "home/blog.html")
 
 
 class sign:

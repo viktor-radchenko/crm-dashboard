@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Manager Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:wght@300;400;500;600;700;800&family=Merriweather:wght@300;400;700;900&display=swap" rel="stylesheet">
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static "/css/home/home.css" %}">
+</head>
+<body>
+    <header class="header">
+        <div class="header-wrapper">
+            <div class="header-logo_wrapper">
+                <img src="https://codingisforlosers.com/wp-content/uploads/2019/12/cifl_blue.svg" alt="header logo" class="header-logo">
+            </div>
+            <div class="nav-wrapper">
+                <nav class="nav">
+                    <ul class="nav-list">
+                        <li class="nav-list_item dropdown">
+                            <a href="/features/" class="nav-list_link">Features</a>
+                            <!-- KEEP IT COMMENTED FOR NOW -->
+                            <!-- <ul class="sub-menu">
+                                <li class="sub-menu_item">
+                                    <a href="#" class="sub-menu_link">CILF?</a>
+                                </li>
+                                <li class="sub-menu_item">
+                                    <a href="#" class="sub-menu_link">Recipes?</a>
+                                </li>
+                                <li class="sub-menu_item">
+                                    <a href="#" class="sub-menu_link">Data Pipelines?</a>
+                                </li>
+                            </ul> -->
+                        </li>
+                        <li class="nav-list_item dropdown">
+                            <a href="/pricing/" class="nav-list_link">Pricing</a>
+                            <!-- <ul class="sub-menu">
+                                <li class="sub-menu_item">
+                                    <a href="#" class="sub-menu_link">Agency Data Pipeline</a>
+                                </li>
+                                <li class="sub-menu_item">
+                                    <a href="#" class="sub-menu_link">Ecom Data Pipeline</a>
+                                </li>
+                                <li class="sub-menu_item">
+                                    <a href="#" class="sub-menu_link">SaaS Data Pipeline</a>
+                                </li>
+                            </ul> -->
+                        </li>
+                        <li class="nav-list_item">
+                            <a href="/blog/" class="nav-list_link">Blog</a>
+                        </li>
+                        <li class="nav-list_item-button">
+                            <a href="/login/" class="nav-list_link">
+                                <button class="nav-list_button">
+                                    {% if request.user.is_anonymous %}
+                                        Sign in
+                                    {% else %}
+                                        Dashboard
+                                    {% endif %}
+                                </button>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+    <main class="main">
+        {% block content %}
+        
+        {% endblock content %}
+    </main>
+    <footer class="footer">
+        <div class="footer-wrapper">
+            <div class="footer-content">
+                <div class="footer-text_wrapper">
+                    <h2 class="footer-text_title">
+                        LAZINESS IS A VIRTUE
+                    </h2>
+                    <p class="footer-text_subtitle">
+                        We help marketers automate their day-to-day data analysis work, by unleashing the power of Google Sheets, Data Studio and BigQuery.
+                    </p>
+                </div>
+                <div class="footer-list_wrapper">
+                    <ul class="footer-list">
+                        <li class="list-item_head">CONNECT</li>
+                        <li class="footer-list_item"><a href="#" class="footer-list_link">Facebook</a></li>
+                        <li class="footer-list_item"><a href="#" class="footer-list_link">Twitter</a></li>
+                        <li class="footer-list_item"><a href="#" class="footer-list_link">Slack</a></li>
+                        <li class="footer-list_item"><a href="#" class="footer-list_link">YouTube</a></li>
+                    </ul>
+                </div>
+                <div class="footer-list_wrapper">
+                    <ul class="footer-list">
+                        <li class="list-item_head">Learn</li>
+                        <li class="footer-list_item"><a href="#" class="footer-list_link">Courses</a></li>
+                        <li class="footer-list_item"><a href="#" class="footer-list_link">Tutorials</a></li>
+                        <li class="footer-list_item"><a href="#" class="footer-list_link">Recipes for BigQuery</a></li>
+                    </ul>
+                </div>
+                <div class="footer-list_wrapper">
+                    <ul class="footer-list">
+                        <li class="list-item_head">Partner</li>
+                        <li class="footer-list_item"><a href="#" class="footer-list_link">BigQuery</a></li>
+                        <li class="footer-list_item"><a href="#" class="footer-list_link">Sheets</a></li>
+                        <li class="footer-list_item"><a href="#" class="footer-list_link">Pipelines</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-quote">
+                <p class="footer-quote_policy">© 2021 - POWERED BY <a href="https://codingisforlosers.com">Coding is for Losers</a> | Read our <a href="https://codingisforlosers.com/privacy-policy/">Privacy Policy</a> | <a href="https://codingisforlosers.com/bigquery-connector-privacy-policy/">BigQuery Connector Privacy Policy</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="./js/slick.min.js"></script>
+    <script src="./js/customers.js"></script>
+    <script src="./js/script.js"></script>
+</body>
+</html>
