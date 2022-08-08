@@ -20,10 +20,6 @@ $(".fformaddlink").on("click", function(e){
     $(this).before($.parseHTML(input))
 });
 
-$(function () {
-    $('[data-toggle="tooltip"]').tooltip()
-  })
-
 $(document).ready(function() {
     let areas = document.querySelectorAll(".textarea-expandable");
     let minHeight = 60; /* Maximum height: 200px */

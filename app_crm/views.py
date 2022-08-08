@@ -503,7 +503,8 @@ class dash:
                 if request.method == "POST":
                     Form.createForm(request)
                     return redirect("/dashboard/admin/forms/")
-                return render(request, "dashboard/admin/forms/create.html")
+                context = dict(orderinfos_defaults=settings.ORDERINFOS_LIST)
+                return render(request, "dashboard/admin/forms/create.html", context)
             else:
                 return redirect("/login/")
 
@@ -525,6 +526,11 @@ class dash:
                 context = {}
                 thisform = Form.getFormById(request, id)
                 context["form"] = thisform
+                context["orderinfos_defaults"] = [
+                    a
+                    for a in settings.ORDERINFOS_LIST
+                    if a not in thisform.orderinfos.get("orderinfos")
+                ]
                 context["things"] = thisform.data.values()
                 return render(request, "dashboard/admin/forms/edit.html", context)
             else:
