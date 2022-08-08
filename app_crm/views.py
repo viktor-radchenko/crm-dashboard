@@ -301,7 +301,7 @@ class dash:
             context["white_label"] = True
             context["addons"] = order.addon.all()
             context["month"] = list(range(1, order.month + 1))
-            return render(request, "dashboard/admin/deliverables.html", context)
+            return render(request, "dashboard/admin/wl_deliverables.html", context)
                 
 
         def task(request, oid, id):
