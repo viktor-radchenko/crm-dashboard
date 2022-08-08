@@ -1,4 +1,4 @@
-import json 
+import json
 from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.conf import settings
@@ -20,7 +20,7 @@ from app_crm.models import (
     Form,
     ZapierApi,
     Message,
-    Notification
+    Notification,
 )
 from app_users.models import CustomUser
 from app_crm.utils import _clear_filters_in_session
@@ -35,7 +35,7 @@ class main:
 
     def pricing(request):
         return render(request, "home/pricing.html")
-    
+
     def blog(request):
         return render(request, "home/blog.html")
 
@@ -47,8 +47,11 @@ class sign:
         else:
             if request.method == "POST":
                 if manageUser.checkIfNeedsConfirmation(request):
-                    messages.warning(request, mark_safe(
-                        f'You need to confirm your account first. Please check your email. You can re-send activation link by clicking <a href="/signup/confirmation/resend/">here</a>')
+                    messages.warning(
+                        request,
+                        mark_safe(
+                            f'You need to confirm your account first. Please check your email. You can re-send activation link by clicking <a href="/signup/confirmation/resend/">here</a>'
+                        ),
                     )
                     return redirect("/login/")
                 success, message = manageUser.loginUser(request)
@@ -82,27 +85,28 @@ class sign:
             else:
                 messages.warning(request, message)
             return redirect("/login/")
-        return render(request, 'resend_confirm_email.html')
+        return render(request, "resend_confirm_email.html")
 
     def invitationSignUp(request, uuid):
         if request.user.is_authenticated:
             return redirect("/dashboard/admin/allorders/")
         user = get_user_model().objects.filter(uuid=uuid).first()
         if not user:
-            messages.error(request, "No client found with this id. Contact administrator and request new confirmation link")
+            messages.error(
+                request,
+                "No client found with this id. Contact administrator and request new confirmation link",
+            )
             return redirect("/login/")
         if request.method == "POST":
             if manageUser.createClientUser(request):
-               return redirect("/login/")
+                return redirect("/login/")
             else:
                 context = {}
                 context["error_message"] = "This account already exists"
                 return render(request, "signup.html", context)
 
         context = dict(
-            email = user.email,
-            first_name = user.first_name,
-            last_name = user.last_name
+            email=user.email, first_name=user.first_name, last_name=user.last_name
         )
 
         return render(request, "signup.html", context)
@@ -110,8 +114,8 @@ class sign:
     def activateAccount(request, uri, token):
         if manageUser.activateUser(request, uri, token):
             messages.success(request, "You have successfully activated you account")
-            return redirect('/login/')
-        return HttpResponse('Activation link is invalid!')
+            return redirect("/login/")
+        return HttpResponse("Activation link is invalid!")
 
     def logout(request):
         manageUser.logoutUser(request)
@@ -132,11 +136,14 @@ class dash:
                     messages.success(request, "Password successfully updated")
                     return redirect("/dashboard/profile/")
             except Exception as e:
-                messages.error(request, "Something went wrong. Please check your input and try again")
+                messages.error(
+                    request,
+                    "Something went wrong. Please check your input and try again",
+                )
             return render(request, "dashboard/profile.html")
         else:
             return redirect("/login/")
-    
+
     def deleteImage(request):
         request.user.set_default_image()
         return redirect("/dashboard/profile/")
@@ -157,9 +164,9 @@ class dash:
 
     def deleteNotification(request, id):
         if manageUser.deleteNotification(request, id):
-            data = {'status': 'ok'}
+            data = {"status": "ok"}
         else:
-            data = {'status': 'error'}
+            data = {"status": "error"}
         return JsonResponse(json.dumps(data), safe=False)
 
     class admin:
@@ -174,7 +181,9 @@ class dash:
                     context["orders"] = Order.getOrdersByFilter(request)
                 else:
                     context["orders"] = Order.getAllOrders(request)
-                context['unread_messages'] = Order.getUnreadMessages(request, context['orders'])
+                context["unread_messages"] = Order.getUnreadMessages(
+                    request, context["orders"]
+                )
                 return render(request, "dashboard/admin/allorders.html", context)
             else:
                 return redirect("/dashboard/user/myorders/")
@@ -195,8 +204,8 @@ class dash:
                         return redirect("/dashboard/admin/create/")
                 context = {}
                 context["users"] = manageUser.getAllClients(request)
-                context['client_tag'] = settings.CLIENT_TAG
-                context['forms'] = request.user.form.filter(is_service=True)
+                context["client_tag"] = settings.CLIENT_TAG
+                context["forms"] = request.user.form.filter(is_service=True)
                 return render(request, "dashboard/admin/createcustom.html", context)
             else:
                 return redirect("/login/")
@@ -211,7 +220,7 @@ class dash:
                 return redirect("/dashboard/admin/allorders/")
             else:
                 return redirect("/login/")
-        
+
         def deleteAllArchivedOrders(request):
             orders = Order.getAllOrders(request)
             for order in orders:
@@ -237,8 +246,12 @@ class dash:
                     return redirect(f"/dashboard/admin/editinfo/{id}/")
                 context = {}
                 context["order"] = Order.getOrderById(request, id)
-                context['email'] = context["order"].owner.email if settings.CLIENT_TAG not in context["order"].owner.email else ''
-                context['form'] = Form.objects.filter(order=context["order"]).first()
+                context["email"] = (
+                    context["order"].owner.email
+                    if settings.CLIENT_TAG not in context["order"].owner.email
+                    else ""
+                )
+                context["form"] = Form.objects.filter(order=context["order"]).first()
                 return render(request, "dashboard/admin/editinfo.html", context)
             else:
                 return redirect("/login/")
@@ -273,7 +286,10 @@ class dash:
         def deliverables(request, id):
             order = Order.getOrderById(request, id)
             if not order:
-                messages.warning(request, "This order does not exist or you do not have permission to access it")
+                messages.warning(
+                    request,
+                    "This order does not exist or you do not have permission to access it",
+                )
                 return redirect("/login/")
             context = {}
             if order.package != None:
@@ -287,11 +303,14 @@ class dash:
             context["forms"] = Form.getAllForms(request)
             context["white_label"] = None
             return render(request, "dashboard/admin/deliverables.html", context)
-        
+
         def deliverables_wl(request, id):
             order = Order.getOrderById(request, id)
             if not order:
-                messages.warning(request, "This order does not exist or you do not have permission to access it")
+                messages.warning(
+                    request,
+                    "This order does not exist or you do not have permission to access it",
+                )
                 return redirect("/login/")
             context = {}
             if order.package != None:
@@ -302,7 +321,6 @@ class dash:
             context["addons"] = order.addon.all()
             context["month"] = list(range(1, order.month + 1))
             return render(request, "dashboard/admin/wl_deliverables.html", context)
-                
 
         def task(request, oid, id):
             if request.user.is_staff:
@@ -315,7 +333,7 @@ class dash:
 
         def allClients(request):
             if request.user.is_staff:
-                request.session['client_redirect'] = '/dashboard/admin/clients/'
+                request.session["client_redirect"] = "/dashboard/admin/clients/"
                 context = {}
                 context["clients"] = manageUser.getAllClients(request)
                 context["client_tag"] = settings.CLIENT_TAG
@@ -325,16 +343,27 @@ class dash:
 
         def clientsCreate(request):
             if request.user.is_staff:
-                if "/dashboard/admin/create/" in request.META['HTTP_REFERER']:
-                    request.session['client_redirect'] = '/dashboard/admin/create/'
+                if "/dashboard/admin/create/" in request.META["HTTP_REFERER"]:
+                    request.session["client_redirect"] = "/dashboard/admin/create/"
                 if request.method == "POST":
-                    if request.POST.get("email") or (request.POST.get("first_name") or request.POST.get("last_name")):
+                    if request.POST.get("email") or (
+                        request.POST.get("first_name") or request.POST.get("last_name")
+                    ):
                         client, _ = manageUser.createClient(request)
                         if client:
-                            return redirect(request.session.get('client_redirect', '/dashboard/admin/clients/'))
-                        messages.error(request, "Client with this email is already created")
+                            return redirect(
+                                request.session.get(
+                                    "client_redirect", "/dashboard/admin/clients/"
+                                )
+                            )
+                        messages.error(
+                            request, "Client with this email is already created"
+                        )
                     else:
-                        messages.error(request, "Form cannot be empty. Please fill in one of the fileds below")
+                        messages.error(
+                            request,
+                            "Form cannot be empty. Please fill in one of the fileds below",
+                        )
                 return render(request, "dashboard/admin/clients/create.html")
             else:
                 return redirect("/login/")
@@ -345,7 +374,10 @@ class dash:
                     email = request.POST.get("email")
                     if email:
                         if not manageUser.checkEmailAvailable(request, email):
-                            messages.error(request, "This email is already taken. Try another email")
+                            messages.error(
+                                request,
+                                "This email is already taken. Try another email",
+                            )
                             return redirect(f"/dashboard/admin/clients/edit/{id}/")
                     manageUser.editClient(request, id)
                     return redirect(f"/dashboard/admin/clients/")
@@ -353,12 +385,16 @@ class dash:
                 client = manageUser.getClientById(request, id)
                 if not client:
                     return redirect("/login/")
-                context["email"] = client.email if settings.CLIENT_TAG not in client.email else '' 
+                context["email"] = (
+                    client.email if settings.CLIENT_TAG not in client.email else ""
+                )
                 context["first_name"] = client.first_name
                 context["last_name"] = client.last_name
                 context["id"] = client.id
                 context["registered"] = client.is_registered
-                context["disabled"] = 'disabled' if client.is_active and client.is_registered else ''
+                context["disabled"] = (
+                    "disabled" if client.is_active and client.is_registered else ""
+                )
                 return render(request, "dashboard/admin/clients/edit.html", context)
             else:
                 return redirect("/login/")
@@ -367,7 +403,7 @@ class dash:
             error = manageUser.sendInvitationUrl(request, id)
             if error:
                 messages.error(request, error)
-            else:    
+            else:
                 messages.success(request, "Invitation has been sent")
             return redirect(f"/dashboard/admin/clients/")
 
@@ -456,7 +492,9 @@ class dash:
             if request.user.is_staff:
                 context = {}
                 context["forms"] = Form.getAllServiceForms(request)
-                return render(request, "dashboard/admin/services/services.html", context)
+                return render(
+                    request, "dashboard/admin/services/services.html", context
+                )
             else:
                 return redirect("/login/")
 
@@ -474,7 +512,8 @@ class dash:
                 if request.method == "POST":
                     Form.createForm(request, is_service=True)
                     return redirect("/dashboard/admin/services/")
-                return render(request, "dashboard/admin/services/create.html")
+                context = dict(orderinfos_defaults=settings.ORDERINFOS_LIST)
+                return render(request, "dashboard/admin/services/create.html", context)
             else:
                 return redirect("/login/")
 
@@ -499,6 +538,11 @@ class dash:
                 context = {}
                 thisform = Form.getFormById(request, id)
                 context["form"] = thisform
+                context["orderinfos_defaults"] = [
+                    a
+                    for a in settings.ORDERINFOS_LIST
+                    if a not in thisform.orderinfos.get("orderinfos")
+                ]
                 context["things"] = thisform.data.values()
                 return render(request, "dashboard/admin/services/edit.html", context)
             else:
@@ -510,11 +554,11 @@ class dash:
                 return redirect("/dashboard/admin/forms/")
             else:
                 return redirect("/login/")
-        
+
         def serviceFormsRemove(request, id):
             if request.user.is_staff:
                 Form.removeForm(request, id)
-                return redirect("/dashboard/admin/forms/")
+                return redirect("/dashboard/admin/services/")
             else:
                 return redirect("/login/")
 
@@ -544,9 +588,7 @@ class dash:
                 if request.user.is_staff:
                     if request.method == "POST":
                         result = templatePackage.createPackage(request)
-                        return redirect(
-                            "/dashboard/admin/template/package/"
-                        )
+                        return redirect("/dashboard/admin/template/package/")
                     return render(
                         request, "dashboard/admin/template/create_package.html"
                     )
@@ -557,9 +599,7 @@ class dash:
                 if request.user.is_staff:
                     if request.method == "POST":
                         templatePackage.editPackage(request, id)
-                        return redirect(
-                            "/dashboard/admin/template/package/"
-                        )
+                        return redirect("/dashboard/admin/template/package/")
                     context = {}
                     pack = templatePackage.getPackageById(id)
                     if pack == None:
@@ -707,7 +747,9 @@ class dash:
                             messages.success(request, msg)
                         else:
                             messages.error(request, mark_safe(msg))
-                        return redirect("/dashboard/admin/" + str(id) + "/deliverables/")
+                        return redirect(
+                            "/dashboard/admin/" + str(id) + "/deliverables/"
+                        )
                     else:
                         return handler404(request)
                 else:
@@ -729,7 +771,9 @@ class dash:
                     context["orders"] = Order.getOrdersByFilter(request)
                 else:
                     context["orders"] = Order.getAllOrders(request)
-                context['unread_messages'] = Order.getUnreadMessages(request, context['orders'])
+                context["unread_messages"] = Order.getUnreadMessages(
+                    request, context["orders"]
+                )
                 return render(request, "dashboard/admin/allorders.html", context)
             else:
                 return redirect("/login/")
@@ -744,8 +788,8 @@ class dash:
                     if Order.createUserOrder(request):
                         return redirect("/dashboard/user/myorders")
                 context = {}
-                context['forms'] = request.user.created_by.form.filter(is_service=True)
-                context['packages'] = request.user.created_by.temlpatePackage.all()
+                context["forms"] = request.user.created_by.form.filter(is_service=True)
+                context["packages"] = request.user.created_by.temlpatePackage.all()
                 return render(request, "dashboard/user/create.html", context)
             else:
                 return redirect("/login/")
@@ -785,7 +829,12 @@ class dash:
                         if not settings.CLIENT_TAG in order.owner.email:
                             recipient = order.owner
                     if recipient:
-                        msg = Message(order=order, author=request.user, body=body, recipient=recipient.email)
+                        msg = Message(
+                            order=order,
+                            author=request.user,
+                            body=body,
+                            recipient=recipient.email,
+                        )
 
                     # check if message is reply
                     is_reply = int(request.POST.get("replyto", 0))

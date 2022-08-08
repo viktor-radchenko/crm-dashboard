@@ -173,4 +173,24 @@ MESSAGE_TAGS = {
         messages.ERROR: 'alert-danger',
  }
 
+ORDERINFOS_LIST = [
+    'order',
+    'company_name',
+    'company_address',
+    'company_city',
+    'company_state',
+    'company_zip',
+    'company_country',
+    'company_phone',
+    'website_url',
+    'company_email',
+    'company_description',
+    'logo_image',
+    'map_url',
+    'website_login_url',
+    'web_username',
+    'web_password',
+    'analytics_account',
+]
+
 CLIENT_TAG = os.getenv("CLIENT_TAG", '__service')

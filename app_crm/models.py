@@ -32,7 +32,6 @@ from django.template.loader import render_to_string
 
 class Order(models.Model):
     order = models.CharField(max_length=500)
-    selected_package = models.CharField(max_length=500, blank=True, null=True)
     company_name = models.CharField(max_length=5000)
     company_address = models.CharField(max_length=5000)
     company_city = models.CharField(max_length=5000)
@@ -401,7 +400,6 @@ class Order(models.Model):
         order = Order(
             order=order_num,
             company_name=request.POST.get("company_name", ""),
-            selected_package=request.POST.get("order_package", ""),
             company_address=request.POST.get("company_address", ""),
             company_city=request.POST.get("company_city", ""),
             company_state=request.POST.get("company_state", ""),
@@ -425,9 +423,37 @@ class Order(models.Model):
             extra_fields=extra_fields,
             notes=order_notes,
         )
+
+        pack = request.POST.get("order_package", "")
+        if pack:
+            tPackage = request.user.created_by.temlpatePackage.get(id=pack)
+            task_ids = []
+            tasks = []
+            for mon in tPackage.month.all():
+                for ta in mon.orderby_set.all():
+                    tasks.append(
+                        Task(
+                            start_date=None,
+                            end_date=None,
+                            completed_by=None,
+                            status=None,
+                            notes="",
+                            month=mon.num,
+                            template_task=ta.templateTask,
+                            ordering=ta.ordering,
+                        )
+                    )
+
+            tSave = Task.objects.bulk_create(tasks)
+            for obj in tSave:
+                task_ids.append(obj.id)
+            package = Package.objects.create(template=tPackage)
+            package.tasks.set(task_ids)
+            order.package = package
         order.save()
         if form:
             form.order = order
+            form.is_editable = False
             form.save()
 
         text = f"Your client {request.user.first_name} has created a new order"
@@ -1142,6 +1168,7 @@ class Form(models.Model):
         CustomUser, on_delete=models.CASCADE, related_name="form"
     )
     is_service = models.BooleanField(default=False)
+    is_editable = models.BooleanField(default=True)
     is_default = models.BooleanField(default=False)
     order =  models.ForeignKey(
         Order, on_delete=models.CASCADE, related_name="intake_form", default=None, blank=True, null=True

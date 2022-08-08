@@ -118,7 +118,7 @@
                                 <button class="btn btn-primary p-0 crm-btn add_dropdown" type="button"><i class="fa fa-plus align-middle"></i><span>Add dropdown field</span></button>
                             </div>
 
-                            <div class="col-12 mb-4 spe-container">
+                            <div class="col-12 mb-4 spe-container draggable">
                             </div>
 
                             <input type="hidden" name="totalcount" id="totalcount">
@@ -139,4 +139,5 @@
 {% block extra_script %}
 {% load static %}
 <script src="{% static "/js/createform.js"%}"></script>
+<script src="{% static "/vendor/sortablejs/sortable.min.js"%}"></script>
 {% endblock %}

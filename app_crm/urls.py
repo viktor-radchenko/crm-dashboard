@@ -149,7 +149,7 @@ urlpatterns = [
                             path("services/create/", views.dash.admin.serviceFormsCreate),
                             path("services/edit/<int:id>/", views.dash.admin.serviceFormsEdit),
                             path(
-                                "services/remove/<int:id>/", views.dash.admin.formsRemove
+                                "services/remove/<int:id>/", views.dash.admin.serviceFormsRemove
                             ),
                             path("clients/", views.dash.admin.allClients),
                             path("clients/create/", views.dash.admin.clientsCreate),

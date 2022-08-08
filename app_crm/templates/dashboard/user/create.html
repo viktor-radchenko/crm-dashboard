@@ -35,7 +35,7 @@
                                     <select name="order_package" class="fformselect form-control">
                                         <option value="" disabled selected>Select package</option>
                                         {% for pkg in packages %}
-                                        <option value="{{ pkg.title }}">{{ pkg.title }}</option>
+                                        <option value="{{ pkg.id }}">{{ pkg.title }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
@@ -112,7 +112,7 @@
                                     <select name="order_package" class="fformselect form-control">
                                         <option value="" disabled selected>Select package</option>
                                         {% for pkg in packages %}
-                                        <option value="{{ pkg.title }}">{{ pkg.title }}</option>
+                                        <option value="{{ pkg.id }}">{{ pkg.title }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
