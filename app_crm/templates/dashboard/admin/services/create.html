@@ -24,11 +24,16 @@
                             
                             <div class="draggable-defaults">
                                 {% for i in orderinfos_defaults %}
-                                    <div class="form-group form-check col-12 ml-4">
-                                        <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="{{i}}" id="{{i}}" >
+                                <div class="form-group form-check col-12 ml-4"  style="position: relative;">
+                                    <div style="display: inline-block;">
+                                        <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="{{i}}"  id="{{i}}">
                                         <label class="form-check-label" for="{{i}}">{{i|title}}</label>
                                     </div>
-                                {% endfor %}
+                                    <div class="drgme" style="
+                                        display: inline-block; cursor: pointer; position: absolute; right: 50px;
+                                    "><i class="fas fa-bars"></i></div>
+                                </div>
+                            {% endfor %}
                             </div>
 
                                 <hr>
