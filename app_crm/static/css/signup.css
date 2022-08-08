@@ -238,3 +238,7 @@ body {
 .alert-dark .alert-link {
     color: #18181c;
 }
+
+small {
+    font-family: Arial, Helvetica, sans-serif;;
+}
