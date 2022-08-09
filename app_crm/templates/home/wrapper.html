@@ -22,42 +22,28 @@
                 <nav class="nav">
                     <ul class="nav-list">
                         <li class="nav-list_item dropdown">
-                            <a href="/features/" class="nav-list_link">Features</a>
-                            <!-- KEEP IT COMMENTED FOR NOW -->
-                            <!-- <ul class="sub-menu">
+                            <a href="#" class="nav-list_link">Services</a>
+                            <ul class="sub-menu">
                                 <li class="sub-menu_item">
-                                    <a href="#" class="sub-menu_link">CILF?</a>
+                                    <a href="#" class="sub-menu_link">Workflow Setup</a>
                                 </li>
                                 <li class="sub-menu_item">
-                                    <a href="#" class="sub-menu_link">Recipes?</a>
-                                </li>
-                                <li class="sub-menu_item">
-                                    <a href="#" class="sub-menu_link">Data Pipelines?</a>
-                                </li>
-                            </ul> -->
-                        </li>
-                        <li class="nav-list_item dropdown">
-                            <a href="/pricing/" class="nav-list_link">Pricing</a>
-                            <!-- <ul class="sub-menu">
-                                <li class="sub-menu_item">
-                                    <a href="#" class="sub-menu_link">Agency Data Pipeline</a>
-                                </li>
-                                <li class="sub-menu_item">
-                                    <a href="#" class="sub-menu_link">Ecom Data Pipeline</a>
-                                </li>
-                                <li class="sub-menu_item">
-                                    <a href="#" class="sub-menu_link">SaaS Data Pipeline</a>
-                                </li>
-                            </ul> -->
-                        </li>
+                                    <a href="#" class="sub-menu_link">Automation</a>
+                                </li>                            
+                            </ul>
+                        </li>                          
                         <li class="nav-list_item">
-                            <a href="/blog/" class="nav-list_link">Blog</a>
+                            <a href="#features" class="nav-list_link">Features</a>
+                        </li>                            
+                       
+                        <li class="nav-list_item-button">
+                            <a href="#" class="nav-list_link"><button class="nav-list_button">Get Started</button></a>
                         </li>
                         <li class="nav-list_item-button">
                             <a href="/login/" class="nav-list_link">
                                 <button class="nav-list_button">
                                     {% if request.user.is_anonymous %}
-                                        Sign in
+                                        Get Started
                                     {% else %}
                                         Dashboard
                                     {% endif %}
