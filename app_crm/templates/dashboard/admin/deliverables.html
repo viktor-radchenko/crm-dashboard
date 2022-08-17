@@ -80,7 +80,7 @@
                     {% for t in task|dictsort:"ordering" %}
                     {% if t.month == m %}
                     <tr class="table">
-                        <td scope="col" class="sortable" style="background-color:#F5F5F5;">{{ t.template_task.title }} <i class="fas fa-question-circle" data-toggle="tooltip" title="{{t.template_task.notes}}"></i></td>
+                        <td scope="col" class="sortable" style="background-color:#F5F5F5;">{{ t.template_task.title }} <i class="fas fa-question-circle" data-toggle="tooltip" title="{{t.template_task.notes}}" style="color: #787878e8;"></i></td>
                         <td scope="col" class="sortable" style="background-color: {{ t.status.color }};">{% if t.start_date == None %}{%else%}{{ t.start_date|date:"M d, Y" }}{% endif %}</td>
                         <td scope="col" class="sortable" style="background-color: {{ t.status.color }};">{% if t.end_date == None %}{%else%}{{ t.end_date|date:"M d, Y" }}{% endif %}</td>
                         <td scope="col" class="sortable" style="background-color: {{ t.status.color }};">{{ t.status.name }}</td>
@@ -112,7 +112,7 @@
                     {% for addontask in addon.tasks.all|dictsort:"ordering" %}
                     {% if addontask.month == m %}
                     <tr class="table">
-                        <td scope="col" class="sortable" style="background-color:#F5F5F5;">{{ addontask.template_task.title }} <i class="fas fa-question-circle" data-toggle="tooltip" title="{{addontask.template_task.notes}}"></i></td>
+                        <td scope="col" class="sortable" style="background-color:#F5F5F5;">{{ addontask.template_task.title }} <i class="fas fa-question-circle" data-toggle="tooltip" title="{{addontask.template_task.notes}}" style="color: #787878e8;"></i></td>
                         <td scope="col" class="sortable" style="background-color: {{ addontask.status.color }};">{% if addontask.start_date == None %}{%else%}{{ addontask.start_date|date:"M d, Y" }}{% endif %}</td>
                         <td scope="col" class="sortable" style="background-color: {{ addontask.status.color }};">{% if addontask.end_date == None %}{%else%}{{ addontask.end_date|date:"M d, Y" }}{% endif %}</td>
                         <td scope="col" class="sortable" style="background-color: {{ addontask.status.color }};">{{ addontask.status.name }}</td>

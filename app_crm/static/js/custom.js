@@ -45,5 +45,5 @@ window.onclick = function(event) {
 }
 
 $(function () {
-  $('[data-toggle="tooltip"]').tooltip()
+  $('[data-toggle="tooltip"]').tooltip({placement:"auto"})
 })
