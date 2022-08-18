@@ -468,7 +468,7 @@ class Order(models.Model):
         )
 
         recipient = request.user.created_by
-        subj = "SearManager.pro - your client has created an order"
+        subj = "Your client has created an order"
 
         url = f"{request._current_scheme_host}/dashboard/admin/editinfo/{order.id}/"
         body = render_to_string(
@@ -551,7 +551,7 @@ class Order(models.Model):
         if not zap and msg.order.owner.is_registered:
             try:
                 recipient = msg.order.owner.created_by if request.user == msg.order.owner else msg.order.owner
-                subj = "SearchManager.pro - you have a new message"
+                subj = "You have a new message"
                 body = render_to_string(
                     "email/zap_message_backup.html",
                     {
@@ -627,7 +627,7 @@ class Order(models.Model):
         if not apikey and order.owner.is_registered:
             try:
                 recipient = order.owner
-                subj = "SearchManager.pro - update on order deliverables"
+                subj = "Update on order deliverables"
                 body = render_to_string(
                     "email/zap_backup.html",
                     {
@@ -1381,7 +1381,7 @@ class manageUser:
                     uri = urlsafe_base64_encode(force_bytes(user.pk))
                     token = account_activation_token.make_token(user)
 
-                    mail_subject = "SearchManager.pro - Activate your account"
+                    mail_subject = "Activate your account"
                     url = (
                         f"{request._current_scheme_host}/signup/activate/{uri}/{token}/"
                     )
@@ -1434,7 +1434,7 @@ class manageUser:
             uri = urlsafe_base64_encode(force_bytes(user.pk))
             token = account_activation_token.make_token(user)
 
-            mail_subject = "SearchManager.pro - Activate your account"
+            mail_subject = "Activate your account"
             url = f"{request._current_scheme_host}/signup/activate/{uri}/{token}/"
 
             body = render_to_string(
@@ -1605,7 +1605,7 @@ class manageUser:
             },
         )
 
-        mail_subject = "SearchManager.pro - client invitation"
+        mail_subject = "Client invitation"
 
         send_mailjet_email(client, mail_subject, body)
 

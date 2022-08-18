@@ -93,7 +93,7 @@ def send_mailjet_email(recipient, subj, body):
             {
             "From": {
                 "Email": os.getenv('MAILJET_SENDER', "viktordevtest2022@gmail.com"),
-                "Name": "Viktor"
+                "Name": os.getenv('MAILJET_NAME', 'noreply')
             },
             "To": [
                 {
