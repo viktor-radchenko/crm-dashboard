@@ -1,4 +1,5 @@
 {% extends 'home/wrapper.html' %}
+{% load static %}
 {% block content %}
 <section class="section">
     <div class="video-section">
@@ -11,7 +12,7 @@
                 Organize your entire workflow, keep all communication in one place and provide exceptional client service with a single project management platform
             </p>
             <br>
-            <p class="video-text"><a href="#" class="nav-list_link"><button class="nav-list_button">Get Started</button></a></p>
+            <p class="video-text"><a href="/login/" class="nav-list_link"><button class="nav-list_button">Get Started</button></a></p>
         </div>
         
     </div>
@@ -61,7 +62,7 @@
             </ul>
         </div>
         <div class="query-image_wrapper">
-            <img src="./images/scr1.png" alt="query-image" class="query-image">
+            <img src="{% static "/img/home/scr1.png" %}" alt="query-image" class="query-image">
         </div>
     </div>
 </section>
@@ -77,9 +78,9 @@
         </div>
         <div class="work-boxes_wrapper">
             <div class="work-boxes-column">
-                <div class="column-box_wrapper" data-src="./images/intake-form.png">
+                <div class="column-box_wrapper" data-src="{% static '/img/home/intake-form.png' %}">
                     <div class="column-image_wrapper">
-                        <img src="./images/011.png" alt="column-image" class="column-image">
+                        <img src="{% static "/img/home//011.png" %}" alt="column-image" class="column-image">
                     </div>
                     <p class="column-name">
                         Create & Setup Your Agency Account
@@ -89,9 +90,9 @@
                         to collect and store the necassary information from clients
                     </p>
                 </div>
-                <div class="column-box_wrapper" data-src="./images/inv-client.png">
+                <div class="column-box_wrapper" data-src="{% static "/img/home/inv-client.png" %}">
                     <div class="column-image_wrapper">
-                        <img src="./images/02.png" alt="column-image" class="column-image">
+                        <img src="{% static "/img/home/02.png" %}" alt="column-image" class="column-image">
                     </div>
                     <p class="column-name">
                         Invite Clients to Their Personal Dashboard
@@ -100,9 +101,9 @@
                         Send invitation email to add clients to their personal order management platform
                     </p>
                 </div>
-                <div class="column-box_wrapper" data-src="./images/del.png">
+                <div class="column-box_wrapper" data-src="{% static "/img/home/del.png" %}">
                     <div class="column-image_wrapper">
-                        <img src="./images/03.png" alt="column-image" class="column-image">
+                        <img src="{% static "/img/home/03.png" %}" alt="column-image" class="column-image">
                     </div>
                     <p class="column-name">
                         Automate & Scale Work Fulfillment
@@ -111,9 +112,9 @@
                         Connect Searchmanager Pro with your tool stack to automate the entire workflow and scale fulfillment
                     </p>
                 </div>
-                <div class="column-box_wrapper" data-src="./images/rep.png">
+                <div class="column-box_wrapper" data-src="{% static "/img/home/rep.png" %}">
                     <div class="column-image_wrapper">
-                        <img src="./images/04.png" alt="column-image" class="column-image">
+                        <img src="{% static "/img/home/04.png" %}" alt="column-image" class="column-image">
                     </div>
                     <p class="column-name">
                         Present Transparent Task Reports
@@ -124,7 +125,7 @@
                 </div>
             </div>
             <div class="work-boxes_image">
-                <img id="showImg" src="./images/q.png" alt="box image" class="boxes-image">
+                <img id="showImg" src="{% static "/img/home/q.png" %}" alt="box image" class="boxes-image">
             </div>
             <div class="work-boxes-column">
 
@@ -134,10 +135,10 @@
 </section>
 <section class="section" style="display:none!important">
     <div class="customer-wrapper">
-        <div class="customer-slide" data-dot-img="./images/customer1.jpg">
+        <div class="customer-slide" data-dot-img="{% static "/img/home/customer1.jpg" %}">
             <div class="customer-info">
                 <div class="customer-image_wrapper">
-                    <img src="./images/customer1.jpg" alt="customer-image" class="customer-image">
+                    <img src="{% static "/img/home/customer1.jpg" %}" alt="customer-image" class="customer-image">
                 </div>
                 <div class="customer-name_card">
                     <p class="customer-name">
@@ -161,10 +162,10 @@
                 <a href="#" class="customer-link">Continue Reading</a>
             </div>
         </div>
-        <div class="customer-slide" data-dot-img="./images/customer2.jpg">
+        <div class="customer-slide" data-dot-img="{% static "/img/home/customer2.jpg" %}">
             <div class="customer-info">
                 <div class="customer-image_wrapper">
-                    <img src="./images/customer2.jpg" alt="customer-image" class="customer-image">
+                    <img src="{% static "/img/home/customer2.jpg" %}" alt="customer-image" class="customer-image">
                 </div>
                 <div class="customer-name_card">
                     <p class="customer-name">
@@ -188,10 +189,10 @@
                 <a href="#" class="customer-link">Continue Reading</a>
             </div>
         </div>
-        <div class="customer-slide" data-dot-img="./images/customer3.jpeg">
+        <div class="customer-slide" data-dot-img="{% static "/img/home/customer3.jpeg" %}">
             <div class="customer-info">
                 <div class="customer-image_wrapper">
-                    <img src="./images/customer3.jpeg" alt="customer-image" class="customer-image">
+                    <img src="{% static "/img/home/customer3.jpeg" %}" alt="customer-image" class="customer-image">
                 </div>
                 <div class="customer-name_card">
                     <p class="customer-name">
@@ -231,7 +232,7 @@
             <div class="slider-card_wrapper">
                 <a href="#" class="slider-card">
                     <div class="slider-card-image_wrapper">
-                        <img src="./images/slider-card-img1.png" alt="slider card image" class="slider-card-image">
+                        <img src="{% static "/img/home/slider-card-img1.png" %}" alt="slider card image" class="slider-card-image">
                     </div>
                     <div class="slider-card-button_wrapper">
                         <div class="slider-card-button">
@@ -258,7 +259,7 @@
             <div class="slider-card_wrapper">
                 <a href="#" class="slider-card">
                     <div class="slider-card-image_wrapper">
-                        <img src="./images/slider-card-img2.png" alt="slider card image" class="slider-card-image">
+                        <img src="{% static "/img/home/slider-card-img2.png" %}" alt="slider card image" class="slider-card-image">
                     </div>
                     <div class="slider-card-button_wrapper">
                         <div class="slider-card-button">
@@ -285,7 +286,7 @@
             <div class="slider-card_wrapper">
                 <a href="#" class="slider-card">
                     <div class="slider-card-image_wrapper">
-                        <img src="./images/slider-card-img3.png" alt="slider card image" class="slider-card-image">
+                        <img src="{% static "/img/home/slider-card-img3.png" %}" alt="slider card image" class="slider-card-image">
                     </div>
                     <div class="slider-card-button_wrapper">
                         <div class="slider-card-button">
@@ -312,7 +313,7 @@
             <div class="slider-card_wrapper">
                 <a href="#" class="slider-card">
                     <div class="slider-card-image_wrapper">
-                        <img src="./images/slider-card-img4.png" alt="slider card image" class="slider-card-image">
+                        <img src="{% static "/img/home/slider-card-img4.png" %}" alt="slider card image" class="slider-card-image">
                     </div>
                     <div class="slider-card-button_wrapper">
                         <div class="slider-card-button">
@@ -374,19 +375,19 @@
                 <tbody class="tbody">
                     <tr class="body-row">
                         <td class="body-column row">Dedicated analyst</td>
-                        <td class="body-column row"><img src="./images/check-list.png" alt="" class="table-image"></td>
+                        <td class="body-column row"><img src="{% static "/img/home/check-list.png" %}" alt="" class="table-image"></td>
                     </tr>
                     <tr class="body-row">
                         <td class="body-column row">Unified BigQuery warehouse</td>
-                        <td class="body-column row"><img src="./images/check-list.png" alt="" class="table-image"></td>
+                        <td class="body-column row"><img src="{% static "/img/home/check-list.png" %}" alt="" class="table-image"></td>
                     </tr>
                     <tr class="body-row">
                         <td class="body-column row">SQL data models built in dbt</td>
-                        <td class="body-column row"><img src="./images/check-list.png" alt="" class="table-image"></td>
+                        <td class="body-column row"><img src="{% static "/img/home/check-list.png" %}" alt="" class="table-image"></td>
                     </tr>
                     <tr class="body-row">
                         <td class="body-column">Reporting in Data Studio, or your preferred platform</td>
-                        <td class="body-column"><img src="./images/check-list.png" alt="" class="table-image"></td>
+                        <td class="body-column"><img src="{% static "/img/home/check-list.png" %}" alt="" class="table-image"></td>
                     </tr>
                 </tbody>
             </table>
@@ -405,7 +406,7 @@
             <a href="#" class="cook-link"><button class="cook-button">Get in Touch</button></a>
         </div>
         <div class="cook-image_wrapper">
-            <img src="./images/person.png" alt="cook-image" class="cook-image">
+            <img src="{% static "/img/home/person.png" %}" alt="cook-image" class="cook-image">
         </div>
     </div>
 </section>

@@ -102,7 +102,7 @@
   text-decoration: none;
 }
 .dropdown::after {
-  content: url(../images/angle-down-solid.svg);
+  content: url(../../img/home/angle-down-solid.svg);
   position: absolute;
   top: 37%;
   right: 0px;
@@ -226,7 +226,7 @@
   padding-right: 100px;
   list-style: none;
   color: #FFFFFF;
-  background: url(../images/listicon.png) no-repeat left 3px;
+  background: url(../../img/home/listicon.png) no-repeat left 3px;
 }
 .query-text_head {
   font-family: 'Merriweather Sans', sans-serif;
