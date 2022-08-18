@@ -617,7 +617,12 @@ class Order(models.Model):
             "analytics_account": order.analytics_account,
             "deliverables_url": deliv_link,
             "message_type": "all_info",
+            "order_notes": order.notes,
         }
+
+        if order.extra_fields:
+            for key, value in order.extra_fields.items():
+                dataset[key] = value
 
         apikey = request.user.key.first()
         if not apikey and order.owner.is_registered:

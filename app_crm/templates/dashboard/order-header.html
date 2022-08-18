@@ -25,10 +25,13 @@
       <div><strong>Google properties account</strong>: <a href="{{order.analytics_account}}" target="_blank"><strong>{{order.analytics_account}}</strong></a></div>
     {% endif %}
   </div>
-
+  {% if order.notes %}
   <div class="d-flex flex-wrap" style="max-height: 100px;width: 100%;gap: 15px;">
-    <div><strong>Order notes</strong>:</div>
+    <div><strong>Order notes</strong>:
+      {{order.notes}}
+    </div>
   </div>
+  {% endif %}
 
 </div>
 

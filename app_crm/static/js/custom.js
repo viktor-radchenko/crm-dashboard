@@ -1,3 +1,7 @@
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip({placement:"auto"})
+})
+
 $(".notification-toggle").click(function (e) {
   e.stopPropagation();
     $(".notification-sidebar").toggleClass('active');
@@ -43,7 +47,3 @@ window.onclick = function(event) {
     modal.style.display = "none";
   }
 }
-
-$(function () {
-  $('[data-toggle="tooltip"]').tooltip({placement:"auto"})
-})
