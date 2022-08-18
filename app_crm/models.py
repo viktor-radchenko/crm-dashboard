@@ -149,8 +149,11 @@ class Order(models.Model):
         )
         new_order.save()
         if form:
-            form.order = new_order
-            form.save()
+            form_snapshot = form
+            form_snapshot.pk = None
+            form_snapshot.order = new_order
+            form_snapshot.is_snapshot = True
+            form_snapshot.save()
         return True, "Order successfully created"
 
     def deleteOrder(request, id):
@@ -452,9 +455,11 @@ class Order(models.Model):
             order.package = package
         order.save()
         if form:
-            form.order = order
-            form.is_editable = False
-            form.save()
+            form_snapshot = form
+            form_snapshot.pk = None
+            form_snapshot.order = order
+            form_snapshot.is_snapshot = True
+            form_snapshot.save()
 
         text = f"Your client {request.user.first_name} has created a new order"
         link = f"/dashboard/admin/editinfo/{order.id}/"
@@ -1168,7 +1173,7 @@ class Form(models.Model):
         CustomUser, on_delete=models.CASCADE, related_name="form"
     )
     is_service = models.BooleanField(default=False)
-    is_editable = models.BooleanField(default=True)
+    is_snapshot = models.BooleanField(default=False)
     is_default = models.BooleanField(default=False)
     order =  models.ForeignKey(
         Order, on_delete=models.CASCADE, related_name="intake_form", default=None, blank=True, null=True
@@ -1269,7 +1274,7 @@ class Form(models.Model):
         return forms
 
     def getAllServiceForms(request):
-        forms = Form.objects.filter(created_by=request.user, is_service=True).all()
+        forms = Form.objects.filter(created_by=request.user, is_service=True, is_snapshot=False).all()
         return forms
 
     def removeForm(request, id):

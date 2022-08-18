@@ -205,7 +205,7 @@ class dash:
                 context = {}
                 context["users"] = manageUser.getAllClients(request)
                 context["client_tag"] = settings.CLIENT_TAG
-                context["forms"] = request.user.form.filter(is_service=True)
+                context["forms"] = request.user.form.filter(is_service=True, is_snapshot=False)
                 return render(request, "dashboard/admin/createcustom.html", context)
             else:
                 return redirect("/login/")
@@ -794,7 +794,7 @@ class dash:
                     if Order.createUserOrder(request):
                         return redirect("/dashboard/user/myorders")
                 context = {}
-                context["forms"] = request.user.created_by.form.filter(is_service=True)
+                context["forms"] = request.user.created_by.form.filter(is_service=True, is_snapshot=False)
                 context["packages"] = request.user.created_by.temlpatePackage.all()
                 return render(request, "dashboard/user/create.html", context)
             else:
