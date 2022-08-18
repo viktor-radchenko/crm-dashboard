@@ -29,9 +29,11 @@ def remove_underscore(var):
 def get_getlist(dictionary, key):
     return list(map(int, dictionary.getlist(key)))
 
+
 @register.filter(name="index_filter")
 def index_filter(indexable, i):
     return indexable[i]
+
 
 @register.filter(name="read_it")
 def read_it(msg):
@@ -39,6 +41,12 @@ def read_it(msg):
         msg.is_read = True
         msg.save()
 
+
 @register.filter(name="get_agency_info")
 def get_agency_info(obj):
     return obj.getAgencyInfo()
+
+
+@register.filter(name="filter_empty_links")
+def filter_empty_links(links):
+    return [l for l in links if l.link]
