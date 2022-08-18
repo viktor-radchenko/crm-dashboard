@@ -39,7 +39,7 @@
                                 <div class="form-group form-check col-12 ml-4"  style="position: relative;">
                                     <div style="display: inline-block;">
                                         <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="{{i}}"  id="{{i}}">
-                                        <label class="form-check-label" for="{{i}}">{{i|title}}</label>
+                                        <label class="form-check-label" for="{{i}}">{{i|remove_underscore|title}}</label>
                                     </div>
                                     <div class="drgme" style="
                                         display: inline-block; cursor: pointer; position: absolute; right: 50px;
@@ -52,7 +52,7 @@
 
                             <div class="form-group col-12 mb-4">
                                 <label class="text ml-1" for="zapier_tag">Zapier tag: (optional)</label>
-                                <input type="text" class="form-control mb-2" name="zapier_tag" id="zapier_tag" value="{{ form.zapier_tag }}">
+                                <input type="text" class="form-control mb-2" name="zapier_tag" id="zapier_tag" value="{{ form.zapier_tag|default_if_none:"" }}">
                             </div>
 
                             <hr>
