@@ -114,7 +114,7 @@
                         <th scope="col" class="sortable">Month</th>
                         <th scope="col" class="sortable">Package</th>
                         <th scope="col" class="sortable">Addon</th>
-                        <th scope="col" class="sortable">Actions</th>
+                        <th scope="col" class="sortable" style="width: 20%">Actions</th>
                     </tr>
                 </thead>
                 
@@ -148,6 +148,10 @@
                                     <i class="fa fa-envelope"></i>
                             </a>
                             
+                            {% if order.link1 %}<a href="{{ order.link1 }}" target="_blank" title="google drive" class="mr-1" ><i class="fab fa-google-drive"></i></a>{% endif %}
+                            {% if order.link2 %}<a href="{{ order.link2 }}" target="_blank" title="trello card" class="mr-1" ><i class="fab fa-trello"></i></a>{% endif %}
+                            {% if order.link3 %}<a href="{{ order.link3 }}" target="_blank" title="workbook" class="mr-1" ><i class="fas fa-table"></i></a>{% endif %}
+                            {% if order.link4 %}<a href="{{ order.link4 }}" target="_blank" title="rank tracker" class="mr-1" ><i class="fas fa-chart-area"></i></a>{% endif %}
                             {% if request.user.is_staff %}
                                 {% if order.is_archived %}
                                 <a href="/dashboard/admin/restore/{{ order.id }}/" title="Restore order" class="mr-1"><i class="fa fa-trash-restore"></i></a>
@@ -156,12 +160,6 @@
                                 <a href="/dashboard/admin/cancel/{{ order.id }}/" title="Archive order" class="mr-1"><i class="fa fa-archive"></i></a>
                                 {% endif %}
                             {% endif %}
-                            <div>
-                            {% if order.link1 %}<a href="{{ order.link1 }}" target="_blank" title="google drive" class="mr-1" ><i class="fab fa-google-drive"></i></a>{% endif %}
-                            {% if order.link2 %}<a href="{{ order.link2 }}" target="_blank" title="trello card" class="mr-1" ><i class="fab fa-trello"></i></a>{% endif %}
-                            {% if order.link3 %}<a href="{{ order.link3 }}" target="_blank" title="workbook" class="mr-1" ><i class="fas fa-table"></i></a>{% endif %}
-                            {% if order.link4 %}<a href="{{ order.link4 }}" target="_blank" title="rank tracker" class="mr-1" ><i class="fas fa-chart-area"></i></a>{% endif %}
-                            </div>
                         </td>
                     </tr>
                     {% endfor %}
