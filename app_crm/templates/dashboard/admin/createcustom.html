@@ -88,7 +88,7 @@
                                     <div class="form-group col-12 mb-4">
                                         <label for="">{{ ft.title }}</label>
                                         <div class="col-12 p-0">
-                                            <select class="form-control">
+                                            <select class="form-control" name="{{ form.id}}:{{ formitem }}">
                                                 {% for x in ft.items %}
                                                     <option value="{{ x }}">{{ x }}</option>
                                                 {% endfor %}

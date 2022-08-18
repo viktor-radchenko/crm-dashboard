@@ -97,9 +97,9 @@
                                         <div class="form-group col-12 mb-4">
                                             <label for="">{{ ft.title }}</label>
                                             <div class="col-12 p-0">
-                                                <select class="form-control">
+                                                <select name="{{ form.id}}:{{ formitem }}" class="form-control">
                                                     {% for x in ft.items %}
-                                                        <option value="{{ x }}">{{ x }}</option>
+                                                        <option value="{{ x }}" {% if x in order.extra_fields|get_item:ft.title %}selected{% endif %}>{{ x }}</option>
                                                     {% endfor %}
                                                 </select>
                                             </div>
