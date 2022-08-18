@@ -129,10 +129,10 @@
   align-items: center;
   justify-content: space-around;
   margin-top: 40px;
-  padding: 0px 80px;
+  padding: 50px 80px 0px;
 }
 .video-text_wrapper {
-  max-width: 630px;
+  max-width: 65%;
 }
 .video-text_head {
   font-family: 'Merriweather Sans', sans-serif;
@@ -143,9 +143,10 @@
 }
 .video-text_title {
   font-family: 'Merriweather Sans', sans-serif;
-  font-size: 70px;
+  font-size: 54px;
   font-weight: 800;
   color: var(--text-color);
+  text-align: center;
 }
 .video-text {
   font-family: 'Merriweather', sans-serif;
@@ -153,6 +154,7 @@
   font-weight: 400;
   color: var(--text-color);
   margin-top: 20px;
+  text-align: center;
 }
 .video-wrapper {
   border: 5px solid #c7c8ca;
@@ -160,7 +162,7 @@
   
 }
 .cards-wrapper {
-  padding: 150px 100px 200px;
+  padding: 150px 300px 200px;
   display: flex;
   align-items: center;
   justify-content: space-around;
@@ -168,6 +170,7 @@
 }
 .card {
   max-width: 340px;
+  height: 270px;
   background-color: #ffffff;
   border: 4px solid #F4F7F8;
   border-radius: 10px;
@@ -232,22 +235,22 @@
   font-family: 'Merriweather Sans', sans-serif;
   font-style: normal;
   font-weight: 800;
-  font-size: 90px;
+  font-size: 52px;
   line-height: 105px;
   color: #fff;
   margin: 10px 0 30px 0;
 }
 .query-image_wrapper {
-  max-width: 700px;
+  max-width: 850px;
 }
 .query-image {
   width: 100%;
-  border: 15px solid #FFFFFF;
+  border: 0px solid #FFFFFF;
   box-shadow: 0px 30px 40px rgb(0 0 0 / 10%);
-  border-radius: 23px 0px 0px 23px;
+  border-radius: 10px;
 }
 .work-wrapper {
-  padding: 200px 75px 0px;
+  padding: 100px 250px 0px;
 }
 .work-head {
   text-align: center;
@@ -270,13 +273,13 @@
   box-sizing: border-box;
 }
 .work-boxes_wrapper {
-  padding: 125px 0px 62px;
+  padding: 62px 0px 62px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 .work-boxes_image {
-  max-width: 408px;
+  max-width: 1000px;
 }
 .boxes-image {
   width: 100%;
@@ -420,7 +423,7 @@
   text-align: center;
   border: 1px solid white;
   border-radius: 50%;
-  background: url(../images/angle-left-solid.svg) 7px 0 no-repeat;
+  background: url(../../img/home/angle-left-solid.svg) 7px 0 no-repeat;
   background-color: var(--text-color);
 }
 .customer-wrapper .slick-arrow.slick-prev:hover{
@@ -436,7 +439,7 @@
   text-align: center;
   border: 1px solid white;
   border-radius: 50%;
-  background: url(../images/angle-right-solid.svg) 7px 0 no-repeat #FFFFFF;
+  background: url(../../img/home/angle-right-solid.svg) 7px 0 no-repeat #FFFFFF;
   background-color: var(--text-color);
   color: #ffffff;
 }
@@ -497,7 +500,7 @@
   height: auto;
 }
 .recipes-wrapper {
-  padding: 106px 72px 80px;
+  padding: 106px 200px 80px;
 }
 .recipes-title {
   text-align: center;
@@ -602,7 +605,7 @@
   text-align: center;
   border: 1px solid #0D3A65;
   border-radius: 50%;
-  background: url(../images/angle-left-solid.svg) 7px 0 no-repeat;
+  background: url(../../img/home/angle-left-solid.svg) 7px 0 no-repeat;
   background-color: #FFFFFF;
   opacity: 0.5;
 }
@@ -617,7 +620,7 @@
   text-align: center;
   border: 1px solid #0D3A65;
   border-radius: 50%;
-  background: url(../images/angle-right-solid.svg) 7px 0 no-repeat;
+  background: url(../../img/home/angle-right-solid.svg) 7px 0 no-repeat;
   background-color: #FFFFFF;
   opacity: 0.5;
 }
@@ -654,7 +657,7 @@
   font-family: 'Merriweather';
   font-size: 16px;
   color: #0D3A65;
-  background: url(../images/listicon.png) no-repeat left 3px;
+  background: url(../../img/home/listicon.png) no-repeat left 3px;
   padding-left: 35px;
   margin-top: 20px;
   list-style: none;
@@ -761,11 +764,12 @@
 .footer-content {
   display: flex;
   align-items: flex-start;
-  justify-content: space-around;
-  padding: 0px 120px 60px;
+  justify-content: flex-start;
+  padding: 0px 300px 60px 150px;
 }
 .footer-text_wrapper {
   max-width: 375px;
+  margin-right: 150px;
 }
 .footer-text_title {
   font-family: "Merriweather Sans", sans-serif;
@@ -781,9 +785,9 @@
   color: #ffffff;
   line-height: 24px;
 }
-.footer-list_wrapper {
-  width: 126px;
-  margin: 0 30px 0 0;
+.footer-list_wrapper {    
+  width: 300px;
+  margin-right: 10px;
   display: inline-block;
   vertical-align: top;
 }
@@ -811,6 +815,7 @@
   color: #8ed1fc;
 }
 .footer-quote {
+  text-align: center;
   background: #05315a;
 }
 .footer-quote_policy {
