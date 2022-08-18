@@ -205,7 +205,9 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
 /* Modal Content/Box */
 .feedback__modal-content {
   background-color: #fefefe;
-  margin: 15% auto; /* 15% from the top and centered */
+  position: fixed;
+  bottom: 50px;
+  left: 128px;
   padding: 20px;
   border: 1px solid #888;
   width: 680px; /* Could be more or less, depending on screen size */

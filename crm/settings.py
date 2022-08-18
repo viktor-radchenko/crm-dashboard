@@ -194,3 +194,5 @@ ORDERINFOS_LIST = [
 ]
 
 CLIENT_TAG = os.getenv("CLIENT_TAG", '__service')
+
+FEEDBACK_FORM = os.getenv("FEEDBACK_FORM")

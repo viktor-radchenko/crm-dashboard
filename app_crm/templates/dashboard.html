@@ -113,7 +113,7 @@
             
             <li class="nav-item feedback__btn" id="feedback__btn">
                 <div class="sidebar-heading">Feedback</div>
-                <button class="nav-link" href="/dashboard/admin/allusers">
+                <button class="nav-link">
                     <i class="fas fa-question-circle"></i>
                     <span></span>
                 </button>
@@ -194,7 +194,7 @@
             <!-- Modal content -->
             <div class="feedback__modal-content">
               <span class="feedback__close">&times;</span>
-              <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSe1cc6c-41AK0JYLFYgjM4qHucye4o7MlOSwIlONFJGb-TH2Q/viewform?embedded=true" width="640" height="450" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+              <iframe src="{% get_settings 'FEEDBACK_FORM' %}" width="640" height="450" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
             </div>
           
           </div>

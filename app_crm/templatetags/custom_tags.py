@@ -50,3 +50,8 @@ def get_agency_info(obj):
 @register.filter(name="filter_empty_links")
 def filter_empty_links(links):
     return [l for l in links if l.link]
+
+
+@register.simple_tag(name="get_settings")
+def get_settings(key):
+    return getattr(settings, key, '');
