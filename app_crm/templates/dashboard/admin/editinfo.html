@@ -63,8 +63,7 @@
                                         {% if itemorder == 'order' %}
                                             <label class="text ml-1" for="order">Order #:</label>
                                             <input type="text" class="form-control mb-2" name="order" maxlength="500" id="order" value="{{ order|get_attr:itemorder }}" required>
-                                        {% else %}
-                                            
+                                        {% else %} 
                                             <label class="text ml-1" for="">{{ itemorder|remove_underscore|title }}</label>
                                             <input type="{% if itemorder == 'analytics_account' %}url{%else%}text{%endif%}" class="form-control mb-2" name="{{ itemorder }}" value="{{ order|get_attr:itemorder }}">
                                         {% endif %}
