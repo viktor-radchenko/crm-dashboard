@@ -53,7 +53,6 @@ class Order(models.Model):
     link2 = models.CharField(max_length=10000)
     link3 = models.CharField(max_length=10000)
     link4 = models.CharField(max_length=10000)
-    note = models.TextField()
     start_date = models.DateField(default=None, blank=True, null=True)
     renewal_date = models.DateField(default=None, blank=True, null=True)
     status = models.ForeignKey(
@@ -231,7 +230,7 @@ class Order(models.Model):
         order.link2 = request.POST["link2"]
         order.link3 = request.POST["link3"]
         order.link4 = request.POST["link4"]
-        order.note = request.POST["note"]
+        order.notes = request.POST["note"]
         if int(request.POST["own"]) != order.owner.id:
             order.owner = CustomUser.objects.get(id=int(request.POST["own"]))
         if not request.POST["start_date"]:
