@@ -5,6 +5,7 @@ readme/
 __pycache__/
 media/
 static/
+/static
 
 # files
 .env
