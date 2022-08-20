@@ -4,8 +4,7 @@ readme/
 .vscode/
 __pycache__/
 media/
-static/
-/static
+/static/
 
 # files
 .env
