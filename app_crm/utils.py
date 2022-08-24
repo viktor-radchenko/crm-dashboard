@@ -43,6 +43,14 @@ class PasswordResetToken(PasswordResetTokenGenerator):
         )
 password_reset_token = PasswordResetToken()
 
+class InvitationUrlToken(PasswordResetTokenGenerator):
+    def _make_hash_value(self, user, timestamp):
+        return (
+            str(user.pk) + str(timestamp) +
+            str(user.is_active) + str(user.uuid)
+        )
+invitation_url_token = InvitationUrlToken()
+
 def _delete_user(user):
     user.is_active = False
     user.is_deleted = True

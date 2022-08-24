@@ -17,6 +17,7 @@ urlpatterns = [
             path("", views.sign.signup, name='signup'),
             path("confirmation/resend/", views.sign.resendConfirmation, name='signup-resend-confirmation'),
             path("invitation/<str:uuid>/", views.sign.invitationSignUp, name='signup-invitation-signup'),
+            path("invite/<url>/<str:token>/", views.sign.clientCreateWithInvite, name='signup-invite-link'),
             path("activate/<uri>/<token>/", views.sign.activateAccount, name='signup-activate-account'),
         ]
     )),

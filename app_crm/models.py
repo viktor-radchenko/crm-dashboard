@@ -15,6 +15,7 @@ from django.conf import settings
 from app_crm.utils import (
     account_activation_token,
     password_reset_token,
+    invitation_url_token,
     _delete_user,
     _create_statuses,
     _create_intake_form,
@@ -1529,6 +1530,37 @@ class manageUser:
                             return True
                         return False
 
+    def createClientUserWithInvite(request, url, token):
+        password = request.POST.get("password")
+        repeat_password = request.POST.get("repeat-password")
+        if len(password) < 6:
+            return False, "Password should be at least 6 characters long"
+        if (not password or not repeat_password) and (password != repeat_password):    
+            return False, "Passwords don't match. Please try again"
+
+        uid = force_text(urlsafe_base64_decode(url))
+        manager_user = CustomUser.objects.get(pk=uid)
+
+        client = CustomUser.objects.filter(email=request.POST.get('email')).first()
+        if client:
+            return False, "User with this email already exists. Please log in"
+
+        if manager_user:
+            client = CustomUser.objects.create(
+                email=request.POST.get('email'),
+                first_name=request.POST.get('first-name'),
+                last_name=request.POST.get('last-name'),
+                password=request.POST.get("password"),
+                created_by=manager_user,
+                is_registered=True,
+                is_client=True,
+                is_active=True,
+            )
+            auth.login(request, client)
+            return True, "Welcome to SearchManager.pro!"
+
+        return False, "Invitation url is invalid. Request new invitation link or ask your manager to send one to your email"
+
     def loginUser(request):
         user = auth.authenticate(
             request, email=request.POST["email"], password=request.POST["password"]
@@ -1694,6 +1726,11 @@ class manageUser:
 
         client.confirmation_sent = True
         client.save()
+
+    def getInviteLink(request):
+        token = invitation_url_token.make_token(request.user)
+        url = urlsafe_base64_encode(force_bytes(request.user.pk))
+        return f"{request._current_scheme_host}/signup/invite/{url}/{token}/"
 
     def editClient(request, id):
         client = CustomUser.objects.get(id=id)

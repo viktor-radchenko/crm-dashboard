@@ -73,10 +73,42 @@
         </div>
     </div>
 </div>
+
+<div class="card shadow">
+    <div class="card-body">
+        <form>
+            <label for="invite-url" style="margin-bottom: 0;">Share invite link with your client! 
+                <input type="text" id="inviteLink" value="{{invite_link}}" disabled hidden>
+                <button id="copyBtn" class="btn text btn-primary ml-3 p-0 crm-btn"><i class="fa fa-copy"></i><span class="align-middle">Copy</span></button>
+                <span id="copyMsg">Copied!</span>
+            </label>
+        </form>
+    </div>
+</div>
 {% endblock %}
 {% block extra_script %}
 {% load static %}
 <script src="{% static "/vendor/datatables/jquery.dataTables.min.js"%}"></script>
 <script src="{% static "/vendor/datatables/dataTables.bootstrap4.min.js"%}"></script>
 <script src="{% static "/js/datatables.js"%}"></script>
+<script>
+    let inviteLink = document.getElementById("inviteLink");
+    let copyBtn = document.getElementById("copyBtn");
+    let copyMsg = document.getElementById("copyMsg");
+
+    copyBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        inviteLink.select();
+        inviteLink.setSelectionRange(0, 99999); /* For mobile devices */
+
+        /* Copy the text inside the text field */
+        navigator.clipboard.writeText(inviteLink.value).then(() => {
+            copyMsg.style.opacity = 100;
+
+            setTimeout(() => {
+                copyMsg.style.opacity = 0;
+            }, 3500);
+        });
+    })
+</script>
 {% endblock %}

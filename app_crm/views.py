@@ -1,4 +1,5 @@
 import json
+from multiprocessing import managers
 from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.conf import settings
@@ -111,6 +112,21 @@ class sign:
 
         return render(request, "signup.html", context)
 
+    def clientCreateWithInvite(request, url, token):
+        if request.user.is_authenticated:
+            return redirect("/login/")
+        if request.method == "POST":
+            success, msg = manageUser.createClientUserWithInvite(request, url, token)
+            if success:
+                messages.success(request, msg)
+                return redirect("/login/")
+            else:
+                messages.error(request, msg)
+                return render(request, "signup.html")
+
+        context = {}
+        return render(request, "signup.html", context)
+
     def activateAccount(request, uri, token):
         if manageUser.activateUser(request, uri, token):
             messages.success(request, "You have successfully activated you account")
@@ -124,26 +140,29 @@ class sign:
             manageUser.sendPassowrdReset(request)
             messages.warning(
                 request,
-                '''We've emailed you instructions for setting your password, if an account exists with the email you entered. 
+                """We've emailed you instructions for setting your password, if an account exists with the email you entered. 
                 You should receive them shortly. If you don't receive an email, please make sure you've entered the address 
                 you registered with, and check your spam folder.
-                ''',
+                """,
             )
             return redirect("/login/")
         return render(request, "password_reset.html")
 
     def confirm_password(request, url, token):
         if not request.user.is_anonymous:
-            return redirect('/login/')
-        if request.method == 'POST':
+            return redirect("/login/")
+        if request.method == "POST":
             success, msg = manageUser.confirmPasswordReset(request, url, token)
             if success:
-                messages.success(request, 'Your password has been set. You may go ahead and log in now.')
-                return redirect('/login/')
+                messages.success(
+                    request,
+                    "Your password has been set. You may go ahead and log in now.",
+                )
+                return redirect("/login/")
             else:
                 messages.error(request, msg)
-                return redirect('/reset_password/')
-        return render(request, 'password_confirm.html')
+                return redirect("/reset_password/")
+        return render(request, "password_confirm.html")
 
     def logout(request):
         manageUser.logoutUser(request)
@@ -367,6 +386,7 @@ class dash:
                 context = {}
                 context["clients"] = manageUser.getAllClients(request)
                 context["client_tag"] = settings.CLIENT_TAG
+                context["invite_link"] = manageUser.getInviteLink(request)
                 return render(request, "dashboard/admin/clients/clients.html", context)
             else:
                 return redirect("/login/")
