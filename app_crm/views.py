@@ -23,7 +23,7 @@ from app_crm.models import (
     Notification,
 )
 from app_users.models import CustomUser
-from app_crm.utils import _clear_filters_in_session
+from app_crm.utils import _clear_filters_in_session, send_mailjet_email
 
 
 class main:
@@ -117,6 +117,34 @@ class sign:
             return redirect("/login/")
         return HttpResponse("Activation link is invalid!")
 
+    def reset_password(request):
+        if not request.user.is_anonymous:
+            return redirect("/login/")
+        if request.method == "POST":
+            manageUser.sendPassowrdReset(request)
+            messages.warning(
+                request,
+                '''We've emailed you instructions for setting your password, if an account exists with the email you entered. 
+                You should receive them shortly. If you don't receive an email, please make sure you've entered the address 
+                you registered with, and check your spam folder.
+                ''',
+            )
+            return redirect("/login/")
+        return render(request, "password_reset.html")
+
+    def confirm_password(request, url, token):
+        if not request.user.is_anonymous:
+            return redirect('/login/')
+        if request.method == 'POST':
+            success, msg = manageUser.confirmPasswordReset(request, url, token)
+            if success:
+                messages.success(request, 'Your password has been set. You may go ahead and log in now.')
+                return redirect('/login/')
+            else:
+                messages.error(request, msg)
+                return redirect('/reset_password/')
+        return render(request, 'password_confirm.html')
+
     def logout(request):
         manageUser.logoutUser(request)
         return redirect("/login/")
@@ -205,7 +233,9 @@ class dash:
                 context = {}
                 context["users"] = manageUser.getAllClients(request)
                 context["client_tag"] = settings.CLIENT_TAG
-                context["forms"] = request.user.form.filter(is_service=True, is_snapshot=False)
+                context["forms"] = request.user.form.filter(
+                    is_service=True, is_snapshot=False
+                )
                 return render(request, "dashboard/admin/createcustom.html", context)
             else:
                 return redirect("/login/")
@@ -794,7 +824,9 @@ class dash:
                     if Order.createUserOrder(request):
                         return redirect("/dashboard/user/myorders")
                 context = {}
-                context["forms"] = request.user.created_by.form.filter(is_service=True, is_snapshot=False)
+                context["forms"] = request.user.created_by.form.filter(
+                    is_service=True, is_snapshot=False
+                )
                 context["packages"] = request.user.created_by.temlpatePackage.all()
                 return render(request, "dashboard/user/create.html", context)
             else:

@@ -10,6 +10,8 @@ urlpatterns = [
     path("pricing/", views.main.pricing, name='pricing'),
     path("blog/", views.main.blog, name='blog'),
     path("login/", views.sign.signin, name='login'),
+    path("reset_password/", views.sign.reset_password, name='reset_password'),
+    path("confirm_password/<url>/<token>/", views.sign.confirm_password, name='confirm_password'),
     path("signup/", include(
         [
             path("", views.sign.signup, name='signup'),

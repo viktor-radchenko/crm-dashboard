@@ -27,14 +27,21 @@ def send_email_to_client(subject, body, recipients):
         logging.error("Exception: " + str(e))
 
 
-class TokenGenerator(PasswordResetTokenGenerator):
+class ActivateTokenGenerator(PasswordResetTokenGenerator):
     def _make_hash_value(self, user, timestamp):
         return (
             str(user.pk) + str(timestamp) +
             str(user.is_active)
         )
-account_activation_token = TokenGenerator()
+account_activation_token = ActivateTokenGenerator()
 
+class PasswordResetToken(PasswordResetTokenGenerator):
+    def _make_hash_value(self, user, timestamp):
+        return (
+            str(user.pk) + str(timestamp) +
+            str(user.is_active) + str(user.password)
+        )
+password_reset_token = PasswordResetToken()
 
 def _delete_user(user):
     user.is_active = False
