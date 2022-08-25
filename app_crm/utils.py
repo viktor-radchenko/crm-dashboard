@@ -200,7 +200,5 @@ def _get_filters_from_session(request):
             user_ids.append(client.id)
         if user_ids:
             filters['owner__in'] = user_ids
-    else:
-        filters['owner__in'] = [request.user.id]
 
     return filters
