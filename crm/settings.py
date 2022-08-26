@@ -46,7 +46,7 @@ if not DEBUG:
     send_default_pii=True
 )
 
-ALLOWED_HOSTS = ["www.searchmanager.pro", "searchmanager.pro", "localhost", "164.92.192.14"]
+ALLOWED_HOSTS = ["www.searchmanager.pro", "searchmanager.pro", "localhost", "104.248.60.119"]
 
 
 # Application definition
