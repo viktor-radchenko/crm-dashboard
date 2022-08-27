@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-PCSMQG8');</script>
+    <!-- End Google Tag Manager -->
+    <title>Campaign & Task Management Tool For SEO Agencies</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="shortcut icon" href="{% static "/img/ico/favicon.svg" %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:wght@300;400;500;600;700;800&family=Merriweather:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <meta name="description" content="Test description">
+    <link rel="stylesheet" href="{% static "/css/home/home.css" %}">
+</head>
+<body>
+    <!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PCSMQG8"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    <header class="header">
+        <div class="header-wrapper">
+            <div class="header-logo_wrapper">
+                <img src="{% static "/img/home/searchmanager.png" %}" alt="header logo" class="header-logo">
+            </div>
+            <div class="nav-wrapper">
+                <nav class="nav">
+                    <ul class="nav-list">
+                        <li class="nav-list_item dropdown">
+                            <a href="#" class="nav-list_link">Services</a>
+                            <ul class="sub-menu">
+                                <li class="sub-menu_item">
+                                    <a href="#" class="sub-menu_link">Workflow Setup</a>
+                                </li>
+                                <li class="sub-menu_item">
+                                    <a href="#" class="sub-menu_link">Automation</a>
+                                </li>                            
+                            </ul>
+                        </li>                          
+                        <li class="nav-list_item">
+                            <a href="#features" class="nav-list_link">Features</a>
+                        </li>                            
+                        <li class="nav-list_item-button">
+                            <a href="/login/" class="nav-list_link">
+                                <button class="nav-list_button">
+                                    {% if request.user.is_anonymous %}
+                                        Get Started
+                                    {% else %}
+                                        Dashboard
+                                    {% endif %}
+                                </button>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+    <main class="main">
+        {% block content %}
+        
+        {% endblock content %}
+    </main>
+    <footer class="footer">
+        <div class="footer-wrapper">
+            <div class="footer-content">
+                <div class="footer-text_wrapper">
+                    <h2 class="footer-text_title">
+                        Searchmanager Pro Team
+                    </h2>
+                    <p class="footer-text_subtitle">
+                       We help agencies and marketing teams optimize their workflows and scale their business.
+                       Improve your client satisfaction and deliver more with less work with Searchmanager Pro!
+                    </p>
+                </div>
+                <div class="footer-list_wrapper">
+                    <ul class="footer-list">
+                        <li class="list-item_head">CONNECT</li>
+                        <li class="footer-list_item"><a href="#" class="footer-list_link">Facebook</a></li>
+                        <li class="footer-list_item"><a href="#" class="footer-list_link">Twitter</a></li>                       
+                    </ul>
+                </div>
+                <div class="footer-list_wrapper">
+                    <ul class="footer-list">
+                        <li class="list-item_head">Learn</li>
+                        <li class="footer-list_item"><a href="https://www.searchenginejournal.com/spp-co-seo-client-management-system-that-scales/377931/" class="footer-list_link">Client Management</a></li>
+                        <li class="footer-list_item"><a href="https://zapier.com/blog/client-onboarding-checklist/" class="footer-list_link">Client Onboarding Checklist</a></li>
+                        <li class="footer-list_item"><a href="how to improve seo client onboarding process" class="footer-list_link">Improve Client Onboarding</a></li>
+                    </ul>
+                </div>
+               
+            </div>
+            <div class="footer-quote">
+                <p class="footer-quote_policy">© 2022 - POWERED BY <a href="https://searchmanager.pro">Searchmanager Pro</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static "/vendor/jquery/jquery.min.js"%}"></script>
+    <script src="{% static "/js/home/slick.min.js"%}"></script>
+    <script src="{% static "/js/home/customers.js"%}"></script>
+    <script src="{% static "/js/home/script.js"%}"></script>
+</body>
+</html>

@@ -2,6 +2,10 @@
 {% block content %}
 {% load i18n %}
 {% language 'en' %}
+{% block extra_head %}
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static "/css/profile.css"%}">
+{% endblock %}
 <div class="col-7 d-sm-flex align-items-center justify-content-betwen mb-4">
   <h1 class="h3 mb-0 text-gray-800">Profile</h1>
 </div>
@@ -11,34 +15,88 @@
         <div class="card shadow mb-4">
             <div class="row">
                 <div class="col-12 mt-3">
-                    <form method="POST" name="editProfile" action="">
+                    <form method="POST" name="editProfile" enctype="multipart/form-data" action="">
                     {% csrf_token %}
-                        <div class="form-group col-12">
-                            <label class="text">Email</label>
-                            <input type="text" class="form-control" value="{{ request.user.email }}" disabled>
-                            <p class="text font-weight-light mt-1 ml-1"><small>You can change <a class="" href="" data-toggle="modal" data-target="#editPassword">password</a></small></p>
-                        </div>
 
                         <div class="form-group col-12">
-                            <label class="text" for="first_name">First name</label>
+                            <label class="text" for="first_name">First name:</label>
                             <input type="text" class="form-control" name="first_name" value="{{ request.user.first_name }}" id="first_name">
                         </div>
 
                         <div class="form-group col-12">
-                            <label class="text" for="last_name">Last name</label>
+                            <label class="text" for="last_name">Last name:</label>
                             <input type="text" class="form-control" name="last_name" value="{{ request.user.last_name }}" id="last_name" >
                         </div>
 
-                        <button type="submit" class="btn text btn-outline-primary ml-3 mt-2" name="editProfile" value="True">Update name</button>
+                        <div class="form-group col-12">
+                            <label class="text">Email:</label>
+                            <input type="text" class="form-control" value="{{ request.user.email }}" disabled>
+                            <p class="text font-weight-light mt-1 ml-1"><small>You can change <a class="" href="" data-toggle="modal" data-target="#editPassword">password</a></small></p>
+                        </div>
 
-                        
+                        <div class="form-group col-12 profile-image-container">
+                            <label for="formFile" class="form-label">Profile image:</label>
+                            <div class="row">
+                                <div class="form-group col-12">
+                                    <img class="profile-image-preview" src="{{ request.user.profile_image.url }}" alt="profile_image" width="200px" height="200px" id='img-upload1'>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-12 profile-image-btns">
+                                    <span class="input-group-btn">
+                                        <span class="btn btn-primary btn-file"><i class="fa fa-upload"></i><input type="file" id="imgInp1" name="profile_image">
+                                        </span>
+                                    </span>
+                                    <a class="btn btn-danger delete-link" href="/dashboard/profile/deleteImg"><i class="fa fa-trash"></i></a>
+                                </div>
+                            </div>
+                        </div>
 
-                        <hr>
+                        {% if request.user.is_staff %}
+
+                        <div class="form-group col-12 mt-5">
+                            <label class="text" for="agency_name">Agency name:</label>
+                            <input type="text" class="form-control" name="agency_name" value="{{ request.user.agency.first.name|default_if_none:'' }}" id="agency_name" >
+                        </div>
+
+                        <div class="form-group col-12 profile-image-container">
+                            <label for="formFile" class="form-label">Agency logo:</label>
+                            <div class="row">
+                                <div class="form-group col-12">
+                                    <img class="profile-image-preview" {% if request.user.agency.first.logo %}src="{{ request.user.agency.first.logo.url }}"{% endif %}alt="agency_logo" width="200px" height="200px" id='img-upload2' {% if not request.user.agency.first.logo %}style="opacity:0; height:0;"{%endif%}>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-12 profile-image-btns">
+                                    <span class="input-group-btn">
+                                        <span class="btn btn-primary btn-file"><i class="fa fa-upload"></i><input type="file" id="imgInp2" name="agency_logo">
+                                        </span>
+                                    </span>
+                                    <a class="btn btn-danger delete-link" href="deleteAgencyLogo"><i class="fa fa-trash"></i></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-12 mb-4 mt-5">
+                            <label class="text ml-1" for="apikey">Zapier API Key:</label>
+                            <input type="url" class="form-control mb-2" name="apikey" id="apikey" value="{{ request.user.key.first.apikey }}">
+                        </div>
+                        {% endif %}
+
+                        <div class="form-group col-12 mb-4 mt-5 ml-3">
+                            <label class="text ml-1" for="disable_email_notifications">
+                                <input type="checkbox" class="form-check-input mb-2" name="disable_email_notifications" id="disable_email_notifications" {% if request.user.disable_email_notifications %}checked{% endif %}>
+                                Disable chat notifications to email
+                            </label>
+                        </div>
 
                         <div class="form-group col-12">
-                            <p class="text">Date joined: {{ request.user.date_joined }}</p>
+                            <label class="text">Notes</label>
+                            <textarea type="text" class="form-control" name="notes" style="height: 120px;">{{ request.user.notes|default_if_none:"" }}</textarea>
                         </div>
-                        {% if request.user.is_superuser %}<div class="form-group col-12"><small><a href="/dashboard/admin/editkey/">edit Zapier API key</a></small></div>{% endif %}
+
+                        <button type="submit" class="btn text btn-primary ml-3 mt-2 mb-5" name="editProfile" value="True">Update</button>
+
                     </form>
                 </div>
             </div>
@@ -70,7 +128,7 @@
                         <input type="password" minlength="6" class="form-control inputs" name="password" autocomplete="new-password" required id="id_password2" aria-autocomplete="list">
                     </div>
                     <p class="text font-weight-light mt-1 ml-1"><small>Min lenght: 6</small></p>
-                    <button type="submit" class="btn text btn-outline-primary" name="editPassword" value="True">Change password</button>
+                    <button type="submit" class="btn text btn-primary" name="editPassword" value="True">Change password</button>
                 </form>
             </div>
 
@@ -82,4 +140,5 @@
 {% block extra_script %}
 {% load static %}
 <script src="{% static "/js/matchpassword.js"%}"></script>
+<script src="{% static "/js/profile.js"%}"></script>
 {% endblock %}

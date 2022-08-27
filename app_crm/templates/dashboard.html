@@ -2,34 +2,47 @@
 <html lang="en">
 
 <head>
-
+    <!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-PCSMQG8');</script>
+    <!-- End Google Tag Manager -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
 
     {% load static %}
+    {% load custom_tags %}
     <link rel="shortcut icon" href="{% static "/img/ico/favicon.svg" %}">
     <link rel="stylesheet" type="text/css" href="{% static "/vendor/fontawesome-free/css/all.min.css"%}">
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
 
     <link rel="stylesheet" type="text/css" href="{% static "/css/dashboard/sb-admin-2.min.css"%}">
+    <link rel="stylesheet" type="text/css" href="{% static "/css/custom.css"%}">
     {% block extra_head %}{% endblock %}
 
 </head>
 
 <body id="page-top">
-
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PCSMQG8"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
     <div id="wrapper">
 
-        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion toggled" id="accordionSidebar">
 
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/">
-                <div class="sidebar-brand-text mx-3">DASHBOARD</div>
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/login/">
+                {% if not request.user.is_anonymous %}
+                    {{ request.user|get_agency_info|safe }}
+                {% endif %}
             </a>
 
             <hr class="sidebar-divider">
 
-
+            {% if not request.user.is_anonymous %}
             <div class="sidebar-heading">Orders</div>
 
             {% if request.user.is_staff == False %}
@@ -62,6 +75,12 @@
                         <a class="collapse-item" href="/dashboard/admin/statuses/">Statuses</a>
                     </div>
                 </div>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="/dashboard/admin/services/">
+                    <i class="fas fa-concierge-bell"></i>
+                    <span>Services</span></a>
             </li>
 
             <li class="nav-item">
@@ -100,25 +119,56 @@
            
             {% endif %}
 
+            
+            <li class="nav-item feedback__btn" id="feedback__btn">
+                <div class="sidebar-heading">Feedback</div>
+                <button class="nav-link">
+                    <i class="fas fa-question-circle"></i>
+                    <span></span>
+                </button>
+            </li>
+            {% endif %}
         </ul>
 
         <div id="content-wrapper" class="d-flex flex-column">
 
             <div id="content">
 
-                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow justify-content-center">
+                    {% if not request.user.is_anonymous %}
                     <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
                         <i class="fa fa-bars"></i>
                     </button>
 
+                    <div class="position-fixed" style="top: 89px;">
+                        {% if messages %}
+                            {% for msg in messages %}
+                            <div class="alert {{ msg.tags }} alert-dismissible fade show shadow" role="alert">
+                                {{ msg }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
                     <ul class="navbar-nav ml-auto">
+
+                        <li class="nav-item">
+                            <button class="notification-toggle pt-3">
+                                <i class="fas fa-bell"></i>
+                                    <div class="notification-count gone"></div>
+                            </button>
+                        </li>
 
                         <div class="topbar-divider d-none d-sm-block"></div>
 
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <img class="rounded-circle" src="{{request.user.profile_image.url}}" alt="" style="width: 35px; height: 35px; display: inline-block; margin-right: 15px;">
                                 <span class="mr-2 d-lg-inline text-gray-600 small">{% if request.user.first_name %}{{ request.user.first_name }} {{ request.user.last_name }}{% else %}{{ request.user.email }}{% endif %}</span>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -136,7 +186,7 @@
                         </li>
 
                     </ul>
-
+                    {% endif %}
                 </nav>
 
                 <div class="container-fluid">
@@ -148,7 +198,45 @@
 
         </div>
 
+        <div id="myModal" class="feedback__modal">
+
+            <!-- Modal content -->
+            <div class="feedback__modal-content">
+              <span class="feedback__close">&times;</span>
+              <iframe src="{% get_settings 'FEEDBACK_FORM' %}" width="640" height="450" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+            </div>
+          
+          </div>
+
+        <div class="feedback">
+            <div class="feedback__container feedback__hidden">
+                
+            </div>
+        </div>
+
     </div>
+
+    {% if not request.user.is_anonymous %}
+    <div class="notification-sidebar bg-gradient-primary sidebar-dark">
+        <div class="sidebar-brand d-flex align-items-center justify-content-center">
+            <div class="sidebar-brand-text mx-3">Notifications</div>
+        </div>
+        <hr class="sidebar-divider">
+        <ul class="notibox">
+            {% if request.user.notification.all %}
+                {% for n in request.user.notification.all %}
+                <li class="notification {% if not n.is_read %} notification-bold{% endif%}" data-id="{{n.id}}">
+                    <a href="/notifications/{{n.id}}/">{{n.text}}</a>
+                    <div class="cancel"><i class="fa fa-trash"></i></div>
+                    <hr class="sidebar-divider">
+                </li>
+                {% endfor %}
+            {% else %}
+                <li class="notification">No new notifications</li>
+            {% endif %}
+        </ul>
+    </div>
+    {% endif %}
 
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
@@ -160,6 +248,7 @@
     <script src="{% static "/vendor/jquery-easing/jquery.easing.min.js"%}"></script>
 
     <script src="{% static "/js/sb-admin-2.min.js"%}"></script>
+    <script src="{% static "/js/custom.js"%}"></script>
 
     {% block extra_script %}{% endblock %}
 

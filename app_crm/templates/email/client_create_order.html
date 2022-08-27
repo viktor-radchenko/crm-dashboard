@@ -1,0 +1,9 @@
+{% autoescape off %}
+Hi {{ recipient.first_name }},
+Your client {{ client.first_name }} has recently created a new order on the platform. You can click on the following link to see details:
+
+{{url}}
+
+Best regards,
+SearchManager.pro Team
+{% endautoescape %}

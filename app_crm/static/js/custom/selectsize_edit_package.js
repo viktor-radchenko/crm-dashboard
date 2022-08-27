@@ -3,6 +3,11 @@ new Sortable(dragArea, {
     animation: 350
 });
 
+const draggableDefaults = document.querySelector('.draggable-defaults')
+new Sortable(draggableDefaults, {
+    animation: 150,
+})
+
 function reOrder() {
     let curindex = 0;
     $('.inputcheck').each(function() {

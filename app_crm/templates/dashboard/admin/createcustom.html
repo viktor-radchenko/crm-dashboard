@@ -1,4 +1,5 @@
 {% extends 'dashboard.html' %}
+{% load custom_tags %}
 {% block content %}
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">Create custom order</h1>
@@ -9,91 +10,191 @@
         <div class="card shadow mb-4 p-2">
             <div class="row">
                 <div class="col-12 mb-3 mt-3">
-                    <form method="POST">
-                        {% csrf_token %}
 
+                    <div class="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                        {% if forms|length > 0 %}
+                        <div class="form-group col-12 mb-4">
+                            <h5 class="mb-4">Select service:</h5>
+                            <select name="theforms" class="fformselect form-control">
+                                {% for form in forms %}
+                                <option value="customform-{{ form.id }}" {% if form.is_default %} selected {% endif %}>{{ form.title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% endif %}
+
+                        <div class="form-forms">
+                        {% if forms|length > 0 %}
+                        {% for form in forms %}
+                        <form method="POST" id="customform-{{ form.id }}" {% if not form.is_default %} style="display: none;" {% endif %}>
+                            {% csrf_token %}
+
+                            <input type="text" hidden name="service_form_id" value="{{form.id}}">
+
+                            <hr>
+
+                            {% if users|length > 0 %}
+                                <div class="form-group col-12 mb-4">
+                                    <label class="text ml-1" for="select-user">Client:</label>
+                                    <select name="userid" id="select-user" class="form-control" required>
+                                        {% for user in users %}
+                                        <option value="{{ user.id }}" selected="selected">
+                                            {{user.first_name}} {{user.last_name}}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            {% endif %}
                             <div class="form-group col-12 mb-4">
-                                <label class="text ml-1" for="select-user">User:</label>
-                                <select name="userid" id="select-user" class="form-control" required>
-                                    <option value="{{request.user.id}}">{% if request.user.first_name or request.user.last_name %}{{ request.user.first_name }} {{ request.user.last_name }} | {% endif %}{{ request.user.email }}</option>
-                                    <option disabled>──────────</option>
-                                    {% for user in users %}
-                                    <option value="{{ user.id }}" selected="selected">{% if user.first_name or user.last_name %}{{ user.first_name }} {{ user.last_name }} | {% endif %}{{ user.email }}</option>
-                                    {% endfor %}
-                                </select>
+                                <a href="/dashboard/admin/clients/create/" class="btn btn-primary w-100">Add client</a>
                             </div>
-                        
+                            
                             <hr>
 
                             <div class="form-group col-12 mb-4">
-                                <label class="text ml-1" for="order">Order #:</label>
-                                <input type="text" class="form-control mb-2" name="order" maxlength="500" id="order" required>
+                            {% for itemorder in form.orderinfos|get_item:'orderinfos' %}
+                                {% if itemorder == 'order' %}
+                                    <label class="text ml-1" for="order">Order #:</label>
+                                    <input type="text" class="form-control mb-2" name="order" maxlength="500" id="order" required>
+                                {% else %}
+                                    <label class="text ml-1" for="">{{ itemorder|remove_underscore|title }}</label>
+                                    <input type="text" class="form-control mb-2" name="{{ itemorder }}">
+                                {% endif %}
+                            {% endfor %}
                             </div>
 
-
-                            <div class="card shadow col-12 mb-4">
-
-                                <a href="#collapseCard" class="d-block card-header py-3 collapsed" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseCard">
-                                    <h6 class="m-0 font-weight-bold text-primary">Additional information</h6>
-                                </a>
-
-                                <div class="collapse" id="collapseCard" style="border-radius: 2px;">
-                                    <div class="card-body">
-                                        <div class="form-group col-12 mb-4">
-                                            <label class="text ml-1" for="company">Company name:</label>
-                                            <input type="text" class="form-control mb-2" name="company_name" maxlength="5000" id="company">
-                                            
-                                            <label class="text ml-1" for="company_address">Company address:</label>
-                                            <input type="text" class="form-control mb-2" name="company_address" maxlength="5000" id="company_address">
-            
-                                            <label class="text ml-1" for="company_city">Company city:</label>
-                                            <input type="text" class="form-control mb-2" name="company_city" maxlength="5000" id="company_city">
-            
-                                            <label class="text ml-1" for="company_state">Company state:</label>
-                                            <input type="text" class="form-control mb-2" name="company_state" maxlength="5000" id="company_state">
-            
-                                            <label class="text ml-1" for="company_zip">Company zip:</label>
-                                            <input type="text" class="form-control mb-2" name="company_zip" maxlength="5000" id="company_zip">
-            
-                                            <label class="text ml-1" for="company_country">Company country:</label>
-                                            <input type="text" class="form-control mb-2" name="company_country" maxlength="5000" id="company_country">
-            
-                                            <label class="text ml-1" for="company_phone">Company phone:</label>
-                                            <input type="text" class="form-control mb-2" name="company_phone" maxlength="5000" id="company_phone">
-            
-                                            <label class="text ml-1" for="website_url">Website url:</label>
-                                            <input type="text" class="form-control mb-2" name="website_url" maxlength="5000" id="website_url">
-            
-                                            <label class="text ml-1" for="company_email">Company email:</label>
-                                            <input type="text" class="form-control mb-2" name="company_email" maxlength="5000" id="company_email">
-            
-                                            <label class="text ml-1" for="company_description">Company description:</label>
-                                            <input type="text" class="form-control mb-2" name="company_description" maxlength="5000" id="company_description">
-            
-                                            <label class="text ml-1" for="logo_image">Logo image:</label>
-                                            <input type="text" class="form-control mb-2" name="logo_image" maxlength="5000" id="logo_image">
-            
-                                            <label class="text ml-1" for="map_url">Map url:</label>
-                                            <input type="text" class="form-control mb-2" name="map_url" maxlength="5000" id="map_url">
-            
-                                            <label class="text ml-1" for="website_login_url">Wesite login url:</label>
-                                            <input type="text" class="form-control mb-2" name="website_login_url" maxlength="5000" id="website_login_url">
-            
-                                            <label class="text ml-1" for="web_username">Website username:</label>
-                                            <input type="text" class="form-control mb-2" name="web_username" maxlength="5000" id="web_username">
-            
-                                            <label class="text ml-1" for="web_password">Website password:</label>
-                                            <input type="text" class="form-control mb-2" name="web_password" maxlength="5000" id="web_password">
-            
-                                            <label class="text ml-1" for="analytics_account">Analytics account:</label>
-                                            <input type="text" class="form-control mb-2" name="analytics_account" maxlength="5000" id="analytics_account">
+                            {% for formitem in form.data %}
+                                {% with ft=form.data|get_item:formitem %}
+                                {% if ft.type == 0 %}
+                                    <div class="form-group col-12 mb-4">
+                                        <label for="">{{ ft.title }}</label>
+                                        <input type="text" class="form-control" name="{{ form.id}}:{{ formitem }}">
+                                    </div>
+                                {% elif ft.type == 1 %}
+                                    <div class="form-group col-12 mb-4">
+                                        <label for="">{{ ft.title }}</label>
+                                        {% for x in ft.items %}
+                                        <div class="form-check col-12">
+                                            <label><input type="checkbox" class="form-check-input" name="{{ form.id}}:{{ formitem }}" value="{{ x }}">{{ x }}</label>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                {% elif ft.type == 3 %}
+                                <div class="form-group col-12 mb-4">
+                                    <label for="">{{ ft.title }}</label>
+                                    <textarea class="form-control textarea-expandable" name="{{ form.id}}:{{ formitem }}"></textarea>
+                                </div>
+                                {% elif ft.type == 4 %}
+                                    <div class="form-group col-12 mb-4">
+                                        <label for="">{{ ft.title }}</label>
+                                        <div class="col-12 p-0">
+                                            <select class="form-control" name="{{ form.id}}:{{ formitem }}">
+                                                {% for x in ft.items %}
+                                                    <option value="{{ x }}">{{ x }}</option>
+                                                {% endfor %}
+                                            </select>
                                         </div>
                                     </div>
-                                </div>
+                                {% endif %}
+                                {% endwith %}
+                            {% endfor %}
+
+                            <div class="form-group col-12 mb-4">
+                                <label>Notes:</label>
+                                <textarea name="notes" class="form-control" rows="3"></textarea>
                             </div>
-                        
-                            <button type="submit" class="btn text btn-outline-primary ml-3 mt-2" id="submit">Create</button>
-                    </form>
+
+                            <button type="submit" class="btn text btn-primary ml-3 mt-2 p-0 crm-btn" id="submit">
+                                <i class="fa fa-plus align-middle"></i>
+                                <span class="align-middle">Create</span>
+                            </button>
+                        </form>
+                        {% endfor %}
+                        {% else %}
+                            <form method="POST">
+                            {% csrf_token %}
+
+                                <div class="form-group col-12 mb-4">
+                                    <label class="text ml-1" for="select-user">Client:</label>
+                                    <select name="userid" id="select-user" class="form-control" required>
+                                        {% for user in users %}
+                                        <option value="{{ user.id }}" selected="selected">
+                                            {{user.first_name}} {{user.last_name}}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-12 mb-4">
+                                    <a href="/dashboard/admin/clients/create/" class="btn btn-primary w-100">Add client</a>
+                                </div>
+                            
+                                <hr>
+
+                                <div class="form-group col-12 mb-4">
+                                    <label class="text ml-1" for="order">Order #:</label>
+                                    <input type="text" class="form-control mb-2" name="order" maxlength="500" id="order" required>
+                                </div>
+
+
+                                <div class="form-group col-12 mb-4">
+                                    <label class="text ml-1" for="company">Company name:</label>
+                                    <input type="text" class="form-control mb-2" name="company_name" maxlength="5000" id="company">
+                                    
+                                    <label class="text ml-1" for="company_address">Company address:</label>
+                                    <input type="text" class="form-control mb-2" name="company_address" maxlength="5000" id="company_address">
+
+                                    <label class="text ml-1" for="company_city">Company city:</label>
+                                    <input type="text" class="form-control mb-2" name="company_city" maxlength="5000" id="company_city">
+
+                                    <label class="text ml-1" for="company_state">Company state:</label>
+                                    <input type="text" class="form-control mb-2" name="company_state" maxlength="5000" id="company_state">
+
+                                    <label class="text ml-1" for="company_zip">Company zip:</label>
+                                    <input type="text" class="form-control mb-2" name="company_zip" maxlength="5000" id="company_zip">
+
+                                    <label class="text ml-1" for="company_country">Company country:</label>
+                                    <input type="text" class="form-control mb-2" name="company_country" maxlength="5000" id="company_country">
+
+                                    <label class="text ml-1" for="company_phone">Company phone:</label>
+                                    <input type="text" class="form-control mb-2" name="company_phone" maxlength="5000" id="company_phone">
+
+                                    <label class="text ml-1" for="website_url">Website url:</label>
+                                    <input type="text" class="form-control mb-2" name="website_url" maxlength="5000" id="website_url">
+
+                                    <label class="text ml-1" for="company_email">Company email:</label>
+                                    <input type="text" class="form-control mb-2" name="company_email" maxlength="5000" id="company_email">
+
+                                    <label class="text ml-1" for="company_description">Company description:</label>
+                                    <input type="text" class="form-control mb-2" name="company_description" maxlength="5000" id="company_description">
+
+                                    <label class="text ml-1" for="logo_image">Logo image:</label>
+                                    <input type="text" class="form-control mb-2" name="logo_image" maxlength="5000" id="logo_image">
+
+                                    <label class="text ml-1" for="map_url">Map url:</label>
+                                    <input type="text" class="form-control mb-2" name="map_url" maxlength="5000" id="map_url">
+
+                                    <label class="text ml-1" for="website_login_url">Wesite login url:</label>
+                                    <input type="text" class="form-control mb-2" name="website_login_url" maxlength="5000" id="website_login_url">
+
+                                    <label class="text ml-1" for="web_username">Website username:</label>
+                                    <input type="text" class="form-control mb-2" name="web_username" maxlength="5000" id="web_username">
+
+                                    <label class="text ml-1" for="web_password">Website password:</label>
+                                    <input type="text" class="form-control mb-2" name="web_password" maxlength="5000" id="web_password">
+
+                                    <label class="text ml-1" for="analytics_account">Analytics account:</label>
+                                    <input type="text" class="form-control mb-2" name="analytics_account" maxlength="5000" id="analytics_account">
+                                </div>
+
+                                <button type="submit" class="btn text btn-primary ml-3 mt-2 p-0 crm-btn" id="submit">
+                                    <i class="fa fa-share align-middle"></i>
+                                    <span class="align-middle">Create</span>
+                                </button>
+                            </form>
+                        {% endif %}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -103,4 +204,5 @@
 {% block extra_script %}
 {% load static %}
 <script src="{% static "/js/digitsfilter.js"%}"></script>
+<script src="{% static "/js/deliverablesforms.js"%}"></script>
 {% endblock %}

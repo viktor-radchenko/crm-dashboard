@@ -1,0 +1,38 @@
+<div class="order-details">
+  <div class="d-flex flex-wrap" style="width: 100%;gap: 15px;">
+    <div><strong>Order #</strong>: {{order.order}}</div>
+    <div><strong>Company name</strong>: {{order.company_name}}</div>
+    <div><strong>Client name</strong>: {{order.owner.first_name}} {{order.owner.last_name|default_if_none:""}}</div>
+    <div><strong>Agency name</strong>: {{order.owner.created_by.agency.first.name|default_if_none:""}}</div>
+  </div>
+
+  <div class="d-flex flex-wrap" style="width: 100%;gap: 15px;">
+    <div><strong>Package</strong>: {{ order.package|default_if_none:"" }}</div>
+    <div><strong>Addon</strong>: {{ order.addon.first.template.title|default_if_none:"" }}</div>
+    <div><strong>Status</strong>: {{ order.status|default_if_none:"" }}</div>
+    <div><strong>Current month</strong>: {{ order.month|default_if_none:"" }}</div>
+  </div>
+    
+    
+  <div class="d-flex flex-column flex-wrap" style="width: 100%;">
+    {% if request.user.is_staff and order.link2 %}
+      <div><a href="{{order.link2}}" target="_blank"><strong>Trello card</strong></a></div>
+    {% endif %}
+    {% if order.link1 %}<div><a href="{{order.link1}}" target="_blank"><strong>Google drive</strong></a></div>{% endif %}
+    {% if order.link3 %}<div><a href="{{order.link3}}" target="_blank"><strong>Workbook</strong></a></div>{% endif %}
+    {% if order.link4 %}<div><a href="{{order.link4}}" target="_blank"><strong>Rank tracker</strong></a></div>{% endif %}
+    {% if request.user.is_staff and order.analytics_account%}
+      <div><strong>Google properties account</strong>: <a href="{{order.analytics_account}}" target="_blank"><strong>{{order.analytics_account}}</strong></a></div>
+    {% endif %}
+  </div>
+  {% if order.notes %}
+  <div class="d-flex flex-wrap" style="max-height: 100px;width: 100%;gap: 15px;">
+    <div><strong>Order notes</strong>:
+      {{order.notes}}
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+
+<hr class="sidebar-divider">

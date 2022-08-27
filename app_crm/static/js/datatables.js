@@ -1,3 +1,5 @@
 $(document).ready(function() {
-  $('#dataTable').DataTable();
+  $('#dataTable').DataTable({
+    'lengthMenu': [50, 10, 25,]
+  });
 });

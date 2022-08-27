@@ -6,7 +6,10 @@
 {% block content %}
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">All statuses</h1>
-    <a class="btn btn-outline-primary" href="/dashboard/admin/statuses/create/" role="button">Create status</a>
+    <a href="/dashboard/admin/statuses/create/" class="btn text btn-primary ml-3 p-0 crm-btn">
+        <i class="fa fa-plus align-middle"></i>
+        <span class="align-middle">Create status</span>
+    </a>
 </div>
 
 <div class="card shadow mb-4">
@@ -41,7 +44,7 @@
                         <th scope="col" class="sortable">{{ status.val }}</th>
                         <th scope="col" class="sortable">
                             <a href="/dashboard/admin/statuses/edit/{{ status.id }}/" title="Edit this status" class="mr-1"><i class="fa fa-pencil-alt"></i></a>
-                            <a href="/dashboard/admin/statuses/remove/{{ status.id }}/" title="Remove this status" class="mr-1"><i class="fa fa-times"></i></a>
+                            <a href="/dashboard/admin/statuses/remove/{{ status.id }}/" title="Remove this status" class="mr-1"><i class="fa fa-trash"></i></a>
                         </th>
 
                     </tr>

@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 
 import dotenv
+from django.contrib.messages import constants as messages
 
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
@@ -45,7 +46,7 @@ if not DEBUG:
     send_default_pii=True
 )
 
-ALLOWED_HOSTS = ["www.searchmanager.pro", "searchmanager.pro", "localhost", "164.92.192.14"]
+ALLOWED_HOSTS = ["www.searchmanager.pro", "searchmanager.pro", "localhost", "104.248.60.119"]
 
 
 # Application definition
@@ -142,6 +143,10 @@ STATIC_URL = "/static/"
 
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
+MEDIA_URL = "/media/"
+
+MEDIA_ROOT = os.getenv("MEDIA_ROOT", BASE_DIR / "media")
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
@@ -157,4 +162,37 @@ EMAIL_HOST = os.getenv('EMAIL_HOST')
 EMAIL_PORT = os.getenv('EMAIL_PORT')
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-EMAIL_USE_TLS = True
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'False') == 'True'
+
+
+MESSAGE_TAGS = {
+        messages.DEBUG: 'alert-secondary',
+        messages.INFO: 'alert-info',
+        messages.SUCCESS: 'alert-success',
+        messages.WARNING: 'alert-warning',
+        messages.ERROR: 'alert-danger',
+ }
+
+ORDERINFOS_LIST = [
+    'order',
+    'company_name',
+    'company_address',
+    'company_city',
+    'company_state',
+    'company_zip',
+    'company_country',
+    'company_phone',
+    'website_url',
+    'company_email',
+    'company_description',
+    'logo_image',
+    'map_url',
+    'website_login_url',
+    'web_username',
+    'web_password',
+    'analytics_account',
+]
+
+CLIENT_TAG = os.getenv("CLIENT_TAG", '__service')
+
+FEEDBACK_FORM = os.getenv("FEEDBACK_FORM")

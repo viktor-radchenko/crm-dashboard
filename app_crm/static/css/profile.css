@@ -1,0 +1,43 @@
+.btn-file {
+  position: relative;
+  overflow: hidden;
+}
+.btn-file input[type=file] {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 100%;
+  min-height: 100%;
+  text-align: right;
+  filter: alpha(opacity=0);
+  opacity: 0;
+  outline: none;
+  background: white;
+  cursor: inherit;
+  display: block;
+}
+
+.profile-image-container {
+  position: relative;
+}
+
+.profile-image-btns {
+  position: absolute;
+  top: 74%;
+  left: 43%;
+}
+
+.btn-primary > i {
+  background: none!important;
+  padding: 0;
+}
+
+.delete-link {
+  width: 42px;
+}
+
+.profile-image-preview {
+  display: block;
+  margin: 0 auto;
+  border-radius: 50%;
+}

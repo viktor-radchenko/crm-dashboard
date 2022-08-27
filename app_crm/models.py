@@ -1,11 +1,34 @@
+import logging
 import re
+import secrets
+from datetime import datetime
 
 import requests
 import json
 
 from django.db import models
-from app_users.models import CustomUser
-from django.contrib import auth
+from app_users.models import CustomUser, UserReplication
+from django.contrib import auth, messages
+from django.contrib.auth import get_user_model
+from django.conf import settings
+
+from app_crm.utils import (
+    account_activation_token,
+    password_reset_token,
+    invitation_url_token,
+    _delete_user,
+    _create_statuses,
+    _create_intake_form,
+    _add_notification,
+    send_mailjet_email,
+    _update_filters_in_session,
+    _get_filters_from_session,
+)
+
+from django.utils.encoding import force_bytes, force_text
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.template.loader import render_to_string
+
 
 # Create your models here.
 
@@ -33,12 +56,16 @@ class Order(models.Model):
     link2 = models.CharField(max_length=10000)
     link3 = models.CharField(max_length=10000)
     link4 = models.CharField(max_length=10000)
-    note = models.TextField()
     start_date = models.DateField(default=None, blank=True, null=True)
     renewal_date = models.DateField(default=None, blank=True, null=True)
     status = models.ForeignKey(
         "Status", on_delete=models.SET_DEFAULT, null=True, blank=True, default=None
     )
+
+    extra_fields = models.JSONField(null=True, blank=True)
+    notes = models.TextField(blank=True, null=True)
+
+    is_archived = models.BooleanField(default=False)
     owner = models.ForeignKey(
         CustomUser,
         on_delete=models.SET_DEFAULT,
@@ -52,60 +79,113 @@ class Order(models.Model):
         "Package", on_delete=models.SET_DEFAULT, null=True, blank=True, default=None
     )
     addon = models.ManyToManyField("Addon", blank=True, default=None)
+    is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
         return self.order
 
     def getOrderById(request, id):
         order = Order.objects.get(id=id)
-        if order.owner == None:
-            if request.user.is_staff:
-                return order
-            else:
-                return False
+        if not order:
+            return False
+        if "white-label" in request.path:
+            return order
+        elif order.owner == request.user or order.owner.created_by == request.user:
+            return order
         else:
-            if order.owner.id == request.user.id or request.user.is_staff:
-                return order
-            else:
-                return False
+            return False
 
     def createCustomOrder(request):
         order_num = re.sub("\D", "", request.POST["order"])
+        client_selected = request.POST.get("userid", None)
+        if not client_selected:
+            return False, "You need to add a client first"
         userid = CustomUser.objects.get(id=request.POST["userid"])
-        stat = Status.objects.filter(val=1).first()
-        Order(
+
+        formid = request.POST.get("service_form_id")
+        form = None
+        if formid:
+            form = Form.objects.get(id=formid)
+
+        # create statuses:
+        stat = request.user.status.filter(val=1).first()
+
+        # create dict from additional fields
+        extra_fields = {}
+        if form:
+            for formfieldnum in form.data:
+                formfield = form.data.get(formfieldnum)
+                title = formfield.get("title")
+                if formfield.get("type") == 1:
+                    extra_fields[title] = request.POST.getlist(
+                        str(form.id) + ":" + str(formfieldnum)
+                    )
+                else:
+                    extra_fields[title] = request.POST.get(
+                        str(form.id) + ":" + str(formfieldnum)
+                    )
+
+        order_notes = request.POST.get("notes", "")
+
+        new_order = Order(
             order=order_num,
-            company_name=request.POST["company_name"],
-            company_address=request.POST["company_address"],
-            company_city=request.POST["company_city"],
-            company_state=request.POST["company_state"],
-            company_zip=request.POST["company_zip"],
-            company_country=request.POST["company_country"],
-            company_phone=request.POST["company_phone"],
-            website_url=request.POST["website_url"],
-            company_email=request.POST["company_email"],
-            company_description=request.POST["company_description"],
-            logo_image=request.POST["logo_image"],
-            map_url=request.POST["map_url"],
-            website_login_url=request.POST["website_login_url"],
-            web_username=request.POST["web_username"],
-            web_password=request.POST["web_password"],
-            analytics_account=request.POST["analytics_account"],
+            company_name=request.POST.get("company_name", ""),
+            company_address=request.POST.get("company_address", ""),
+            company_city=request.POST.get("company_city", ""),
+            company_state=request.POST.get("company_state", ""),
+            company_zip=request.POST.get("company_zip", ""),
+            company_country=request.POST.get("company_country", ""),
+            company_phone=request.POST.get("company_phone", ""),
+            website_url=request.POST.get("website_url", ""),
+            company_email=request.POST.get("company_email", ""),
+            company_description=request.POST.get("company_description", ""),
+            logo_image=request.POST.get("logo_image", ""),
+            map_url=request.POST.get("map_url", ""),
+            website_login_url=request.POST.get("website_login_url", ""),
+            web_username=request.POST.get("web_username", ""),
+            web_password=request.POST.get("web_password", ""),
+            analytics_account=request.POST.get("analytics_account", ""),
             start_date=None,
             renewal_date=None,
             status=stat,
             owner=userid,
             month=1,
-        ).save()
+            extra_fields=extra_fields,
+            notes=order_notes,
+        )
+        new_order.save()
+        if form:
+            form_snapshot = form
+            form_snapshot.pk = None
+            form_snapshot.order = new_order
+            form_snapshot.is_snapshot = True
+            form_snapshot.save()
+        return True, "Order successfully created"
 
-    def deleteOrder(id):
+    def deleteOrder(request, id):
         order = Order.objects.get(id=id)
+        if not request.user != order.owner or request.user != order.owner.created_by:
+            return False, "You don't have permission to delete this order"
         if order.package != None:
-            package = order.package
-            tasks = package.tasks.all()
-            tasks.delete()
-            package.delete()
-        order.delete()
+            try:
+                package = order.package
+                tasks = package.tasks.all()
+                tasks.delete()
+                # package.delete()
+                # package.save()
+            except Exception as e:
+                logging.error("Exception: " + str(e))
+        order.is_deleted = True
+        order.save()
+        return True, "Order successfully deleted"
+
+    def restoreOrder(request, id):
+        order = Order.objects.get(id=id)
+        if not request.user != order.owner or request.user != order.owner.created_by:
+            return False, "You don't have permission to delete this order"
+        order.is_archived = False
+        order.save()
+        return True, "Order successfully restored"
 
     def editInfo(request, id):
         order = Order.objects.get(id=id)
@@ -113,23 +193,42 @@ class Order(models.Model):
             order.owner != request.user or order.owner.created_by != request.user
         ):
             return
+        # process form fields
+        form = order.intake_form.first()
+        extra_fields = {}
+        if form:
+            for formfieldnum in form.data:
+                formfield = form.data.get(formfieldnum)
+                title = formfield.get("title")
+                if formfield.get("type") == 1:
+                    extra_fields[title] = request.POST.getlist(
+                        str(form.id) + ":" + str(formfieldnum)
+                    )
+                else:
+                    extra_fields[title] = request.POST.get(
+                        str(form.id) + ":" + str(formfieldnum)
+                    )
+        order_notes = request.POST.get("notes", "")
+
         order.order = re.sub("\D", "", request.POST["order"])
-        order.company_name = request.POST["company_name"]
-        order.company_address = request.POST["company_address"]
-        order.company_city = request.POST["company_city"]
-        order.company_state = request.POST["company_state"]
-        order.company_zip = request.POST["company_zip"]
-        order.company_country = request.POST["company_country"]
-        order.company_phone = request.POST["company_phone"]
-        order.website_url = request.POST["website_url"]
-        order.company_email = request.POST["company_email"]
-        order.company_description = request.POST["company_description"]
-        order.logo_image = request.POST["logo_image"]
-        order.map_url = request.POST["map_url"]
-        order.website_login_url = request.POST["website_login_url"]
-        order.web_username = request.POST["web_username"]
-        order.web_password = request.POST["web_password"]
-        order.analytics_account = request.POST["analytics_account"]
+        order.company_name = request.POST.get("company_name", "")
+        order.company_address = request.POST.get("company_address", "")
+        order.company_city = request.POST.get("company_city", "")
+        order.company_state = request.POST.get("company_state", "")
+        order.company_zip = request.POST.get("company_zip", "")
+        order.company_country = request.POST.get("company_country", "")
+        order.company_phone = request.POST.get("company_phone", "")
+        order.website_url = request.POST.get("website_url", "")
+        order.company_email = request.POST.get("company_email", "")
+        order.company_description = request.POST.get("company_description", "")
+        order.logo_image = request.POST.get("logo_image", "")
+        order.map_url = request.POST.get("map_url", "")
+        order.website_login_url = request.POST.get("website_login_url", "")
+        order.web_username = request.POST.get("web_username", "")
+        order.web_password = request.POST.get("web_password", "")
+        order.analytics_account = request.POST.get("analytics_account", "")
+        order.extra_fields = extra_fields
+        order.notes = order_notes
         order.save()
 
     def editOrder(request, id):
@@ -142,7 +241,7 @@ class Order(models.Model):
         order.link2 = request.POST["link2"]
         order.link3 = request.POST["link3"]
         order.link4 = request.POST["link4"]
-        order.note = request.POST["note"]
+        order.notes = request.POST["note"]
         if int(request.POST["own"]) != order.owner.id:
             order.owner = CustomUser.objects.get(id=int(request.POST["own"]))
         if not request.POST["start_date"]:
@@ -177,7 +276,6 @@ class Order(models.Model):
                             completed_by=None,
                             status=None,
                             notes="",
-                            report_link="",
                             month=mon.num,
                             template_task=ta.templateTask,
                             ordering=ta.ordering,
@@ -229,7 +327,6 @@ class Order(models.Model):
                                 end_date=None,
                                 completed_by=None,
                                 notes="",
-                                report_link="",
                                 template_task=t.templateTask,
                                 ordering=t.ordering,
                             )
@@ -261,7 +358,6 @@ class Order(models.Model):
                                     end_date=None,
                                     completed_by=None,
                                     notes="",
-                                    report_link="",
                                     template_task=templateAddonTask.templateTask,
                                     ordering=templateAddonTask.ordering,
                                 )
@@ -281,112 +377,313 @@ class Order(models.Model):
 
     def cancelOrder(id):
         order = Order.objects.get(id=id)
-        order.status = Status.objects.filter(val=0).first()
+        order.is_archived = True
         order.save()
 
     def getAllOrders(request):
-        user_ids = []
-        user_ids.append(request.user.id)
-        for client in request.user.client.all():
-            user_ids.append(client.id)
-        orders = Order.objects.filter(owner__in=user_ids)
+        filters = _get_filters_from_session(request)
+        orders = (
+            Order.objects.filter(**filters)
+            .exclude(owner__is_deleted=True)
+            .exclude(is_deleted=True)
+        )
         return orders
 
     def createUserOrder(request):
         order_num = re.sub("\D", "", request.POST["order"])
-        owner = CustomUser.objects.get(id=request.user.id)
+
+        formid = request.POST.get("service_form_id")
+        if formid:
+            form = Form.objects.get(id=formid)
+        else:
+            form = None
+
         stat = Status.objects.filter(val=1).first()
-        Order(
+
+        extra_fields = {}
+        if form:
+            for formfieldnum in form.data:
+                formfield = form.data.get(formfieldnum)
+                title = formfield.get("title")
+                if formfield.get("type") == 1:
+                    extra_fields[title] = request.POST.getlist(
+                        str(form.id) + ":" + str(formfieldnum)
+                    )
+                else:
+                    extra_fields[title] = request.POST.get(
+                        str(form.id) + ":" + str(formfieldnum)
+                    )
+
+        order_notes = request.POST.get("notes", "")
+
+        order = Order(
             order=order_num,
-            company_name=request.POST["company_name"],
-            company_address=request.POST["company_address"],
-            company_city=request.POST["company_city"],
-            company_state=request.POST["company_state"],
-            company_zip=request.POST["company_zip"],
-            company_country=request.POST["company_country"],
-            company_phone=request.POST["company_phone"],
-            website_url=request.POST["website_url"],
-            company_email=request.POST["company_email"],
-            company_description=request.POST["company_description"],
-            logo_image=request.POST["logo_image"],
-            map_url=request.POST["map_url"],
-            website_login_url=request.POST["website_login_url"],
-            web_username=request.POST["web_username"],
-            web_password=request.POST["web_password"],
-            analytics_account=request.POST["analytics_account"],
+            company_name=request.POST.get("company_name", ""),
+            company_address=request.POST.get("company_address", ""),
+            company_city=request.POST.get("company_city", ""),
+            company_state=request.POST.get("company_state", ""),
+            company_zip=request.POST.get("company_zip", ""),
+            company_country=request.POST.get("company_country", ""),
+            company_phone=request.POST.get("company_phone", ""),
+            website_url=request.POST.get("website_url", ""),
+            company_email=request.POST.get("company_email", ""),
+            company_description=request.POST.get("company_description", ""),
+            logo_image=request.POST.get("logo_image", ""),
+            map_url=request.POST.get("map_url", ""),
+            website_login_url=request.POST.get("website_login_url", ""),
+            web_username=request.POST.get("web_username", ""),
+            web_password=request.POST.get("web_password", ""),
+            analytics_account=request.POST.get("analytics_account", ""),
             start_date=None,
             renewal_date=None,
             status=stat,
-            owner=owner,
+            owner=request.user,
             month=1,
-        ).save()
+            extra_fields=extra_fields,
+            notes=order_notes,
+        )
+
+        pack = request.POST.get("order_package", "")
+        if pack:
+            tPackage = request.user.created_by.temlpatePackage.get(id=pack)
+            task_ids = []
+            tasks = []
+            for mon in tPackage.month.all():
+                for ta in mon.orderby_set.all():
+                    tasks.append(
+                        Task(
+                            start_date=None,
+                            end_date=None,
+                            completed_by=None,
+                            status=None,
+                            notes="",
+                            month=mon.num,
+                            template_task=ta.templateTask,
+                            ordering=ta.ordering,
+                        )
+                    )
+
+            tSave = Task.objects.bulk_create(tasks)
+            for obj in tSave:
+                task_ids.append(obj.id)
+            package = Package.objects.create(template=tPackage)
+            package.tasks.set(task_ids)
+            order.package = package
+        order.save()
+        if form:
+            form_snapshot = form
+            form_snapshot.pk = None
+            form_snapshot.order = order
+            form_snapshot.is_snapshot = True
+            form_snapshot.save()
+
+        text = f"Your client {request.user.first_name} has created a new order"
+        link = f"/dashboard/admin/editinfo/{order.id}/"
+
+        _add_notification(
+            text, target=request.user.created_by, model=Notification, link=link
+        )
+
+        recipient = request.user.created_by
+        subj = "Your client has created an order"
+
+        url = f"{request._current_scheme_host}/dashboard/admin/editinfo/{order.id}/"
+        body = render_to_string(
+            "email/client_create_order.html",
+            {
+                "recipient": recipient,
+                "url": url,
+                "client": request.user,
+            },
+        )
+        send_mailjet_email(recipient, subj, body)
+
         return True
 
     def editUserOrder(request, id):
         order = Order.objects.get(id=id)
+
+        # process form fields
+        form = order.intake_form.first()
+
+        extra_fields = {}
+        if form:
+            for formfieldnum in form.data:
+                formfield = form.data.get(formfieldnum)
+                title = formfield.get("title")
+                if formfield.get("type") == 1:
+                    extra_fields[title] = request.POST.getlist(
+                        str(form.id) + ":" + str(formfieldnum)
+                    )
+                else:
+                    extra_fields[title] = request.POST.get(
+                        str(form.id) + ":" + str(formfieldnum)
+                    )
+        order_notes = request.POST.get("notes", "")
+
         order.order = re.sub("\D", "", request.POST["order"])
-        order.company_name = request.POST["company_name"]
-        order.company_address = request.POST["company_address"]
-        order.company_city = request.POST["company_city"]
-        order.company_state = request.POST["company_state"]
-        order.company_zip = request.POST["company_zip"]
-        order.company_country = request.POST["company_country"]
-        order.company_phone = request.POST["company_phone"]
-        order.website_url = request.POST["website_url"]
-        order.company_email = request.POST["company_email"]
-        order.company_description = request.POST["company_description"]
-        order.logo_image = request.POST["logo_image"]
-        order.map_url = request.POST["map_url"]
-        order.website_login_url = request.POST["website_login_url"]
-        order.web_username = request.POST["web_username"]
-        order.web_password = request.POST["web_password"]
-        order.analytics_account = request.POST["analytics_account"]
+        order.company_name = request.POST.get("company_name", "")
+        order.company_address = request.POST.get("company_address", "")
+        order.company_city = request.POST.get("company_city", "")
+        order.company_state = request.POST.get("company_state", "")
+        order.company_zip = request.POST.get("company_zip", "")
+        order.company_country = request.POST.get("company_country", "")
+        order.company_phone = request.POST.get("company_phone", "")
+        order.website_url = request.POST.get("website_url", "")
+        order.company_email = request.POST.get("company_email", "")
+        order.company_description = request.POST.get("company_description", "")
+        order.logo_image = request.POST.get("logo_image", "")
+        order.map_url = request.POST.get("map_url", "")
+        order.website_login_url = request.POST.get("website_login_url", "")
+        order.web_username = request.POST.get("web_username", "")
+        order.web_password = request.POST.get("web_password", "")
+        order.analytics_account = request.POST.get("analytics_account", "")
+        order.extra_fields = extra_fields
+        order.notes = order_notes
         order.save()
 
     def getUserOrders(request):
-        orders = Order.objects.filter(owner=request.user.id)
+        orders = Order.objects.filter(owner=request.user.id).exclude(is_archived=True)
         return orders
 
-    def sendAllInfo(id):
-        order = Order.objects.get(id=id)
-        if ZapierApi.objects.filter(id=1).exists():
-            deliv_link = (
-                "https://searchmanager.pro/dashboard/admin/"
-                + str(order.id)
-                + "/deliverables/"
-            )
-            apikey = ZapierApi.objects.get(id=1)
-
-            dataset = {
-                "order": order.order,
-                "company_name": order.company_name,
-                "company_address": order.company_address,
-                "company_city": order.company_city,
-                "company_state": order.company_state,
-                "company_zip": order.company_zip,
-                "company_country": order.company_country,
-                "company_phone": order.company_phone,
-                "website_url": order.website_url,
-                "company_email": order.company_email,
-                "company_description": order.company_description,
-                "logo_image": order.logo_image,
-                "map_url": order.map_url,
-                "website_login_url": order.website_login_url,
-                "web_username": order.web_username,
-                "web_password": order.web_password,
-                "analytics_account": order.analytics_account,
-                "deliverables_url": deliv_link,
-            }
-
-            r = requests.post(apikey.apikey, data=json.dumps(dataset))
-            return r.ok
-        else:
+    def sendMessageNotification(request, msg):
+        # check if no recipient in case client is not registered
+        if not msg.recipient:
             return False
+        if request.user.is_client:
+            zap = request.user.created_by.key.first()
+        else:
+            zap = request.user.key.first()
+
+        dataset = dict(
+            order=msg.order.order,
+            name=msg.author.first_name,
+            email=msg.author.email,
+            company=msg.order.company_name,
+            first_name=msg.order.owner.first_name,
+            last_name=msg.order.owner.last_name,
+            body=msg.body,
+            date_added=msg.date_added.strftime("%d-%m-%Y %H:%M"),
+            url=f"{request._current_scheme_host}/dashboard/chatroom/{msg.order.id}/",
+            recipients=msg.recipient,
+            message_type="chat_message",
+        )
+
+        if not zap and msg.order.owner.is_registered:
+            try:
+                recipient = (
+                    msg.order.owner.created_by
+                    if request.user == msg.order.owner
+                    else msg.order.owner
+                )
+                subj = "You have a new message"
+                body = render_to_string(
+                    "email/zap_message_backup.html",
+                    {
+                        "dataset": dataset,
+                    },
+                )
+
+                if not recipient.disable_email_notifications:
+                    send_mailjet_email(recipient, subj, body)
+
+                return True, "Data has been sent successfully"
+            except Exception as e:
+                logging.error("Exception: " + str(e))
+                return (
+                    False,
+                    "We were unable to send data to Zapier. Please check you Zapier API key url is correct",
+                )
+        else:
+            try:
+                r = requests.post(zap.apikey, data=json.dumps(dataset))
+                return r.ok
+            except:
+                return False
+        return False
+
+    def getUnreadMessages(request, orders):
+        recipient = request.user.email
+        unread = []
+        for ord in orders:
+            if ord.message.filter(recipient=recipient, is_read=False):
+                unread.append(ord.id)
+        return unread
+
+    def sendAllInfo(request, id):
+        order = Order.objects.get(id=id)
+        if order.owner.created_by != request.user:
+            return False, "You don't have permission to use this API"
+
+        deliv_link = (
+            "https://searchmanager.pro/dashboard/admin/"
+            + str(order.id)
+            + "/deliverables/"
+        )
+
+        dataset = {
+            "order": order.order,
+            "company_name": order.company_name,
+            "company_address": order.company_address,
+            "company_city": order.company_city,
+            "company_state": order.company_state,
+            "company_zip": order.company_zip,
+            "company_country": order.company_country,
+            "company_phone": order.company_phone,
+            "website_url": order.website_url,
+            "company_email": order.company_email,
+            "company_description": order.company_description,
+            "logo_image": order.logo_image,
+            "map_url": order.map_url,
+            "website_login_url": order.website_login_url,
+            "web_username": order.web_username,
+            "web_password": order.web_password,
+            "analytics_account": order.analytics_account,
+            "deliverables_url": deliv_link,
+            "message_type": "all_info",
+            "order_notes": order.notes,
+        }
+
+        if order.extra_fields:
+            for key, value in order.extra_fields.items():
+                dataset[key] = value
+
+        apikey = request.user.key.first()
+        if not apikey and order.owner.is_registered:
+            try:
+                recipient = order.owner
+                subj = "Update on order deliverables"
+                body = render_to_string(
+                    "email/zap_backup.html",
+                    {
+                        "dataset": dataset,
+                    },
+                )
+
+                send_mailjet_email(recipient, subj, body)
+
+                return True, "Data has been sent successfully"
+            except Exception as e:
+                logging.error("Exception: " + str(e))
+                return (
+                    False,
+                    "We were unable to send data to Zapier. Please check you Zapier API key url is correct",
+                )
+        try:
+            r = requests.post(apikey.apikey, data=json.dumps(dataset))
+            return r.ok, "Data has been sent successfully"
+        except:
+            return (
+                False,
+                "We were unable to send data to Zapier. Please check you Zapier API key url is correct",
+            )
 
     def sendForm(request, id, formid):
         order = Order.objects.get(id=id)
-        if ZapierApi.objects.filter(id=1).exists():
-            apikey = ZapierApi.objects.get(id=1)
+        if order.owner.created_by != request.user:
+            return False, "You don't have permission to use this API"
+        apikey = request.user.key.first()
+        if apikey:
             form = Form.objects.get(id=formid)
 
             orderfields = form.orderinfos.get("orderinfos")
@@ -401,45 +698,38 @@ class Order(models.Model):
                 formfield = form.data.get(formfieldnum)
                 if formfield.get("type") == 1:
                     dataset[formfieldnum] = {
-                        "title": formfield.get("title"),
-                        "answer": request.POST.getlist(
+                        formfield.get("title"): request.POST.getlist(
                             str(form.id) + ":" + str(formfieldnum)
-                        ),
+                        )
                     }
                 else:
                     dataset[formfieldnum] = {
-                        "title": formfield.get("title"),
-                        "answer": request.POST.get(
+                        formfield.get("title"): request.POST.get(
                             str(form.id) + ":" + str(formfieldnum)
-                        ),
+                        )
                     }
 
             dataset["form_note"] = request.POST.get("formnote")
-
+            dataset["zapier_tag"] = form.zapier_tag
             dataset["form_name"] = form.title
+            dataset["message_type"] = "form_info"
 
             r = requests.post(apikey.apikey, data=json.dumps(dataset))
-            return r.ok
+            return r.ok, "Form was sent successfully"
         else:
-            return False
+            return (
+                False,
+                'No Zapier API key provided. You can add one <a href="/dashboard/admin/editkey/">here</a>',
+            )
 
     def getOrdersByFilter(request):
-        filters = {}
-        if request.GET.get("select-package", False):
-            filters["package__template_id__in"] = list(
-                map(int, request.GET.getlist("select-package"))
-            )
-        if request.GET.get("select-addon", False):
-            filters["addon__template_id__in"] = list(
-                map(int, request.GET.getlist("select-addon"))
-            )
-        if request.GET.get("select-status", False):
-            filters["status__in"] = list(map(int, request.GET.getlist("select-status")))
-        if request.GET.get("select-user", False):
-            filters["owner__in"] = list(map(int, request.GET.getlist("select-user")))
-        if request.GET.get("month", False):
-            filters["month"] = int(request.GET.get("month"))
-        orders = Order.objects.filter(**filters)
+        _update_filters_in_session(request)
+        filters = _get_filters_from_session(request)
+        orders = (
+            Order.objects.filter(**filters)
+            .exclude(owner__is_deleted=True)
+            .exclude(is_deleted=True)
+        )
         return orders
 
 
@@ -457,6 +747,16 @@ class Package(models.Model):
         return pack
 
 
+class TaskReportLink(models.Model):
+    link = models.CharField(max_length=2048)
+    task = models.ForeignKey(
+        "Task", on_delete=models.CASCADE, related_name="report_link"
+    )
+
+    def __str__(self):
+        return f"Report link for task #{self.task.id}"
+
+
 class Task(models.Model):
     start_date = models.DateField(default=None, blank=True, null=True)
     end_date = models.DateField(default=None, blank=True, null=True)
@@ -472,7 +772,6 @@ class Task(models.Model):
         "Status", on_delete=models.SET_DEFAULT, null=True, blank=True, default=None
     )
     notes = models.TextField(default=None, blank=True)
-    report_link = models.CharField(max_length=10000, blank=True)
     month = models.IntegerField(default=None, blank=True)
     template_task = models.ForeignKey("templateTask", on_delete=models.CASCADE)
     ordering = models.IntegerField()
@@ -483,8 +782,13 @@ class Task(models.Model):
     def editTask(request, id):
         task = Task.objects.get(id=id)
 
+        local_status = Status.objects.get(id=int(request.POST["status"]))
+        task.status = local_status
+
         if request.POST["start_date"] == "":
             local_start_date = None
+            if local_status.name == "In progress":
+                local_start_date = datetime.now()
             task.start_date = local_start_date
         else:
             local_start_date = request.POST["start_date"]
@@ -492,23 +796,19 @@ class Task(models.Model):
 
         if request.POST["end_date"] == "":
             local_end_date = None
+            if local_status.name == "Completed":
+                local_end_date = datetime.now()
             task.end_date = local_end_date
         else:
             local_end_date = request.POST["end_date"]
             task.end_date = local_end_date
 
-        if request.POST["completed"] == "None":
-            local_completed_by = None
-            task.completed_by = local_completed_by
-        else:
-            local_completed_by = CustomUser.objects.get(
-                id=int(request.POST["completed"])
-            )
-            task.completed_by = local_completed_by
+        # report links
+        links = request.POST.getlist("report_link_modal")
+        for link in links:
+            if not task.report_link.filter(link=link).first():
+                TaskReportLink.objects.create(link=link, task=task)
 
-        local_status = Status.objects.get(id=int(request.POST["status"]))
-        task.status = local_status
-        task.report_link = request.POST["report_link"]
         task.notes = request.POST["note"]
         task.save()
 
@@ -518,7 +818,6 @@ class Task(models.Model):
                 start_date=local_start_date,
                 status=local_status,
                 end_date=local_end_date,
-                completed_by=local_completed_by,
             )
 
     def getTaskById(id):
@@ -559,6 +858,9 @@ class templatePackage(models.Model):
         return tempPack.id
 
     def getAllPackage(request):
+        if request.user.is_client:
+            pack = request.user.created_by.temlpatePackage.all()
+            return pack
         user = request.user
         pack = user.temlpatePackage.all()
         return pack
@@ -676,7 +978,6 @@ class Month(models.Model):
                             end_date=None,
                             status=None,
                             notes="",
-                            report_link="",
                             month=month.num,
                             template_task=templateTask(id=item),
                             ordering=getOrderding(item),
@@ -693,13 +994,16 @@ class templateTask(models.Model):
     created_by = models.ForeignKey(
         CustomUser, on_delete=models.CASCADE, related_name="templateTask"
     )
+    notes = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.title
 
     def createTask(request):
         templateTask.objects.create(
-            title=request.POST["title"], created_by=request.user
+            title=request.POST["title"],
+            created_by=request.user,
+            notes=request.POST["notes"],
         )
 
     def getAllTask(request):
@@ -715,6 +1019,7 @@ class templateTask(models.Model):
         if not task or task.created_by != request.user:
             return
         task.title = request.POST["title"]
+        task.notes = request.POST.get("notes", None)
         task.save()
 
     def removeTask(request, id):
@@ -748,6 +1053,9 @@ class templateAddon(models.Model):
         return self.title
 
     def getAllAddon(request):
+        if request.user.is_client:
+            addons = request.user.created_by.templateAddon.all()
+            return addons
         user = request.user
         addons = user.templateAddon.all()
         return addons
@@ -814,7 +1122,6 @@ class templateAddon(models.Model):
                                 end_date=None,
                                 completed_by=None,
                                 notes="",
-                                report_link="",
                                 template_task=addTempTask.templateTask,
                                 ordering=addTempTask.ordering,
                             )
@@ -848,7 +1155,7 @@ class Addon(models.Model):
 class Status(models.Model):
     name = models.CharField(max_length=500)
     color = models.CharField(max_length=500)
-    val = models.IntegerField(default=None, null=True, unique=True)
+    val = models.IntegerField()
     created_by = models.ForeignKey(
         CustomUser, on_delete=models.CASCADE, related_name="status"
     )
@@ -857,6 +1164,9 @@ class Status(models.Model):
         return self.name
 
     def getAllStatuses(request):
+        if request.user.is_client:
+            statuses = request.user.created_by.status.all()
+            return statuses
         user = request.user
         statuses = user.status.all()
         return statuses
@@ -877,13 +1187,12 @@ class Status(models.Model):
         return Status.objects.filter(id=id, created_by=request.user).first()
 
     def editStatus(request, id):
-        status = Status.objects.filter(id=id, created_by=request.user)
+        status = Status.objects.filter(id=id, created_by=request.user).first()
         if status:
-            status.update(
-                name=request.POST.get("name"),
-                color=request.POST.get("color"),
-                val=request.POST.get("value"),
-            )
+            status.name = request.POST.get("name")
+            status.color = request.POST.get("color")
+            status.val = request.POST.get("value")
+            status.save()
 
     def removeStatus(request, id):
         status = Status.objects.filter(id=id, created_by=request.user).first()
@@ -895,16 +1204,32 @@ class Form(models.Model):
     title = models.CharField(max_length=500)
     orderinfos = models.JSONField(null=True)
     data = models.JSONField(null=True)
+    zapier_tag = models.TextField(blank=True, null=True)
     created_by = models.ForeignKey(
         CustomUser, on_delete=models.CASCADE, related_name="form"
+    )
+    is_service = models.BooleanField(default=False)
+    is_snapshot = models.BooleanField(default=False)
+    is_default = models.BooleanField(default=False)
+    order = models.ForeignKey(
+        Order,
+        on_delete=models.CASCADE,
+        related_name="intake_form",
+        default=None,
+        blank=True,
+        null=True,
     )
 
     def __str__(self):
         return self.title
 
-    def createForm(request):
+    def createForm(request, is_service=False):
         formname = request.POST["formname"]
+        zapier_tag = request.POST.get("zapier_tag")
         orderinfosset = {"orderinfos": request.POST.getlist("orderinfos")}
+        if is_service and "order" not in orderinfosset["orderinfos"]:
+            orderinfosset["orderinfos"].insert(0, "order")
+
         dataset = {}
 
         for x in range(0, int(request.POST["totalcount"]) + 1):
@@ -919,11 +1244,16 @@ class Form(models.Model):
                     "type": 1,
                     "items": request.POST.getlist("checkboxitem" + str(x)),
                 }
-            elif request.POST.get("radioname" + str(x), False):
+            elif request.POST.get("textarea" + str(x), False):
                 dataset[x] = {
-                    "title": request.POST.get("radioname" + str(x), False),
-                    "type": 2,
-                    "items": request.POST.getlist("radioitem" + str(x)),
+                    "title": request.POST.get("textarea" + str(x), False),
+                    "type": 3,
+                }
+            elif request.POST.get("dropdownname" + str(x), False):
+                dataset[x] = {
+                    "title": request.POST.get("dropdownname" + str(x), False),
+                    "type": 4,
+                    "items": request.POST.getlist("dropdownitem" + str(x)),
                 }
 
         Form.objects.create(
@@ -931,14 +1261,19 @@ class Form(models.Model):
             orderinfos=orderinfosset,
             data=dataset,
             created_by=request.user,
+            is_service=is_service,
+            zapier_tag=zapier_tag,
         )
 
-    def editForm(request, id):
+    def editForm(request, id, is_service=False):
         form = Form.objects.filter(id=id, created_by=request.user).first()
         if not form:
             return
         formname = request.POST["formname"]
+        zapier_tag = request.POST.get("zapier_tag")
         orderinfosset = {"orderinfos": request.POST.getlist("orderinfos")}
+        if is_service and "order" not in orderinfosset["orderinfos"]:
+            orderinfosset["orderinfos"].insert(0, "order")
         dataset = {}
 
         for x in range(0, int(request.POST["totalcount"]) + 1):
@@ -953,43 +1288,115 @@ class Form(models.Model):
                     "type": 1,
                     "items": request.POST.getlist("checkboxitem" + str(x)),
                 }
-            elif request.POST.get("radioname" + str(x), False):
+            elif request.POST.get("textarea" + str(x), False):
                 dataset[x] = {
-                    "title": request.POST.get("radioname" + str(x), False),
-                    "type": 2,
-                    "items": request.POST.getlist("radioitem" + str(x)),
+                    "title": request.POST.get("textarea" + str(x), False),
+                    "type": 3,
+                }
+            elif request.POST.get("dropdownname" + str(x), False):
+                dataset[x] = {
+                    "title": request.POST.get("dropdownname" + str(x), False),
+                    "type": 4,
+                    "items": request.POST.getlist("dropdownitem" + str(x)),
                 }
 
         form.title = formname
         form.orderinfos = orderinfosset
         form.data = dataset
+        form.zapier_tag = zapier_tag
         form.save()
 
     def getFormById(request, id):
         return Form.objects.get(id=id, created_by=request.user)
 
     def getAllForms(request):
-        forms = Form.objects.filter(created_by=request.user).all()
+        forms = (
+            Form.objects.filter(created_by=request.user).exclude(is_service=True).all()
+        )
+        return forms
+
+    def getAllServiceForms(request):
+        forms = Form.objects.filter(
+            created_by=request.user, is_service=True, is_snapshot=False
+        ).all()
         return forms
 
     def removeForm(request, id):
-        form = Form.objects.filter(id=id, created_by=request.user).first()
+        form = (
+            Form.objects.filter(id=id, created_by=request.user)
+            .exclude(is_default=True)
+            .first()
+        )
         if form:
             form.delete()
 
 
 class ZapierApi(models.Model):
     apikey = models.CharField(max_length=5000)
+    created_by = models.ForeignKey(
+        CustomUser, null=True, on_delete=models.CASCADE, related_name="key"
+    )
 
     def editKey(request):
-        if ZapierApi.objects.filter(id=1).exists():
-            ZapierApi.objects.filter(id=1).update(apikey=request.POST.get("apikey"))
+        # check if zapier key is empty -> delete it
+        zapier_key = request.POST.get("apikey")
+        key = request.user.key.first()
+        if not zapier_key and not key:
+            return
+        if not zapier_key and request.user.key.first():
+            request.user.key.first().delete()
+            return
+        # validate zapier:
+        if zapier_key and "zapier" not in zapier_key:
+            messages.error(request, "Your zapier hook url is invalid")
+            return
+        if not key:
+            ZapierApi.objects.create(
+                apikey=request.POST.get("apikey"), created_by=request.user
+            )
         else:
-            ZapierApi.objects.create(id=1, apikey=request.POST.get("apikey"))
+            key.apikey = request.POST.get("apikey")
+            key.save()
 
-    def getKey():
-        key = ZapierApi.objects.filter(id=1)
+    def getKey(request):
+        key = request.user.key.first()
         return key
+
+
+class Agency(models.Model):
+    owner = models.ForeignKey(
+        CustomUser, on_delete=models.CASCADE, related_name="agency"
+    )
+    name = models.CharField(max_length=255, null=True, blank=True)
+    logo = models.ImageField(upload_to="agency_logo/", null=True, blank=True)
+    notes = models.TextField(null=True, blank=True)
+    date_added = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ("-date_added",)
+
+    def set_default_agency_image(self):
+        if self.logo:
+            self.logo.delete(save=True)
+
+    def __str__(self):
+        return f"Agency {self.id} by {self.owner}"
+
+
+class Notification(models.Model):
+    owner = models.ForeignKey(
+        CustomUser, on_delete=models.CASCADE, related_name="notification"
+    )
+    is_read = models.BooleanField(default=False)
+    text = models.TextField(null=True, blank=True)
+    date_added = models.DateTimeField(auto_now_add=True)
+    link = models.CharField(max_length=255, null=True, blank=True)
+
+    class Meta:
+        ordering = ("-id",)
+
+    def __str__(self):
+        return f"Notification {self.id} for {self.owner}"
 
 
 class manageUser:
@@ -1001,24 +1408,158 @@ class manageUser:
                         email=request.POST["email"]
                     ).first()
                     if client_user:
+                        return False
+                    user = CustomUser.objects.create_user(
+                        first_name=request.POST["first-name"],
+                        last_name=request.POST["last-name"],
+                        email=request.POST["email"],
+                        password=request.POST["password"],
+                        is_staff=True,
+                        is_registered=True,
+                        is_active=False,
+                    )
+
+                    user_agency = Agency(owner=user)
+                    user_agency.save()
+
+                    uri = urlsafe_base64_encode(force_bytes(user.pk))
+                    token = account_activation_token.make_token(user)
+
+                    mail_subject = "Activate your account"
+                    url = (
+                        f"{request._current_scheme_host}/signup/activate/{uri}/{token}/"
+                    )
+
+                    body = render_to_string(
+                        "email/acc_active_email.html",
+                        {
+                            "user": user,
+                            "url": url,
+                        },
+                    )
+
+                    send_mailjet_email(user, mail_subject, body)
+
+                    # create statuses for the user
+                    _create_statuses(user, Status)
+                    _create_intake_form(user, Form)
+                    return True
+
+    def updateAgency(request):
+        if not request.user.is_staff:
+            return
+        agency = request.user.agency.first()
+        if request.FILES.get("agency_logo"):
+            agency.logo = request.FILES.get("agency_logo")
+        if agency and not request.POST.get("agency_name"):
+            agency.name = ""
+        else:
+            agency.name = request.POST.get("agency_name")
+        agency.save()
+
+    def getNotificationById(request, id):
+        notification = request.user.notification.get(id=id)
+        if notification:
+            notification.is_read = True
+            notification.save()
+            return notification
+
+    def deleteNotification(request, id):
+        notification = request.user.notification.get(id=id)
+        if notification:
+            notification.delete()
+            return True
+        return False
+
+    def resendConfirmation(request):
+        email = request.POST.get("email")
+        user = CustomUser.objects.filter(email=email, is_active=False).first()
+        if user:
+            uri = urlsafe_base64_encode(force_bytes(user.pk))
+            token = account_activation_token.make_token(user)
+
+            mail_subject = "Activate your account"
+            url = f"{request._current_scheme_host}/signup/activate/{uri}/{token}/"
+
+            body = render_to_string(
+                "email/acc_active_email.html",
+                {
+                    "user": user,
+                    "url": url,
+                },
+            )
+
+            send_mailjet_email(user, mail_subject, body)
+            return True, "Confirmation link has been sent. Check your email"
+        return (
+            False,
+            "We will send you a confirmation link if this account is registered. Check your email",
+        )
+
+    def activateUser(request, uri, token):
+        try:
+            uid = force_text(urlsafe_base64_decode(uri))
+            user = CustomUser.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
+            user = None
+
+        if user is not None and account_activation_token.check_token(user, token):
+            user.is_active = True
+            user.save()
+
+            auth.login(request, user)
+            return True
+        return False
+
+    def createClientUser(request):
+        if request.POST["email"] and request.POST["password"]:
+            if request.POST["password"] == request.POST["repeat-password"]:
+                if len(request.POST["password"]) >= 6:
+                    client_user = CustomUser.objects.filter(
+                        email=request.POST["email"]
+                    ).first()
+                    if client_user:
                         if client_user.is_client and not client_user.is_registered:
                             client_user.first_name = request.POST["first-name"]
                             client_user.last_name = request.POST["last-name"]
                             client_user.set_password(request.POST["password"])
+                            client_user.is_registered = True
+                            client_user.is_active = True
                             client_user.save()
                             auth.login(request, client_user)
                             return True
                         return False
-                    else:
-                        user = CustomUser.objects.create_user(
-                            first_name=request.POST["first-name"],
-                            last_name=request.POST["last-name"],
-                            email=request.POST["email"],
-                            password=request.POST["password"],
-                            is_staff=True,
-                        )
-                        auth.login(request, user)
-                        return True
+
+    def createClientUserWithInvite(request, url, token):
+        password = request.POST.get("password")
+        repeat_password = request.POST.get("repeat-password")
+        if len(password) < 6:
+            return False, "Password should be at least 6 characters long"
+        if (not password or not repeat_password) and (password != repeat_password):    
+            return False, "Passwords don't match. Please try again"
+
+        uid = force_text(urlsafe_base64_decode(url))
+        manager_user = CustomUser.objects.get(pk=uid)
+
+        client = CustomUser.objects.filter(email=request.POST.get('email')).first()
+        if client:
+            return False, "User with this email already exists. Please log in"
+
+        if manager_user:
+            client = CustomUser.objects.create(
+                email=request.POST.get('email'),
+                first_name=request.POST.get('first-name'),
+                last_name=request.POST.get('last-name'),
+                password=request.POST.get("password"),
+                created_by=manager_user,
+                is_registered=True,
+                is_client=True,
+                is_active=True,
+            )
+            auth.login(request, client)
+            return True, "Welcome to SearchManager.pro!"
+
+        return False, "Invitation url is invalid. Request new invitation link or ask your manager to send one to your email"
 
     def loginUser(request):
         user = auth.authenticate(
@@ -1026,12 +1567,69 @@ class manageUser:
         )
         if user is not None:
             auth.login(request, user)
-            return True
+            return True, ""
         else:
-            return False
+            deactivated_user = UserReplication.objects.filter(
+                old_email=request.POST.get("email")
+            ).first()
+            if deactivated_user:
+                user_replica = CustomUser.objects.filter(
+                    email=deactivated_user.new_email
+                ).first()
+                if user_replica.is_deleted and not user_replica.is_active:
+                    return (
+                        False,
+                        "This user is either deleted or deactivated. Please contact your administrator to resolve it",
+                    )
+            return False, "We couldn't find an account with this credentials"
+
+    def checkIfNeedsConfirmation(request):
+        user = CustomUser.objects.filter(email=request.POST["email"]).first()
+        if user:
+            if user.is_registered and not user.is_active and not user.is_client:
+                return True
+        return False
 
     def logoutUser(request):
         auth.logout(request)
+
+    def sendPassowrdReset(request):
+        email = request.POST.get("email")
+        if email:
+            user = get_user_model().objects.filter(email=email).first()
+            if user:
+                uri = urlsafe_base64_encode(force_bytes(user.pk))
+                token = password_reset_token.make_token(user)
+                url = f"{request._current_scheme_host}/confirm_password/{uri}/{token}/"
+
+                subj = "Confirm password reset"
+                body = render_to_string(
+                    "email/password_reset.html",
+                    {
+                        "user": user,
+                        "url": url,
+                    },
+                )
+                send_mailjet_email(user, subj, body)
+
+    def confirmPasswordReset(request, url, token):
+        password = request.POST.get("password")
+        repeat_password = request.POST.get("repeat-password")
+        if (password and repeat_password) and (password == repeat_password):
+            if len(password) >= 6:
+                try:
+                    uid = force_text(urlsafe_base64_decode(url))
+                    user = CustomUser.objects.get(pk=uid)
+                except (TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
+                    user = None
+                if user is not None and password_reset_token.check_token(user, token):
+                    user.set_password(password)
+                    user.save()
+                    return True, 'Your password has been set. You may go ahead and log in now'
+                return False, 'Password reset request is not valid. Please try again'
+            return False, "Password should be at least 6 characters long"
+        return False, "Passwords don't match"
+        
 
     def editPassword(request):
         if len(request.POST.get("password")) >= 6:
@@ -1041,14 +1639,24 @@ class manageUser:
     def editProfile(request):
         request.user.first_name = request.POST.get("first_name")
         request.user.last_name = request.POST.get("last_name")
+        request.user.notes = request.POST.get("notes", "")
+        request.user.disable_email_notifications = (
+            True if request.POST.get("disable_email_notifications") else False
+        )
+        if request.user.is_staff:
+            ZapierApi.editKey(request)
+        if request.FILES.get("profile_image"):
+            request.user.profile_image = request.FILES.get("profile_image")
         request.user.save()
 
     def getAllUsers():
-        users = CustomUser.objects.all()
+        users = CustomUser.objects.all().exclude(is_registered=False)
         return users
 
     def getAllClients(request):
-        clients = CustomUser.objects.filter(created_by=request.user, is_active=True)
+        clients = CustomUser.objects.filter(created_by=request.user).exclude(
+            is_deleted=True
+        )
         return clients
 
     def getClientById(request, id):
@@ -1057,11 +1665,22 @@ class manageUser:
             return None
         return client
 
+    def getClientUserByUuid(uuid):
+        client = CustomUser.objects.filter(uuid=uuid)
+        if not client:
+            return None
+        return client
+
     def createClient(request):
         if request.user.is_staff:
+            first_client = len(request.user.client.all())
             if CustomUser.objects.filter(email=request.POST.get("email")).first():
-                return False
+                return False, first_client
             email = request.POST.get("email")
+            if not email:
+                email = (
+                    f"{settings.CLIENT_TAG}-{secrets.token_hex(16)}@searchmanager.pro"
+                )
             first_name = request.POST.get("first_name")
             last_name = request.POST.get("last_name")
             client = CustomUser.objects.create(
@@ -1071,28 +1690,65 @@ class manageUser:
                 created_by=request.user,
                 is_registered=False,
                 is_client=True,
+                is_active=False,
             )
             client.set_unusable_password()
             client.save()
-            return client
+            return client, first_client
+
+    def checkEmailAvailable(request, email):
+        user = CustomUser.objects.filter(email=email).first()
+        if user:
+            if user.created_by != request.user:
+                return False
+            if not user.is_registered:
+                return True
+        return True
+
+    def sendInvitationUrl(request, id):
+        client = CustomUser.objects.get(id=id)
+        if not client or client.created_by != request.user:
+            return "You do not have permission to invite this user"
+
+        url = f"{request._current_scheme_host}/signup/invitation/{client.uuid}/"
+
+        body = render_to_string(
+            "email/client_invite_email.html",
+            {
+                "client": client,
+                "url": url,
+            },
+        )
+
+        mail_subject = "Client invitation"
+
+        send_mailjet_email(client, mail_subject, body)
+
+        client.confirmation_sent = True
+        client.save()
+
+    def getInviteLink(request):
+        token = invitation_url_token.make_token(request.user)
+        url = urlsafe_base64_encode(force_bytes(request.user.pk))
+        return f"{request._current_scheme_host}/signup/invite/{url}/{token}/"
 
     def editClient(request, id):
         client = CustomUser.objects.get(id=id)
         if not client or client.created_by != request.user:
             return
-        first_name = request.POST.get("first_name")
-        last_name = request.POST.get("last_name")
 
-        client.first_name = first_name
-        client.last_name = last_name
+        if not client.is_registered and request.POST.get("email"):
+            if client.email != request.POST.get("email"):
+                client.email = request.POST.get("email")
+        client.first_name = request.POST.get("first_name")
+        client.last_name = request.POST.get("last_name")
         client.save()
 
     def removeClient(request, id):
         client = CustomUser.objects.get(id=id)
         if not client or client.created_by != request.user:
             return False
-        client.is_active = False
-
+        _delete_user(client)
         return True
 
     def getUser(id):
@@ -1131,7 +1787,7 @@ class manageUser:
             user.save()
 
     def getNormalUsers(request):
-        return request.user.client.all()
+        return request.user.client.all().exclude(is_deleted=True)
 
     def getStaffUsers():
         users = CustomUser.objects.filter(is_active=True, is_staff=True)
@@ -1139,17 +1795,22 @@ class manageUser:
 
     def deleteUser(request, id):
         if request.user.is_superuser:
-            CustomUser.objects.filter(id=id).delete()
+            user = CustomUser.objects.filter(id=id).first()
+            for i in user.client.all():
+                _delete_user(i)
+            _delete_user(user)
 
 
 class Message(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="message")
     author = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    recipient = models.EmailField(max_length=255, null=True, blank=True)
     body = models.TextField()
     date_added = models.DateTimeField(auto_now_add=True)
     parent = models.ForeignKey(
         "self", on_delete=models.CASCADE, null=True, blank=True, related_name="replies"
     )
+    is_read = models.BooleanField(default=False)
 
     class Meta:
         ordering = ("-date_added",)

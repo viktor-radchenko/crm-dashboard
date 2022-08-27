@@ -14,10 +14,10 @@
                         
                             <div class="form-group col-12 mb-4">
                                 <label class="text ml-1" for="apikey">Key:</label>
-                                <input type="text" class="form-control mb-2" name="apikey" id="apikey" value="{% for x in key %}{{ x.apikey }}{% endfor %}" required>
+                                <input type="text" class="form-control mb-2" name="apikey" id="apikey" value="{{ key.apikey }}" required>
                             </div>
 
-                            <button type="submit" class="btn text btn-outline-primary mt-4 ml-3" id="submit">Submit</button>
+                            <button type="submit" class="btn text btn-primary mt-4 ml-3" id="submit">Submit</button>
                     </form>
                 </div>
             </div>

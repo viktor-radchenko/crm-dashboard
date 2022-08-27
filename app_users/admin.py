@@ -22,7 +22,7 @@ class CustomUserAdmin(UserAdmin):
         ("Permissions", {"fields": ("is_superuser", "is_staff", "is_active")}),
         (
             "Information",
-            {"fields": ("first_name", "last_name", "date_joined", "last_login")},
+            {"fields": ("first_name", "last_name", "is_registered", "date_joined", "last_login", "profile_image")},
         ),
     )
     add_fieldsets = (

@@ -8,13 +8,49 @@
     <h1 class="h3 mb-0 text-gray-800">Edit order</h1>
 </div>
 
+<div class="card shadow mb-4">
+<div class="card-body">
+<div class="oder-details w-100">
+    <div class="form-group col-12 mb-4">
+    <div class="order-navigation d-flex justify-content-between">
+      
+      <div class="order-title" style="max-width: 100px; width: 100%;">
+        <h5>Order info:</h5>
+      </div>
+      
+      <div class="order-links" style="font-size: 20px; text-align: right;">        
+          <a href="/dashboard/admin/editinfo/{{ order.id }}/" class="btn btn-primary border-0 p-0">
+              <i class="fa fa-pencil-alt align-middle" aria-hidden="true"></i>
+              <span class="align-middle">Intake Form</span>
+          </a>
+
+          <a href="/dashboard/admin/{{ order.id }}/deliverables/" class="btn btn-primary border-0 p-0">
+            <i class="fa fa-file align-middle" aria-hidden="true"></i>
+            <span class="align-middle">Deliverables</span>
+          </a>
+
+        <a href="/dashboard/chatroom/{{ order.id }}/" class="btn btn-primary border-0 p-0">
+          <i class="fa fa-envelope align-middle" aria-hidden="true"></i>
+          <span class="align-middle">Messages</span>
+        </a>
+      </div>
+     
+    </div>
+  
+    <hr class="sidebar-divider">
+  
+    {% block order-header %}
+        {% include "../order-header.html" %}
+    {% endblock %}
+  </div>
+
 <div class="row align-items-center justify-content-center">
     <div class="col-xl-6 col-lg-8 col-md-10 col-sm-12">
         <div class="card shadow mb-4 p-2">
             <div class="row">
                 <div class="col-12 mb-3 mt-3">
                     <div class="form-group col-12 mb-4">
-                        <p>Email: <strong>{{ order.owner.email }}</strong></p>
+                        <p>Email: {% if order.owner.is_active and not client_tag in order.owner.email%} <strong>{{ order.owner.email }}</strong> {% endif %}</p> 
                         <p>First name: <strong>{% if order.owner.first_name %}{{ order.owner.first_name }}{% else %}-{% endif %}</strong></p>
                         <p>Last name: <strong>{% if order.owner.last_name %}{{ order.owner.last_name }}{% else %}-{% endif %}</strong></p>
                         {% if request.user.is_superuser %}<a href="#" data-toggle="modal" data-target="#confirmModal">delete this order</a>{% endif %}
@@ -27,7 +63,7 @@
                                 <label class="text ml-1" for="select-owner">User:</label>
                                 <select name="own" id="select-owner" class="form-control mb-2" required>
                                     {% for user in users %}
-                                    <option value="{{ user.id }}" {% if user.id == order.owner.id %}selected="selected"{% endif %}>{{ user.first_name }} {{ user.last_name }} {{ user.email }}</option>
+                                    <option value="{{ user.id }}" {% if user.id == order.owner.id %}selected="selected"{% endif %}>{{ user.first_name }} {{ user.last_name }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -56,15 +92,10 @@
                             <div class="form-group col-12 mb-4">
                                 <label class="text ml-1" for="select-pack">Package:</label>
                                 <select name="package" id="select-pack" class="form-control" required>
-                                    {% if order.package %}
-                                    <option value="default" selected="selected">{{ order.package.template.title }}</option>
-                                    <option value="None">None</option>
-                                    {% else %}
-                                    <option value="None" {% if not order.package_id %}selected="selected"{% endif %}>None</option>
                                     {% for p in package %}
-                                    <option value="{{ p.id }}">{{ p.title }} (template)</option>
+                                    <option {% if p == order.package %}  value="default" selected="selected" {% else %}value="{{ p.id }}"{%endif%}>{{ p.title }}</option>
                                     {% endfor %}
-                                    {% endif %}
+                                    <option value="None" {% if not order.package_id %}selected="selected"{% endif %}>None</option>
                                 </select>
                             </div>
 
@@ -80,7 +111,7 @@
                                     {% endif %}
                                     {% endfor %}
                                 </select>
-                                <small>Ctrl to select multiple or cancel selection</small>
+                                <small style="color: #365ccd;">Press CTRL to select multiple addons or to cancel selection</small>
                             </div>
 
                             <hr>
@@ -95,19 +126,22 @@
                                 <label class="text ml-1" for="link_3">Workbook:</label>
                                 <input type="text" class="form-control mb-2" name="link3" id="link_3" value="{{ order.link3 }}">
 
-                                <label class="text ml-1" for="link_4">Link 4:</label>
+                                <label class="text ml-1" for="link_4">Rank Tracker:</label>
                                 <input type="text" class="form-control mb-2" name="link4" id="link_4" value="{{ order.link4 }}">
 
-                                <label class="text ml-1" for="note">Note:</label>
-                                <textarea class="form-control mb-2" name="note" id="note">{{ order.note }}</textarea>
+                                <label class="text ml-1" for="note">Notes:</label>
+                                <textarea class="form-control mb-2" name="note" id="note">{{ order.notes }}</textarea>
                             </div>
                         
-                            <button type="submit" class="btn text btn-outline-primary ml-3 mt-2" id="submit">Submit</button>
+                            <button type="submit" class="btn text btn-primary ml-3 mt-2" id="submit">Submit</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+</div>
+</div>
+</div>
 </div>
 <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="deleteModal" style="display: none;" aria-hidden="true">
     <div class="modal-dialog" role="document">

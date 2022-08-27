@@ -1,0 +1,80 @@
+{% extends 'dashboard.html' %}
+{% load custom_tags %}
+{% block content %}
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">Add service</h1>
+</div>
+
+<div class="row align-items-center justify-content-center">
+    <div class="col-xl-6 col-lg-8 col-md-10 col-sm-12">
+        <div class="card shadow mb-4 p-2">
+            <div class="row">
+                <div class="col-12 mb-3 mt-3">
+                    <form method="POST" name="thisform" id="thisform" onsubmit="setVals()">
+                        {% csrf_token %}
+                        
+                            <div class="form-group col-12 mb-4">
+                                <label class="text ml-1" for="formname">Service name:</label>
+                                <input type="text" class="form-control mb-2" name="formname" autofocus="" id="formname" required>
+                            </div>
+
+                            <hr>
+                            <div class="form-group col-12 mb-4">
+                              <h5>Edit intake form for the service:</h5>
+                            </div>
+                            
+                            <div class="draggable-defaults">
+                                {% for i in orderinfos_defaults %}
+                                <div class="form-group form-check col-12 ml-4"  style="position: relative;">
+                                    <div style="display: inline-block;">
+                                        <input type="checkbox" class="form-check-input mb-2" name="orderinfos" value="{{i}}"  id="{{i}}">
+                                        <label class="form-check-label" for="{{i}}">{{i|remove_underscore|title}}</label>
+                                    </div>
+                                    <div class="drgme" style="
+                                        display: inline-block; cursor: pointer; position: absolute; right: 50px;
+                                    "><i class="fas fa-bars"></i></div>
+                                </div>
+                            {% endfor %}
+                            </div>
+
+                                <hr>
+
+                                <div class="form-group col-12 mb-4">
+                                    <label class="text ml-1" for="zapier_tag">Zapier tag: (optional)</label>
+                                    <input type="text" class="form-control mb-2" name="zapier_tag" id="zapier_tag" value="{{ form.zapier_tag }}">
+                                </div>
+                            
+
+                            <hr>
+
+                            <div class="form-group col-12 mb-4 add_form_fields">
+                            <button class="btn btn-primary p-0 crm-btn add_text_field" type="button"><i class="fa fa-plus align-middle"></i><span>Add text field</span></button>
+                            <button class="btn btn-primary p-0 crm-btn add_checkbox_field" type="button"><i class="fa fa-plus align-middle"></i><span>Add checkbox field</span></button>
+                            <button class="btn btn-primary p-0 crm-btn add_textarea" type="button"><i class="fa fa-plus align-middle"></i><span>Add large text field</span></button>
+                            <button class="btn btn-primary p-0 crm-btn add_dropdown" type="button"><i class="fa fa-plus align-middle"></i><span>Add dropdown field</span></button>
+                            </div>
+
+                            <div class="col-12 mb-4 spe-container draggable">
+                            </div>
+
+                            <input type="hidden" name="totalcount" id="totalcount">
+                        
+                            <div class="d-flex flex-row">
+                                <button class="btn btn-primary border-0 ml-3 mt-2 p-0 crm-btn">
+                                  <i class="fa fa-plus align-middle"></i>
+                                  <span class="align-middle">Create</span>
+                                </button>
+                            </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_script %}
+{% load static %}
+<script src="{% static "/js/createform.js"%}"></script>
+<script src="{% static "/vendor/sortablejs/sortable.min.js"%}"></script>
+<script src="{% static "/js/custom/selectsize_edit_package.js"%}"></script>
+{% endblock %}

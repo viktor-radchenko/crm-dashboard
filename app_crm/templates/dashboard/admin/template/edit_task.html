@@ -15,8 +15,19 @@
                             <div class="form-group col-12 mb-4">
                                 <label class="text ml-1" for="title">Title:</label>
                                 <input type="text" class="form-control mb-2" name="title" autofocus="" maxlength="500" id="title" value="{{ task.title }}" required>
-                        
-                            <button type="submit" class="btn text btn-outline-primary mt-4" id="submit">Submit</button>
+                            </div>
+
+                            <div class="form-group col-12 mb-4">
+                                <label class="text ml-1" for="title">Description:</label>
+                                <textarea name="notes" class="form-control" rows="5">{{ task.notes|default_if_none:""}}</textarea>
+                            </div>
+
+                            <div class="d-flex flex-row">
+                                <button class="btn btn-primary border-0 ml-3 mt-2 p-0 crm-btn">
+                                  <i class="fa fa-share align-middle"></i>
+                                  <span class="align-middle">Submit</span>
+                                </button>
+                            </div>
                     </form>
                 </div>
             </div>

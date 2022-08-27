@@ -1,0 +1,155 @@
+{% extends 'home/wrapper.html' %}
+{% load static %}
+{% block content %}
+<section class="section">
+    <div class="video-section">
+        <div class="video-text_wrapper">
+            
+            <h1 class="video-text_title">
+                Scale Your Marketing Agency With Seamless Campaign Management
+            </h1>
+            <p class="video-text">
+                Organize your entire workflow, keep all communication in one place and provide exceptional client service with a single project management platform
+            </p>
+            <br>
+            <p class="video-text"><a href="/login/" class="nav-list_link"><button class="nav-list_button">Get Started</button></a></p>
+        </div>
+        
+    </div>
+</section>
+<section class="section">
+    <div class="cards-wrapper">
+        <a href="#" class="card">
+            <h4 class="card-name">
+                SEO & Marketing Agencies
+            </h4>
+            <p class="card-text">
+                Improve your workflow with a centralized agency dashboard
+            </p>
+        </a>
+        <a href="#" class="card">
+            <h4 class="card-name">
+                White-Label SEO Companies
+            </h4>
+            <p class="card-text">
+                Automate task fulfillment and provide transparent white-label reports
+            </p>
+        </a>
+        <a href="#" class="card">
+            <h4 class="card-name">
+                Freelancers & Small Teams
+            </h4>
+            <p class="card-text" id="features">
+                Manage more clients with less efforts
+            </p>
+        </a>
+    </div>
+</section>
+<section class="section">
+    <span ></span>
+    <div class="query-wrapper">
+        <div class="query-text_wrapper">                   
+            <h2 class="query-text_head">Features</h2>
+            <ul class="query-text_list">
+                <li class="query-list_item">Personalize your agency account around your brand</li>
+                <li class="query-list_item">Build custom packages & addons</li>
+                <li class="query-list_item">Perfect client onboarding with custom intake forms & personal client dashboard</li>
+                <li class="query-list_item">Manage & track work fulfillment with monthly deliverables</li>
+                <li class="query-list_item">Provide clients with transparent task reports</li>
+                <li class="query-list_item">Keep all project communication in one place</li>
+                <li class="query-list_item">Integrate with other apps to automate & improve your workflow</li>
+                <li class="query-list_item">Scale your agency with seamless campaign management</li>
+            </ul>
+        </div>
+        <div class="query-image_wrapper">
+            <img src="{% static "/img/home/scr1.png" %}" alt="query-image" class="query-image">
+        </div>
+    </div>
+</section>
+<section class="section">
+    <div class="work-wrapper">
+        <div class="work-head">
+            <h2 class="work-head_title">
+                How Does It Work?
+            </h2>
+            <p class="work-head_text">
+                Follow these steps to get started
+            </p>
+        </div>
+        <div class="work-boxes_wrapper">
+            <div class="work-boxes-column">
+                <div class="column-box_wrapper" data-src="{% static '/img/home/intake-form.png' %}">
+                    <div class="column-image_wrapper">
+                        <img src="{% static "/img/home//011.png" %}" alt="column-image" class="column-image">
+                    </div>
+                    <p class="column-name">
+                        Create & Setup Your Agency Account
+                    </p>
+                    <p class="column-text">
+                        Create tasks and combine them into packages (services) you provide. Build custom intake forms
+                        to collect and store the necassary information from clients
+                    </p>
+                </div>
+                <div class="column-box_wrapper" data-src="{% static "/img/home/inv-client.png" %}">
+                    <div class="column-image_wrapper">
+                        <img src="{% static "/img/home/02.png" %}" alt="column-image" class="column-image">
+                    </div>
+                    <p class="column-name">
+                        Invite Clients to Their Personal Dashboard
+                    </p>
+                    <p class="column-text">
+                        Send invitation email to add clients to their personal order management platform
+                    </p>
+                </div>
+                <div class="column-box_wrapper" data-src="{% static "/img/home/del.png" %}">
+                    <div class="column-image_wrapper">
+                        <img src="{% static "/img/home/03.png" %}" alt="column-image" class="column-image">
+                    </div>
+                    <p class="column-name">
+                        Automate & Scale Work Fulfillment
+                    </p>
+                    <p class="column-text">
+                        Connect Searchmanager Pro with your tool stack to automate the entire workflow and scale fulfillment
+                    </p>
+                </div>
+                <div class="column-box_wrapper" data-src="{% static "/img/home/rep.png" %}">
+                    <div class="column-image_wrapper">
+                        <img src="{% static "/img/home/04.png" %}" alt="column-image" class="column-image">
+                    </div>
+                    <p class="column-name">
+                        Present Transparent Task Reports
+                    </p>
+                    <p class="column-text">
+                        Build trust and transparency with your clients by allowing your them to access task deliverables anytime from their client dashboard
+                    </p>
+                </div>
+            </div>
+            <div class="work-boxes_image">
+                <img id="showImg" src="{% static "/img/home/q.png" %}" alt="box image" class="boxes-image">
+            </div>
+            <div class="work-boxes-column">
+
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+<section class="section">
+    <div class="cook-wrapper">
+        <div class="cook-text">
+            <h2 class="cook-title">
+                Ready to scale your agency?
+            </h2>
+            <p class="cook-subtitle">
+                Get started now or contact us if you have any questions!    
+            </p>
+            <a href="#" class="cook-link"><button class="cook-button">Get in Touch</button></a>
+        </div>
+        <div class="cook-image_wrapper">
+            <img src="{% static "/img/home/person.png" %}" alt="cook-image" class="cook-image">
+        </div>
+    </div>
+</section>
+{% endblock content %}

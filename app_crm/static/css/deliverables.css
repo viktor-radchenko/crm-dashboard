@@ -8,3 +8,7 @@ td textarea{
     background-color: transparent;
     border: none;
 }
+
+.table-sm td, .table-sm th {
+    padding: 0.2rem;
+}
