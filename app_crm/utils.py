@@ -193,12 +193,15 @@ def _get_filters_from_session(request):
         filters["month"] = request.session.get('month')
     filters["is_archived"] = request.session.get('show_archived', False)
 
-    if not filters.get('owner__in') and not request.user.is_client:
-        user_ids = []
-        user_ids.append(request.user.id)
-        for client in request.user.client.all():
-            user_ids.append(client.id)
-        if user_ids:
-            filters['owner__in'] = user_ids
+    if request.user.is_client:
+        filters['owner__in'] = [request.user.id]
+    else:
+        if not filters.get('owner__in'):
+            user_ids = []
+            user_ids.append(request.user.id)
+            for client in request.user.client.all():
+                user_ids.append(client.id)
+            if user_ids:
+                filters['owner__in'] = user_ids
 
     return filters
