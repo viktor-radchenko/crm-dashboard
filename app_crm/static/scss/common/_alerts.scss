@@ -1,0 +1,69 @@
+.flash-msg {
+  position: fixed;
+  bottom: 50px;
+  right: 50px;
+
+  display: flex;
+  flex-flow: column-reverse;
+
+  &__alert {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 350px;
+    padding: 5px 10px 5px 5px;
+    border: 1px solid $accent;
+    transition: all 0.3s ease-in-out;
+    max-height: 500px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: $bx-shadow;
+    @extend %inter-semibold;
+    font-size: 14px;
+    color: $accent;
+    z-index: 555;
+    cursor: default;
+    transition: all 0.3s ease-in-out;
+
+    &.close {
+      max-height: 0;
+      visibility: hidden;
+    }
+
+    &--info {
+      color: #1c606a;
+      background-color: #d7f1f5;
+      border-color: #c7ebf1;
+    }
+
+    &--success {
+      color: #0f6848;
+      background-color: #d2f4e8;
+      border-color: #bff0de;
+    }
+
+    &--warning {
+      color: #806520;
+      background-color: #fdf3d8;
+      border-color: #fceec9;
+    }
+
+    &--danger {
+      color: #78261f;
+      background-color: #fadbd8;
+      border-color: #f8ccc8;
+    }
+  }
+
+  &__close {
+    display: inline-block;
+    margin-left: auto;
+    padding: 5px;
+    padding-left: 15px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: inherit;
+  }
+}

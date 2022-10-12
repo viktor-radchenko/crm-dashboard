@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block auth %}
+{% load i18n %}
+{% language 'en' %}
+<section class="crm-login">
+  <div class="crm-login__bg"></div>
+  <div class="crm-login__form-container">
+    <form method="POST" class="crm-login__form" action="">
+      {% csrf_token %}
+      <div class="crm-login__form-header">Log in to your account</div>
+      <div class="crm-login__form-group">
+        <label class="crm-login__form-label" for="">E-mail</label>
+        <input class="crm-login__form-input" type="email" name="email" autocapitalize="off" autocorrect="off" autocomplete="email"
+          autofocus="autofocus" required>
+      </div>
+
+      <div class="crm-login__form-group">
+        <label class="crm-login__form-label" for="">Password</label>
+        <input class="crm-login__form-input" type="password" name="password" autocomplete="current-password" required>
+      </div>
+
+      <button class="crm-login__form-submit" type="submit">Sign in <i class="fas fa-arrow-right"></i></button>
+    </form>
+    <div class="crm-login__form-nav">
+      <a href="/reset_password" class="crm-login__form-forgot">Forgot password?</a>
+      <small class="have-account">Not a member? 
+        <a href="/signup" class="crm-login__form-register">Create an account</a>
+      </small>
+      
+    </div>
+  </div>
+</section>
+{% endlanguage %}
+{% endblock %}

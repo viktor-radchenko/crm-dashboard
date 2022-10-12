@@ -48,6 +48,7 @@ if not DEBUG:
 
 ALLOWED_HOSTS = ["www.searchmanager.pro", "searchmanager.pro", "localhost", "104.248.60.119"]
 
+APP_NAME = os.getenv('APP_NAME', 'Dashboard')
 
 # Application definition
 
@@ -166,11 +167,11 @@ EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'False') == 'True'
 
 
 MESSAGE_TAGS = {
-        messages.DEBUG: 'alert-secondary',
-        messages.INFO: 'alert-info',
-        messages.SUCCESS: 'alert-success',
-        messages.WARNING: 'alert-warning',
-        messages.ERROR: 'alert-danger',
+        messages.DEBUG: 'flash-msg__alert--secondary',
+        messages.INFO: 'flash-msg__alert--info',
+        messages.SUCCESS: 'flash-msg__alert--success',
+        messages.WARNING: 'flash-msg__alert--warning',
+        messages.ERROR: 'flash-msg__alert--danger',
  }
 
 ORDERINFOS_LIST = [

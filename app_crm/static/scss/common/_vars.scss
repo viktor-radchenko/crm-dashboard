@@ -1,0 +1,81 @@
+// colors
+$bg: #0158ea;
+$default: rgba(0, 0, 0, 0.7);
+$lg-grey: #d8d8d8;
+$bg-dark: #292E35;
+$bg-blue: rgba(1, 88, 234, 0.03);
+$title: #000000;
+$accent: #083866;
+
+// general
+$bx-shadow: 0px 7px 10px 1px rgba(1, 88, 234, 0.08);
+
+// section
+%section-rounded {
+  background: #FFFFFF;
+  /* background effect1 */
+  box-shadow: 0px 7px 10px 2px rgba(198, 204, 224, 0.25);
+  border-radius: 5px;
+}
+
+// fonts
+$font-size: 12px;
+
+%fwa {
+  font-family: "Font Awesome 5 Free";
+}
+
+%inter-regular {
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+}
+
+%inter-medium {
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+}
+
+%inter-semibold {
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+}
+
+%inter-bold {
+  font-family: "Inter", sans-serif;
+  font-weight: 800;
+}
+
+
+%checkbox-hidden {
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  position: absolute;
+}
+
+@function max($numbers...) {
+  @return m#{a}x(#{$numbers});
+}
+@function min($numbers...) {
+  @return m#{i}n(#{$numbers});
+}
+
+@mixin line-clamp($lines) {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: $lines;
+  -webkit-box-orient: vertical;
+}
+
+@mixin r($width) {
+  @media only screen and (max-width: $width+ "px") {
+    @content; 
+  } 
+}
+
+@mixin rmin($width) {
+  @media only screen and (min-width: $width+ "px") {
+    @content; 
+  } 
+}

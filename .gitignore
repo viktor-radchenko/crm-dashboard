@@ -1,5 +1,6 @@
 # directories
 .venv/
+node_modules/
 readme/
 .vscode/
 __pycache__/
@@ -11,3 +12,4 @@ media/
 .env*
 .DS_Store
 *.pyc
+package-lock.json

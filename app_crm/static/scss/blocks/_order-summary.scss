@@ -1,0 +1,103 @@
+.summary {
+  @extend %section-rounded;
+  padding: 15px;
+  padding-bottom: 30px;
+  margin-bottom: 20px;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+  }
+
+  &__title {
+    position: relative;
+    padding-left: 35px;
+    @extend %inter-medium;
+    font-size: 21px;
+    color: $accent;
+
+    &::before {
+      content: "\f0c5";
+      position: absolute;
+      left: 10px;
+      top: calc(50% - 9px);
+      @extend %fwa;
+      font-size: 18px;
+    }
+  }
+
+  &__nav {
+    display: flex;
+
+    &-item:not(:last-child) {
+      margin-right: 5px;
+    }
+  }
+
+  &__info {
+    display: flex;
+
+    & > hr {
+      display: inline-block;
+      margin: 20px 10px;
+      border: 0.5px solid $default;
+    }
+  }
+
+  &__column {
+    flex-grow: 2;
+    padding-left: 15px;
+
+    &-header {
+      position: relative;
+      padding-left: 20px;
+      margin-bottom: 5px;
+      @extend %inter-medium;
+      font-size: 15px;
+      line-height: 18px;
+      color: $accent;
+
+      & i {
+        position: absolute;
+        left: -5px;
+        top: calc(50% - 8px);
+      }
+    }
+
+    &-rows {
+      display: flex;
+      flex-flow: column wrap;
+      max-height: 150px;
+      padding-left: 20px;
+
+      & .summary__column-row-title {
+        min-width: 100px;
+        @extend %inter-semibold;
+        color: $default;
+      }
+
+      &--lg .summary__column-row-title {
+        min-width: 150px;
+        @extend %inter-semibold;
+        color: $default;
+      }
+    }
+
+    &-row {
+      display: flex;
+      align-items: center;
+      padding: 1px 0;
+    }
+
+    &-row-data {
+      padding: 5px 10px;
+      background-color: rebeccapurple;
+      color: #fff;
+      border-radius: 5px;
+      font-size: 12px;
+    }
+  }
+
+}

@@ -1,0 +1,65 @@
+<header class="header">
+  <div class="header__items">
+    <button class="header__burger-btn"><i class="fas fa-bars"></i></button>
+    <button class="header__notifications">
+      <btn class="header__notifications-toggle">
+        <i class="far fa-bell"></i>
+      </btn>
+      <div class="notifications notifications--lg">
+        <div class="notifications__header">
+          <span class="notifications__header-text">Notifications</span>
+          <a href="#" class="notifications__clear-all">Clear all<i class="fas fa-trash"></i></a>
+        </div>
+        <ul class="notifications__items">
+          <li class="notifications__item">
+            <img src="{% static '/img/profile_default.jpeg' %}" alt="" class="notifications__img">
+            <p class="notifications__subject">Bryan Carroll has submitted a new order</p>
+            <a href="#" class="notifications__view-link crm-button">View</a>
+          </li>
+          <li class="notifications__item">
+            <img src="{% static '/img/profile_default.jpeg' %}" alt="" class="notifications__img">
+            <p class="notifications__subject">Bryan Carroll has submitted a new order</p>
+            <a href="#" class="notifications__view-link crm-button">View</a>
+          </li>
+          <li class="notifications__item">
+            <img src="{% static '/img/profile_default.jpeg' %}" alt="" class="notifications__img">
+            <p class="notifications__subject">Bryan Carroll has submitted a new order</p>
+            <a href="#" class="notifications__view-link crm-button">View</a>
+          </li>
+          <li class="notifications__item">
+            <img src="{% static '/img/profile_default.jpeg' %}" alt="" class="notifications__img">
+            <p class="notifications__subject">Bryan Carroll has submitted a new order</p>
+            <a href="#" class="notifications__view-link crm-button">View</a>
+          </li>
+          <li class="notifications__item">
+            <img src="{% static '/img/profile_default.jpeg' %}" alt="" class="notifications__img">
+            <p class="notifications__subject">Bryan Carroll has submitted a new order</p>
+            <a href="#" class="notifications__view-link crm-button">View</a>
+          </li>
+        </ul>
+      </div>
+    </button>
+    <div class="header__profile">
+      <button class="header__profile-btn">
+        <img class="header__profile-img" src="{% static '/img/profile_default.jpeg' %}" alt="Profile image">
+        <span class="header__profile-name">Alalpopadopulos Ebanovrotus</span>
+      </button>
+      <div class="header__profile-links">
+        <div class="notifications notifications--sm">
+          <div class="notifications__header">
+            <i class="far fa-user"></i>
+            <span class="notifications__header-text">Your Profile</span>
+          </div>
+          <ul class="notifications__items">
+            <li class="notifications__item">
+              <a href="#" class="notifications__link"><i class="far fa-user"></i></i>Settings</a>
+            </li>
+            <li class="notifications__item">
+              <a href="#" class="notifications__link"><i class="far fa-user"></i>Log out</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>

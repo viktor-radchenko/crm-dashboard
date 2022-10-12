@@ -1,0 +1,96 @@
+.all-orders {
+  &__filters {
+    display: flex;
+    align-items: center;
+    padding: 10px 5px;
+    margin-bottom: 30px;
+    background-color: #fff;
+  }
+
+  &__search-container {
+    position: relative;
+    max-width: 315px;
+    width: 100%;
+    margin-right: 60px;
+  }
+
+  &__search-icon {
+    position: absolute;
+    top: 10px;
+    left: 12px;
+    font-size: 16px;
+    color: $bg;
+  }
+
+  &__form {
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+
+  &__form-submit {
+    margin-right: 10px;
+
+    & > button {
+      margin-right: 10px;
+    }
+  }
+
+  &__form-selects {
+    display: flex;
+    flex-grow: 1;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+  }
+
+  &__form-select {
+    max-width: 150px;
+    width: 100%;
+    flex-shrink: 0;
+  }
+
+  &__link-container {
+    position: relative;
+    display: flex;
+    justify-content: space-evenly;
+    max-width: 180px;
+    margin: 0 auto;
+    color: $bg;
+  }
+
+  &__link-expander {
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: inherit;
+  }
+
+  &__link-popup {
+    position: absolute;
+    top: 20px;
+    display: flex;
+    flex-flow: column;
+    align-items: flex-start;
+    justify-items: start;
+    background: #fff;
+    box-shadow: $bx-shadow;
+    width: 180px;
+    padding: 10px 0;
+    z-index: 5;
+
+    & a {
+      display: block;
+      width: 100%;
+      padding-left: 40px;
+      &:hover {
+        background: $bg;
+        color: #fff;
+      }
+    }
+
+    &--hidden {
+      display: none;
+    }
+  }
+}

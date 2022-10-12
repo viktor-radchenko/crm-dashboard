@@ -1,0 +1,99 @@
+<section class="crm-crud">
+  <div class="crm-crud__main">
+    <div class="crm-crud__header">
+      <div class="crm-crud__title">Service Forms</div>
+      <div class="crm-crud__search">
+        <span class="crm-crud__search-icon">
+          <i class="fas fa-search"></i>
+        </span>
+      </div>
+      <div class="crm-crud__add-button crm-button crm-button--lg">
+        <i class="fas fa-plus"></i>
+        <span>Create servie form</span>
+      </div>
+    </div>
+
+    <div class="table-responsive table-responsive--crud">
+      <table class="" id="dataTableCrud" width="100%" cellspacing="0">
+        <thead>
+          <tr>
+            <th scope="col" class="sortable">Form name</th>
+            <th scope="col" class="sortable">Description</th>
+            <th scope="col" class="sortable">Actions</th>
+          </tr>
+        </thead>
+  
+        <tbody>
+          <tr>
+            <td scope="col" class="sortable">Web Design</td>
+            <td scope="col" class="sortable">Whatever description</td>
+            <td scope="col" class="sortable">
+              <a class="crm-crud__action-btn" href="#"><i class="fa fa-pencil-alt"></i></a>
+              <a class="crm-crud__action-btn" href="#"><i class="fas fa-trash-alt"></i></a>
+            </td>
+          </tr>
+          <tr>
+            <td scope="col" class="sortable">SEO</td>
+            <td scope="col" class="sortable">Whatever description</td>
+            <td scope="col" class="sortable">
+              <a class="crm-crud__action-btn" href="#"><i class="fa fa-pencil-alt"></i></a>
+              <a class="crm-crud__action-btn" href="#"><i class="fas fa-trash-alt"></i></a>
+            </td>
+          </tr>
+          <tr>
+            <td scope="col" class="sortable">Web Development</td>
+            <td scope="col" class="sortable">Description</td>
+            <td scope="col" class="sortable">
+              <a class="crm-crud__action-btn" href="#"><i class="fa fa-pencil-alt"></i></a>
+              <a class="crm-crud__action-btn" href="#"><i class="fas fa-trash-alt"></i></a>
+            </td>
+          </tr>
+          <tr>
+            <td scope="col" class="sortable">First form</td>
+            <td scope="col" class="sortable">Whatever description</td>
+            <td scope="col" class="sortable">
+              <a class="crm-crud__action-btn" href="#"><i class="fa fa-pencil-alt"></i></a>
+              <a class="crm-crud__action-btn" href="#"><i class="fas fa-trash-alt"></i></a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="crm-crud__sidebar-container">
+    <div class="crm-crud__sidebar crm-crud__sidebar--top">
+      <div class="crm-crud__sidebar-header crm-crud__sidebar-header--analytics">
+        <img src="{% static '/img/google-analytics.png' %}" alt="Whatever">
+        <div class="">
+          <div class="crm-crud__sidebar-title">Analytics</div>
+          <div class="crm-crud__sidebar-subtitle">Service Form insights</div>
+        </div>
+      </div>
+
+      <div class="crm-crud__sidebar-body">
+        <div class="crm-crud__sidebar-row">
+          <img src="{% static 'img/form.png' %}" alt="">
+          <span>3</span>
+          <span>whatever</span>
+        </div>
+        <div class="crm-crud__sidebar-row">
+          <img src="{% static 'img/shopping-bag.png' %}" alt="">
+          <span>3</span>
+          <span>whatever</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="crm-crud__sidebar crm-crud__sidebar--bottom">
+      <div class="crm-crud__sidebar-header crm-crud__sidebar-header--summary">
+        <div class="crm-crud__sidebar-title">Description</div>
+      </div>
+      <div class="crm-crud__sidebar-body">
+        Pellentesque fringilla mauris a sem commodo tincidunt. Sed nec augue porttitor, aliquam lorem in,
+        vehicula nunc. Praesent aliquet venenatis semper.Maecenas vel bibendum velit. In sodales nisi vitae
+        justo eleifend rhoncus.
+      </div>
+    </div>
+  </div>
+</section>

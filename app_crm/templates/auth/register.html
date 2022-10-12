@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block auth %}
+{% load i18n %}
+{% language 'en' %}
+<section class="crm-login">
+  <div class="crm-login__bg"></div>
+  <div class="crm-login__form-container">
+    <form method="POST" class="crm-login__form" action="">
+      {% csrf_token %}
+      <div class="crm-login__form-header">Sign up</div>
+      <div class="crm-login__form-group">
+        <label class="crm-login__form-label" for="">First name</label>
+        <input class="crm-login__form-input" type="text" name="first-name" autocapitalize="off" autocorrect="off" autocomplete="email" autofocus="autofocus"
+        value="{% if first_name %}{{first_name}}{% else %}{{''}}{% endif %}"
+        required>
+      </div>
+
+      <div class="crm-login__form-group">
+        <label class="crm-login__form-label" for="">Last name</label>
+        <input class="crm-login__form-input" type="text" name="last-name" autocapitalize="off" autocorrect="off" autocomplete="email" autofocus="autofocus"
+        value="{% if last_name %}{{last_name}}{% else %}{{''}}{% endif %}"
+        required>
+      </div>
+
+      <div class="crm-login__form-group">
+        <label class="crm-login__form-label" for="">E-mail</label>
+        <input class="crm-login__form-input" type="email" name="email" autocapitalize="off" autocorrect="off" autocomplete="email" autofocus="autofocus"
+        value="{% if email %}{{email}}{% else %}{{''}}{% endif %}" 
+        required>
+      </div>
+
+      <div class="crm-login__form-group">
+        <label class="crm-login__form-label" for="">Password</label>
+        <input class="crm-login__form-input" type="password" name="password"  id="id_password1" minlength="6" autocomplete="new-password">
+      </div>
+      
+      <div class="crm-login__form-group">
+        <label class="crm-login__form-label" for="">Repeat password</label>
+        <input class="crm-login__form-input" type="password" name="repeat-password"  id="id_password2" minlength="6" autocomplete="new-password">
+      </div>
+
+      <button class="crm-login__form-submit" type="submit">Sign up <i class="fas fa-arrow-right"></i></button>
+    </form>
+    <div class="crm-login__form-nav">
+      <small class="have-account">Already have an account? 
+        <a href="/login" class="crm-login__form-register">Sign in</a>
+      </small>
+    </div>
+  </div>
+</section>
+{% endlanguage %}
+{% endblock %}

@@ -1,0 +1,75 @@
+.header {
+  display: flex;
+  align-items: center;
+  padding: 0 35px;
+  height: 75px;
+  background-color: #fff;
+  box-shadow: $bx-shadow;
+
+  &__items {
+    display: flex;
+    width: 100%;
+  }
+
+  &__burger-btn {
+    margin-right: auto;
+    padding: 0;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+
+    &:hover {
+      color: #444;
+    }
+  }
+
+  &__notifications {
+    position: relative;
+    margin-right: 20px;
+    padding: 0;
+    background: none;
+    border: none;
+    color: $bg;
+    font-size: 23px;
+    overflow: visible;
+
+    &-toggle {
+      cursor: pointer;
+    }
+  }
+
+  &__profile {
+    position: relative;
+
+    &-btn {
+      display: flex;
+      align-items: center;
+      padding: 5px 30px 5px 20px;
+      border: none;
+      background: $bg-blue;
+      border-radius: 10px;
+      color: $default;
+      cursor: pointer;
+      user-select: none;
+      outline: 1px solid #fff;
+      @extend %inter-medium;
+      transition: outline 0.3s ease;
+
+      &:hover {
+        outline-color: $bg;
+      }
+    }
+
+    &-img {
+      width: 30px;
+      height: 30px;
+      margin-right: 25px;
+      object-fit: contain;
+      border: 1px solid $bg;
+      border-radius: 50%;
+    }
+  }
+
+
+}

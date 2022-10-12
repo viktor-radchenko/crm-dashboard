@@ -1,0 +1,141 @@
+.sidebar {
+  flex-shrink: 0;
+  padding: 15px 25px;
+  max-width: 200px;
+  width: 100%;
+  background-color: $bg-dark;
+  color: #fff;
+  font-weight: 800;
+  transition: 0.3s ease-in-out all;
+
+  &.collapsed {
+    max-width: 100px;
+    padding: 15px 15px;
+    text-align: center;
+
+    & .sidebar__link {
+      & span {
+        display: block;
+        padding-top: 5px;
+      }
+
+      &--expandable {
+        position: relative;
+
+        & .sidebar__popup {
+          position: absolute;
+          top: 0;
+          left: 100px;
+          box-shadow: 0 0.15rem 1.75rem 0 rgb(58 59 69 / 15%);
+          width: 150px;
+          z-index: 15;
+          border-radius: 5px;
+
+          &-container {
+            margin-top: 0;
+          }
+        }
+
+        &::after {
+          display: none;
+        }
+      }
+    }
+  }
+
+  &__sections {
+    display: flex;
+    flex-flow: column;
+  }
+
+  &__section {
+    padding: 15px 0 0;
+    border-bottom: 1px solid #fff;
+
+    &:first-child {
+      padding: 0 0 15px;
+    }
+  }
+
+  &__header {
+    margin-bottom: 5px;
+    font-size: 11px;
+    color: $lg-grey;
+  }
+
+  &__link {
+    padding: 18px 0;
+    cursor: pointer;
+
+    &--expandable {
+      position: relative;
+
+      &::after {
+        content: '\f078';
+        @extend %fwa;
+        position: absolute;
+        right: 0;
+        top: 17px;
+        transition: transform 0.4s ease;
+      }
+
+      &.show {
+        &::after {
+          transform: rotate(-180deg);
+        }
+      }
+    }
+
+    & > a {
+      & i {
+        display: inline-block;
+        min-width: 20px;
+        margin-left: 0;
+      }
+    }
+  }
+
+  &__popup {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.4s ease-in-out;
+
+    &.show {
+      max-height: 300px;
+    }
+
+    &-container {
+      width: 100%;
+      margin-top: 20px;
+      color: $default;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: $bx-shadow;
+      font-size: $font-size;
+      overflow: hidden;
+      z-index: 10;
+    }
+
+    &-link {
+      padding: 10px 20px;
+      transition: background-color 0.2s ease, color 0.2s ease;
+
+      &:hover {
+        background-color: $bg;
+        color: #fff;
+      }
+    }
+  }
+
+  &__logo-img {
+    margin: 0 auto;
+    max-width: 85px;
+    object-fit: contain;
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+    transition: 0.3s ease-in-out all;
+
+    .sidebar.collapsed & {
+      max-width: 60px;
+    }
+  }
+}

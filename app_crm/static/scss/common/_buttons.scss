@@ -1,0 +1,42 @@
+.crm-button {
+  padding: 3px 12px;
+  color: #fff;
+  border-radius: 5px;
+  border: none;
+  background-color: $bg;
+  cursor: pointer;
+  
+  &:hover {
+    box-shadow: $bx-shadow;
+  }
+
+  &--lg {
+    padding: 8px 33px;
+  }
+
+  &--grey {
+    background-color: $lg-grey;
+    color: $default;
+  }
+
+  &--inactive {
+    background-color: $lg-grey;
+    color: $default;
+  }
+
+  &--nav{
+    padding: 10px 20px;
+    @extend %inter-medium;
+    line-height: 13px;
+    font-size: 14px;
+    border-radius: 10px;
+
+    & i {
+      display: inline-block;
+      position: relative;
+      margin-right: 10px;
+      font-size: 20px;
+      top: calc(13px - 50%);
+    }
+  }
+}

@@ -1,0 +1,118 @@
+.crm-crud {
+  display: flex;
+  justify-content: center;
+
+  &__main {
+    margin-right: 25px;
+    max-width: 850px;
+    width: 100%;
+    padding: 17px 30px;
+    background-color: #fff;
+    box-shadow: $bx-shadow;
+    border-radius: 10px;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 35px;
+  }
+
+  &__title {
+    flex-grow: 2;
+    @extend %inter-semibold;
+    font-size: 24px;
+    line-height: 29px;
+    color: $accent;
+  }
+
+  &__search {
+    position: relative;
+    max-width: 240px;
+    width: 100%;
+    margin-right: 20px;
+  }
+
+  &__search-icon {
+    position: absolute;
+    top: 10px;
+    left: 12px;
+    font-size: 16px;
+    color: $bg;
+  }
+
+  &__add-button {
+    padding: 10px;
+    border-radius: 10px;
+    @extend %inter-medium;
+    font-size: 12px;
+
+    & i {
+      font-size: 10px;
+      padding-right: 5px;
+    }
+  }
+
+  &__action-btn {
+    color: $default;
+
+    &:first-of-type {
+      padding-right: 5px;
+    }
+
+    &:hover {
+      color: $bg;
+    }
+  }
+
+  &__sidebar-container {
+    max-width: 205px;
+    width: 100%;
+  }
+
+  &__sidebar {
+
+    &-header {
+      position: relative;
+
+      &--analytics {
+        display: flex;
+        align-items: center;
+        
+        & img {
+          display: block;
+          width: 20px;
+          height: 20px;
+          margin-right: 10px;
+        }
+      }
+    }
+
+    &-row {
+      display: flex;
+    }
+    &-title {
+      @extend %inter-medium;
+      font-size: 20px;
+      line-height: 20px;
+      color: $accent;
+    }
+
+    &-subtitle {
+      font-size: 10px;
+      color: #979797;
+    }
+
+    &--top,
+    &--bottom {
+      padding: 17px 30px;
+      background-color: #fff;
+      box-shadow: $bx-shadow;
+      border-radius: 10px;
+    }
+
+    &--top {
+      margin-bottom: 25px;
+    }
+  }
+}

@@ -1,0 +1,54 @@
+/*Styling Selectbox*/
+.dropdown .select {
+  cursor: pointer;
+  outline: none;
+  color: #111;
+}
+
+.dropdown .select > i {
+  position: absolute;
+  top: calc(50% - 12px);
+  right: 20px;
+  font-size: 13px;
+  color: $default;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  line-height: 20px;
+}
+
+.dropdown.active {
+  border-color: $bg;
+}
+
+.dropdown.active .select > i {
+  transform: rotate(-180deg);
+}
+.dropdown .dropdown-menu {
+  display: none;
+  position: absolute;
+  width: 100%;
+  padding: 0;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: $bx-shadow;
+  list-style: none;
+  overflow: hidden;
+  overflow-y: auto;
+  max-height: 200px;
+  z-index: 9;
+}
+.dropdown .dropdown-menu li {
+  padding: 15px 20px;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  color: #111;
+}
+.dropdown .dropdown-menu {
+
+}
+.dropdown .dropdown-menu li:hover {
+  background-color: #f2f2f2;
+}
+.dropdown .dropdown-menu li:active {
+  background-color: #e2e2e2;
+}

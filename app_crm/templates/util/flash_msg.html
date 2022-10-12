@@ -1,0 +1,15 @@
+{% if messages %}
+  <div class="flash-msg">
+    {% for msg in messages %}
+      <div class="flash-msg__alert {{ msg.tags }}">
+        <span>{{ msg }}</span>
+        <button type="button" class="flash-msg__close" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+{% block extra-scripts %}
+{% endblock extra-scripts %}

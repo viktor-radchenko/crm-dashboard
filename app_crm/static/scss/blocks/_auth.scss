@@ -1,0 +1,127 @@
+.crm-login {
+  display: flex;
+  width: 100%;
+  align-items: center;
+
+  &__bg {
+    max-width: 25%;
+    width: 100%;
+    height: 100vh;
+    background-image: url('/static/img/searchmanager-pro-login.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    box-shadow: $bx-shadow;
+  }
+
+  &__form-container {
+    padding: 55px 55px 20px;
+    margin: 0 auto;
+    max-width: 440px;
+    background: #fff;
+    box-shadow: $bx-shadow;
+    border-radius: 10px
+  }
+
+  &__form {
+
+    &-header {
+      margin-bottom: 25px;
+      min-width: 330px;
+      @extend %inter-bold;
+      color: $accent;
+      font-size: 30px;
+    }
+
+    &-group {
+     margin-bottom: 7px;
+    }
+
+    &-label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 14px;
+      @extend %inter-semibold;
+      color: $accent;
+    }
+
+    &-input {
+      display: block;
+      width: 100%;
+      padding: 10px 10px;
+      font-size: 14px;
+      line-height: 1;
+      border: none;
+      border-radius: 5px;
+      background-color: rgba(49, 123, 193, 0.23);
+      transition: box-shadow 0.2s ease-in-out;
+
+      &:focus, &:hover {
+        box-shadow: $bx-shadow;
+      }
+    }
+
+    &-submit {
+      display: block;
+      width: 100%;
+      padding: 0;
+      margin: 0;
+      border: none;
+      background: none;
+
+      margin: 25px 0;
+      padding: 10px;
+      @extend %inter-semibold;  
+      font-size: 14px;
+      color: #fff;
+      background-color: $bg;
+      border-radius: 5px;
+
+      cursor: pointer;
+      transition: box-shadow 0.3s ease-in-out;
+
+      & i {
+        font-size: 12px;
+      }
+
+      &:hover {
+        box-shadow: $bx-shadow;
+      }
+    }
+
+    &-nav {
+      display: flex;
+      flex-flow: column;
+      align-items: center;
+      @extend %inter-semibold;
+      color: $accent;
+      font-size: 14px;
+
+      & small {
+        color: rgba(0, 0, 0, 0.5);
+        cursor: default;
+
+      }
+
+      & a {
+        color: $accent;
+        border-bottom: 1px solid $bg-blue;
+        transition: border-color 0.2s ease-in-out;
+        margin-bottom: 10px;
+        font-size: 14px;
+
+        & span {
+          color: $lg-grey;
+        }
+
+        &:hover {
+          border-color: $accent;
+        }
+      }
+    }
+
+    & p {
+      margin-bottom: 30px;
+      font-size: 15px;
+    }
+  }
+}

@@ -1,0 +1,86 @@
+// ** Custom Select **/ 
+
+.custom-select-wrapper {
+  position: relative;
+  display: inline-block;
+  user-select: none;
+  margin: 0 auto;
+}
+.custom-select-wrapper select {
+  display: none;
+}
+.custom-select {
+  position: relative;
+  display: inline-block;
+}
+.custom-select-trigger {
+  position: relative;
+  display: block;
+  padding: 5px 84px 5px 42px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.custom-select-trigger:after {
+  position: absolute;
+  display: block;
+  content: '';
+  width: 10px;
+  height: 10px;
+  top: 50%;
+  right: 60px;
+  margin-top: -3px;
+  border-bottom: 2px solid $bg;
+  border-right: 2px solid $bg;
+  transform: rotate(45deg) translateY(-50%);
+  transition: all 0.2s ease-in-out;
+  transform-origin: 50% 0;
+}
+.custom-select.opened .custom-select-trigger:after {
+  margin-top: 3px;
+  transform: rotate(-135deg) translateY(-50%);
+}
+.custom-options {
+  position: absolute;
+  display: block;
+  top: 100%;
+  left: 0;
+  right: 0;
+  min-width: 100%;
+  margin: 15px 0;
+  box-sizing: border-box;
+  box-shadow: $bx-shadow;
+  background: #fff;
+  transition: all 0.2s ease-in-out;
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-15px);
+}
+.custom-select.opened .custom-options {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: all;
+  transform: translateY(0);
+}
+
+.custom-option {
+  position: relative;
+  display: block;
+  padding: 10px;
+  @extend %inter-medium;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+.custom-option:first-of-type {
+  border-radius: 4px 4px 0 0;
+}
+.custom-option:last-of-type {
+  border-bottom: 0;
+  border-radius: 0 0 4px 4px;
+}
+.custom-option:hover,
+.custom-option.selection {
+  background-color: $bg;
+  color: #fff;
+}

@@ -1,0 +1,123 @@
+.table-responsive {
+  padding: 0 25px;
+  font-size: 13px;
+
+  &--crud {
+    padding: 0;
+    width: 100%;
+  }
+}
+
+#dataTable_length {
+  margin-bottom: 40px;
+}
+
+#dataTable,
+#dataTableCrud {
+  text-align: center;
+  color: $title;
+}
+
+#dataTable_info {
+  margin-top: 350px;
+}
+
+// Adding table filters styling here
+#dataTable_filter > label > input,
+#dataTableCrud_filter > label > input {
+  display: block;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 12px 20px 12px 50px;
+  color: $accent;
+  font-size: 12px;
+  line-height: 1;
+  background-color: $bg-blue;
+  border-radius: 20px;
+  outline: 1px solid #fff;
+  transition: outline-color 0.2s ease;
+
+  &::-webkit-search-cancel-button {
+    cursor: pointer;
+  }
+
+  &:hover,
+  &:focus {
+    outline-color: $bg;
+  }
+}
+
+#dataTable th,
+#dataTableCrud th {
+  @extend %inter-regular;
+  color: $default;
+
+  &:first-of-type {
+    text-align: left;
+  }
+}
+
+#dataTableCrud th {
+  font-size: 13px;
+  line-height: 13px;
+}
+
+#dataTableCrud tbody tr td:first-of-type {
+  text-align: left;
+}
+
+#dataTable td,
+#dataTableCrud td {
+  padding: 10px 0;
+}
+
+#dataTable tbody:before,
+#dataTableCrud tbody:before {
+  line-height: 20px;
+  content: '\200C';
+  display: block;
+}
+
+#dataTableCrud thead .sorting:after,
+#dataTableCrud thead .sorting_asc:after,
+#dataTableCrud thead .sorting_asc_disabled:after {
+  content: '\25bc';
+  padding-left: 10px;
+  // @extend %fwa;
+}
+
+#dataTableCrud thead .sorting_desc:after,
+#dataTableCrud thead .sorting_desc_disabled:after {
+  content: "\25b2";
+  padding-left: 10px;
+  // @extend %fwa; 
+}
+
+.col {
+  &--client {
+    color: $bg;
+  }
+
+  &--status > span,
+  &--package > span,
+  &--addon > span {
+    display: block;
+    width: fit-content;
+    margin: 0 auto;
+    padding: 4px 10px;
+    border-radius: 5px;
+  }
+
+  &--status > span {
+    background-color: #67c8aa;
+  }
+
+  &--package > span {
+    background-color: #edd274;
+  }
+
+  &--addon > span {
+    background-color: #b174ed;
+  }
+}

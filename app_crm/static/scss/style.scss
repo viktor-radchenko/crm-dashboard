@@ -1,0 +1,25 @@
+@import 'common/vars';
+@import 'common/fonts';
+@import 'common/reset';
+@import 'common/libs';
+@import 'common/global';
+@import 'common/sprite';
+@import 'common/buttons';
+@import 'common/dropdowns';
+@import 'common/alerts';
+
+
+@import 'blocks/notification-popup';
+@import 'blocks/all-orders';
+@import 'blocks/custom-select';
+@import 'blocks/table-responsive';
+@import 'blocks/order-summary';
+@import 'blocks/crm-form';
+@import 'blocks/crm-crud';
+@import 'blocks/form-builder';
+@import 'blocks/auth';
+
+
+@import 'components/_sidebar';
+@import 'components/_header';
+@import 'components/_content';

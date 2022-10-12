@@ -1,0 +1,120 @@
+.crm-form-section {
+  @extend %section-rounded;
+  padding: 15px;
+}
+
+.crm-form {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  margin: 0 auto;
+  width: 70%;
+
+  &__group {
+    width: 100%;
+    margin-bottom: 15px;
+  }
+
+  &__input-container {
+    position: relative;
+    width: 100%;
+  }
+
+  &__input {
+    display: inline-block;
+    width: 100%;
+    padding: 35px 20px 15px;
+    border: 2px solid $lg-grey;
+    border-radius: 5px;
+    overflow: hidden;
+    line-height: 14.5px;
+    font-size: 12px;
+    transition: 0.2s ease-out border-color, 0.2s ease-out box-shadow;
+    color: #000;
+
+    &:hover, &:focus {
+      box-shadow: $bx-shadow;
+    }
+
+    &:focus {
+      border-color: $bg;
+    }
+
+    &--textarea {
+      height: 200px;
+      resize: none;
+      overflow-y: auto;
+    }
+
+    &--date {
+      position: relative;
+
+
+      &::-webkit-calendar-picker-indicator {
+        position: absolute;
+        opacity: 0;
+        right: 0;
+        width: 90%;
+        height: 80px;
+        cursor: pointer;
+      }
+
+      &::after {
+        content: "\f073";
+        position: absolute;
+        @extend %fwa;
+        right: 20px;
+        top: calc(50% - 7px);
+        color: $default;
+        font-size: 16px;
+        z-index: 5;
+      }
+    }
+  }
+
+  &__checkbox { 
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+
+    & input {
+      appearance: none;
+      margin: 5px 10px 5px 0;
+      height: 15px;
+      width: 15px;
+      border: 1px solid $lg-grey;
+      border-radius: 50%;
+      transition: 0.2s all linear;
+      outline: none;
+
+      &:checked {
+        border: 6px solid $bg;
+      }
+    }
+
+    & label {
+      display: block;
+      width: 100%;
+      cursor: pointer;
+    }
+  }
+
+  &__input-label {
+    position: absolute;
+    top: 2px;
+    left: 20px;
+    padding-top: 13px;
+    color: $bg;
+    background-color: #fff;
+    @extend %inter-regular;
+    font-size: 14px;
+    line-height: 17px;
+    z-index: 5;
+
+    &--textarea {
+      width: 97%;
+      padding-bottom: 7px;
+      margin-bottom: 5px;
+    }
+  }
+}
